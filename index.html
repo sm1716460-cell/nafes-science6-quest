@@ -3429,7 +3429,7 @@ LAB[1] = W1;
    GENERIC HELPERS (Week 2 onward) + WEEK 2 LAB
    ===================================================================== */
 const IMG = (w, n) => `img/lab${w}/${n}.webp`;
-const I2 = n => IMG(n.startsWith("l_") || n.startsWith("o_") || n.startsWith("g_") ? 1 : 2, n);
+const I2 = n => IMG(/^(l_|o_|g_)/.test(n) ? 1 : /^(m_|t_|x_)/.test(n) ? 3 : 2, n);
 
 function sortGame(host, o){
  const w = document.createElement("div"); w.className = "lcard";
@@ -3746,6 +3746,246 @@ W2.notes = [
  ["🧬 Traits", ["Eye color = variation of a genetic trait; blue eyes = <b>recessive</b>.", "<b>Pedigree chart</b> = traits passed down in a family.", "<b>Acquired trait</b> = learned / from the environment."], "#8b5cf6"]
 ];
 LAB[2] = W2;
+
+/* =====================================================================
+   WEEK 3 — Properties of Matter, States, Changes, Mixtures & Solutions
+   ===================================================================== */
+const W3 = { w:3, emoji:"🧪", label:"Week 3 · Matter, Mixtures & Solutions", stations:[] };
+const st3 = document.createElement("style");
+st3.textContent = `
+.tank{position:relative;width:100%;aspect-ratio:16/10;border-radius:18px;overflow:hidden;background:linear-gradient(#eaf7ff 0 22%,#7fd0ff 22%,#3aa0e8 100%);border:4px solid #b7e3ff}
+.tank .wl{position:absolute;left:0;right:0;top:22%;height:6px;background:rgba(255,255,255,.7)}
+.tank img{position:absolute;width:16%;transform:translate(-50%,-50%);transition:top 1.6s cubic-bezier(.3,1.2,.5,1),transform .6s;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
+.objs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.objs button{background:#fff;border-radius:14px;padding:4px;border:3px solid #e6defd;width:clamp(56px,9vmin,86px)}
+.objs button.on{border-color:var(--p);background:#f1ecff}.objs button img{width:100%;aspect-ratio:1;object-fit:contain}
+.meas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.meas div{background:#f5f2ff;border-radius:14px;padding:8px;font-weight:800;color:var(--pd)}
+.meas b{display:block;font-size:clamp(20px,3.6vmin,36px);color:var(--p);font-family:var(--hf)}
+.circ{position:relative;width:100%;aspect-ratio:16/9;max-width:620px;margin:auto}
+.circ svg{position:absolute;inset:0;width:100%;height:100%}
+.gap{position:absolute;left:41%;top:72%;width:18%;height:22%;border:4px dashed #cbbdf8;border-radius:16px;display:grid;place-items:center;background:#faf8ff}
+.gap img{width:80%;max-height:90%;object-fit:contain}
+.gap.over{border-color:var(--p);background:#efe8ff}
+.pcv{width:100%;aspect-ratio:4/3;border-radius:18px;background:#14093f;display:block}
+.sbtns{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.glass{position:relative;width:min(100%,260px);aspect-ratio:3/4;margin:auto}
+.glass .g{position:absolute;inset:6% 12% 0 12%;border:5px solid #b7d7ef;border-top:none;border-radius:0 0 26px 26px;overflow:hidden;background:rgba(220,240,255,.35)}
+.glass .w{position:absolute;left:0;right:0;bottom:0;height:78%;background:linear-gradient(rgba(130,200,255,.55),rgba(80,160,240,.7));transition:background .6s}
+.glass .pile{position:absolute;left:10%;right:10%;bottom:0;background:#fff;border-radius:50% 50% 0 0;transition:height .6s}
+.glass .gr{position:absolute;width:6px;height:6px;background:#fff;border-radius:2px}
+.meter{display:flex;gap:4px;margin-top:6px}.meter span{flex:1;text-align:center;font-weight:800;border-radius:10px;padding:6px 2px;background:#eee;color:#888;font-size:clamp(11px,1.9vmin,17px)}
+.meter span.on{color:#fff}.meter .d.on{background:#4CC9F0}.meter .c.on{background:#8d6bff}.meter .s.on{background:#e53935}
+.mixes{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.mixes button{background:#fff;border:3px solid #e6defd;border-radius:16px;padding:6px;font-weight:800;color:var(--pd);font-size:clamp(12px,2vmin,18px)}
+.mixes button img{width:70%;aspect-ratio:1;object-fit:contain;display:block;margin:auto}
+.mixes button.on{border-color:var(--p);background:#f1ecff}.mixes button.ok{border-color:var(--ok);background:#e6fbef}
+.stage3{min-height:clamp(180px,30vmin,300px);border-radius:18px;background:linear-gradient(#f7fbff,#e8f2ff);display:flex;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden;padding:10px}
+.stage3 img{width:clamp(70px,13vmin,140px);transition:transform 1s,opacity 1s}
+.bal{position:relative;width:min(100%,360px);margin:auto}
+.bal svg{width:100%}
+`;
+document.head.appendChild(st3);
+
+/* 1 — MEASURE IT: mass, volume, density, buoyancy */
+const OBJ = { m_cork:["Cork",4,16], m_wood:["Wood block",30,50], m_ice:["Ice cube",18,20], m_duck:["Rubber duck",20,60], m_apple:["Apple",120,160], m_brick:["Brick",400,200], m_coin:["Gold coin",19,1], m_nail:["Iron nail",8,1] };
+W3.stations.push({ id:"density", icon:"⚖️", short:"Float or Sink", title:"Density Lab", covers:["P001","P002","P003","P004","P005","P006","P007","P008","P009","P010"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🛁 Float or sink?</h2><p style="margin-top:0">1️⃣ Pick an object · 2️⃣ Measure it · 3️⃣ Drop it in the tank!</p>
+   <div class="objs" id="dObjs">${Object.entries(OBJ).map(([k, o]) => `<button data-o="${k}" aria-label="${o[0]}"><img src="${I2(k)}" alt=""></button>`).join("")}</div>
+   <div class="tank" id="tank" style="margin-top:8px"><div class="wl"></div></div><p class="cap" id="dCap">Water's density = 1 g/mL</p></div>
+   <div><div class="lcard"><h3 id="dName">📏 Measuring station</h3><div class="lrow" style="justify-content:center"><img src="${I2("t_balance")}" alt="" style="width:clamp(60px,10vmin,100px)"><img src="${I2("t_cyl")}" alt="" style="width:clamp(30px,5vmin,50px)"></div>
+    <div class="meas"><div>Mass<b id="dM">?</b>grams (g)</div><div>Volume<b id="dV">?</b>milliliters (mL)</div><div>Density<b id="dD">?</b>g/mL</div></div>
+    <div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn y" id="dMeas">⚖️ Measure</button><button class="lbtn t" id="dDrop">💧 Drop in water</button><button class="lbtn c" id="dCut">✂️ Cut in half</button></div><p id="dT" style="font-weight:700"></p></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Density = Mass ÷ Volume</span></p><p>Density <b>less than water</b> → it <span class="kw2">floats</span> (buoyancy). More than water → it <span class="kw3">sinks</span>.</p><p>Color, mass, volume and density are all <b>physical properties</b>.</p></div></div></div>`;
+  let cur = null, measured = false, dropped = 0; const tried = new Set(), inTank = [];
+  el.querySelectorAll("[data-o]").forEach(b => b.onclick = () => { cur = { k:b.dataset.o, m:OBJ[b.dataset.o][1], v:OBJ[b.dataset.o][2] }; measured = false;
+   el.querySelectorAll("[data-o]").forEach(x => x.classList.toggle("on", x === b)); $("#dName").textContent = "📏 " + OBJ[cur.k][0]; ["#dM","#dV","#dD"].forEach(x => $(x).textContent = "?"); $("#dT").textContent = ""; sfx.tap();
+   api.hoot(`Measure the <b>${OBJ[cur.k][0]}</b> first — then predict: float or sink? 🤔`, "m_think"); });
+  const show = () => { $("#dM").textContent = cur.m; $("#dV").textContent = cur.v; $("#dD").textContent = (cur.m / cur.v).toFixed(2); };
+  $("#dMeas").onclick = () => { if (!cur) return api.hoot("Pick an object first! 👆", "m_point"); measured = true; show(); sfx.ok();
+   $("#dT").innerHTML = `Density = ${cur.m} g ÷ ${cur.v} mL = <b>${(cur.m / cur.v).toFixed(2)} g/mL</b>`; api.hoot(`Mass is measured in <b>grams</b>, volume in <b>milliliters</b>. Density = mass ÷ volume!`, "m_idea"); };
+  $("#dCut").onclick = () => { if (!cur || !measured) return api.hoot("Measure it first! ⚖️", "m_point"); const d0 = (cur.m / cur.v).toFixed(2); cur.m = +(cur.m / 2).toFixed(1); cur.v = +(cur.v / 2).toFixed(1); show(); sfx.tap();
+   $("#dT").innerHTML = `✂️ Cut in half: the <b>mass</b> (and volume) got smaller… but the density is still <b>${d0}</b>! Density doesn't depend on size.`; api.hoot("Cutting an object changes its <b>mass</b> — but not its density! 🤯", "m_wow"); };
+  $("#dDrop").onclick = () => { if (!cur) return api.hoot("Pick an object first! 👆", "m_point");
+   const d = cur.m / cur.v, fl = d < 1, x = 10 + (dropped++ % 6) * 16;
+   const im = document.createElement("img"); im.src = I2(cur.k); im.style.left = x + "%"; im.style.top = "-10%"; $("#tank").appendChild(im); inTank.push(im); if (inTank.length > 6) inTank.shift().remove();
+   requestAnimationFrame(() => requestAnimationFrame(() => { im.style.top = fl ? (20 + d * 6) + "%" : "86%"; }));
+   tone(fl ? [600, 800] : [400, 200], .08, "sine", .08); tried.add(cur.k);
+   lt(() => { $("#dCap").innerHTML = `${OBJ[cur.k][0]}: ${d.toFixed(2)} g/mL → ${fl ? "<b style='color:var(--ok)'>FLOATS</b> (less dense than water)" : "<b style='color:var(--bad)'>SINKS</b> (denser than water)"}`;
+    if (cur.k === "m_ice") api.hoot("Ice floats because it has a <b>lower density</b> than water! 🧊", "m_wow"); else if (cur.k === "m_brick") api.hoot("The brick has the <b>greatest density</b> — down it goes! 🧱", "m_oops"); }, 1200);
+   if (tried.size >= 5 && !el.dataset.q){ el.dataset.q = 1; lt(() => miniQuiz(quizBox(el), ["P004","P003","P010","P002","P007","P006","P008","P009","P001"], () => api.done()), 1800); } };
+  hookCard(el, IMG(3, "hook_float"), ["Splash! Why does the cork float… 🍾", "…but the brick sinks? 🧱", "The secret is DENSITY! Let's measure!"], () => api.hoot("Pick an object, measure it, then drop it in the tank! 🛁", "m_point"));
+ }});
+
+/* 2 — CONDUCTOR TESTER */
+const CON = { m_copper:["Copper wire",1], m_nail:["Iron nail",1], m_coin:["Metal coin",1], m_mspoon:["Metal spoon",1], m_eraser:["Rubber eraser",0], m_pspoon:["Plastic spoon",0], m_wood:["Wood",0], m_cork:["Cork",0] };
+W3.stations.push({ id:"conduct", icon:"💡", short:"Conductors", title:"Conductor Tester", covers:["P011","P012","P013","P014","P015"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>💡 Will the bulb light?</h2><p style="margin-top:0">Drag a material into the <b>gap</b> in the circuit!</p>
+   <div class="circ"><svg viewBox="0 0 640 360"><defs><radialGradient id="glow"><stop offset="0" stop-color="#fff59d"/><stop offset="1" stop-color="#fff59d" stop-opacity="0"/></radialGradient></defs>
+    <circle id="bGlow" cx="320" cy="70" r="0" fill="url(#glow)"/>
+    <path d="M120 300 V70 H285 M355 70 H520 V300 H380 M260 300 H120" stroke="#ff8a3d" stroke-width="12" fill="none" stroke-linejoin="round"/>
+    <path id="wireFlow" d="M120 300 V70 H285 M355 70 H520 V300 H380 M260 300 H120" stroke="#fff176" stroke-width="5" fill="none" stroke-dasharray="10 22" opacity="0"/>
+    <rect x="70" y="150" width="100" height="70" rx="12" fill="#37474f"/><rect x="95" y="138" width="50" height="14" rx="4" fill="#90a4ae"/><text x="120" y="194" text-anchor="middle" font-size="30" fill="#fff" font-weight="900">+  −</text>
+    <circle id="bulb" cx="320" cy="70" r="40" fill="#eceff1" stroke="#90a4ae" stroke-width="5"/><rect x="300" y="105" width="40" height="22" rx="5" fill="#90a4ae"/><path d="M305 70 q15 -25 30 0" stroke="#90a4ae" stroke-width="4" fill="none"/></svg>
+    <div class="gap" data-drop="gap" id="gap">❓</div></div><p class="cap" id="cT"></p><div class="tray" id="cTray"></div></div>
+   <div><div class="lcard"><h3>Conductors vs insulators</h3><p>⚡ <span class="kw2">Conductors</span> let heat and electricity flow easily — like <b>metals</b> (copper, iron). <b>Copper</b> is used in wires because it's a <b>good conductor</b>.</p>
+    <p>🛡️ <span class="kw3">Insulators</span> do <b>not</b> conduct heat or electricity well — like <b>rubber, plastic, wood</b>. Wires are coated with <b>plastic</b> to keep us safe!</p>
+    <div class="lrow" style="justify-content:center"><img src="${I2("m_copper")}" alt="" style="width:90px"><span style="font-size:30px">+</span><span style="font-size:clamp(14px,2.2vmin,20px);font-weight:800;background:#ffe1ea;border-radius:12px;padding:8px">🟥 plastic coating</span><span style="font-size:30px">=</span><span style="font-size:40px">🔌</span></div></div>
+    <div class="lcard"><h3>Results table</h3><div class="bins" style="grid-template-columns:1fr 1fr"><div class="bin" style="min-height:80px"><b>⚡ Conductors</b><div class="chips" id="cOk"></div></div><div class="bin" style="min-height:80px"><b>🛡️ Insulators</b><div class="chips" id="cNo"></div></div></div></div><div id="cQ"></div></div></div>`;
+  $("#cTray").innerHTML = shuffle(Object.keys(CON)).map(k => `<span class="chip2" data-k="${k}"><img class="ci" src="${I2(k)}" alt="">${CON[k][0]}</span>`).join("");
+  let n = 0;
+  dnd(el, ".chip2", (it, tg) => {
+   if (tg.id !== "gap") return; const k = it.dataset.k, on = CON[k][1];
+   $("#gap").innerHTML = `<img src="${I2(k)}" alt="">`; n++;
+   $("#bulb").setAttribute("fill", on ? "#fff176" : "#eceff1"); $("#bGlow").setAttribute("r", on ? 110 : 0); $("#wireFlow").setAttribute("opacity", on ? 1 : 0);
+   $("#cT").innerHTML = on ? `💡 It lights up! <b>${CON[k][0]}</b> is a <span class="kw2">conductor</span>.` : `🌑 No light. <b>${CON[k][0]}</b> is an <span class="kw3">insulator</span>.`;
+   if (on) tone([600, 900], .08, "square", .08); else tone([200], .1, "sine", .06);
+   it.classList.add("ok"); it.dataset.lock = 1; $(on ? "#cOk" : "#cNo").appendChild(it);
+   api.hoot(on ? "Metals are great <b>conductors</b>! ⚡" : "Rubber, plastic and wood are <b>insulators</b> — they block electricity. 🛡️", on ? "m_wow" : "m_think");
+   if (n === Object.keys(CON).length) miniQuiz($("#cQ"), ["P011","P013","P012","P014","P015"], () => api.done());
+  });
+  let t = 0; const iv = setInterval(() => { t = (t + 4) % 64; const w = $("#wireFlow"); if (w) w.setAttribute("stroke-dashoffset", -t); else clearInterval(iv); }, 50); TIMERS.push(iv);
+  api.hoot("Test every material! Which ones make the bulb glow? 💡", "m_point");
+ }});
+
+/* 3 — STATES OF MATTER particle simulator */
+W3.stations.push({ id:"states", icon:"🔥", short:"States of Matter", title:"States of Matter", covers:["P016","P017","P018","P019","P020","P021","P022","P023","P024","P025","P026","P027","P028","P029","P030"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🔥 Particle Simulator</h2><canvas class="pcv" id="pc"></canvas>
+   <div class="lrow" style="margin-top:6px"><span style="font-size:26px">🧊</span><input type="range" class="slider" id="pT" min="-20" max="130" value="-10" style="flex:1" aria-label="Temperature"><span style="font-size:26px">🔥</span></div>
+   <p class="cap" id="pCap"></p><div class="sbtns"><button class="lbtn t" data-h="-15">❄️ Remove heat</button><button class="lbtn c" data-h="15">🔥 Add heat</button></div></div>
+   <div><div class="lcard" id="pInfo"></div>
+    <div class="lcard"><h3>🔄 Change names</h3><p>🧊➜💧 <span class="kw">Melting</span> (absorbs heat) · 💧➜🧊 <span class="kw">Freezing</span> (removes heat)</p><p>💧➜💨 <span class="kw">Boiling / evaporation</span> · 💨➜💧 <span class="kw">Condensation</span></p><p>🧊➜💨 <span class="kw">Sublimation</span> (solid straight to gas) · 💨➜❄️ <span class="kw">Deposition</span> (frost!)</p><p>Water is special: when it freezes its <b>volume increases</b> — that's why ice floats! 🧊</p></div><div id="pQ"></div></div></div>`;
+  const cv = $("#pc"), cx = cv.getContext("2d"); let W, H, raf, t0 = 0, ps = [], shown = new Set();
+  function fit(){ const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+   ps = []; const cols = 8, rows = 6, s = Math.min(W, H) * .07; for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){ const hx = W / 2 - (cols - 1) * s / 2 + c * s, hy = H - 20 - (rows - 1 - r) * s; ps.push({ hx, hy, x:hx, y:hy, vx:rnd(-1, 1), vy:rnd(-1, 1) }); } }
+  const state = T => T < 0 ? "solid" : T < 100 ? "liquid" : "gas";
+  const INFO = { solid:["🧊 SOLID","Particles are <b>tightly packed</b> and <b>vibrate in fixed positions</b>. Fixed shape and fixed volume."],
+   liquid:["💧 LIQUID","Particles slide past each other. <b>Fixed volume but no fixed shape</b> — it takes the shape of its container."],
+   gas:["💨 GAS","Particles <b>move freely and fast</b> and <b>fill the whole container</b>. The forces between them are <b>weakest</b>."] };
+  let last = "";
+  function upd(){ const T = +$("#pT").value, s = state(T); $("#pCap").innerHTML = `🌡️ ${T}°C → <b>${s.toUpperCase()}</b>`;
+   if (s !== last){ const ch = { "solid>liquid":"Melting! It absorbed heat 🔥", "liquid>solid":"Freezing! Heat was removed ❄️", "liquid>gas":"Boiling! Liquid → gas 💨", "gas>liquid":"Condensation! Gas → liquid 💧", "solid>gas":"Sublimation! Solid straight to gas", "gas>solid":"Deposition! Gas straight to solid — like frost ❄️" }[last + ">" + s];
+    if (ch){ api.hoot(`<b>${ch}</b> Adding or removing heat changes the state.`, "m_wow"); tone([500, 700], .07, "triangle", .08); }
+    last = s; shown.add(s); $("#pInfo").innerHTML = `<h2>${INFO[s][0]}</h2><p>${INFO[s][1]}</p><p>🌡️ Heating makes particles <b>move faster</b>; as matter goes from liquid to gas, the attraction forces get <b>weaker</b>.</p>`;
+    if (shown.size === 3 && !el.dataset.q){ el.dataset.q = 1; lt(() => miniQuiz($("#pQ"), ["P016","P017","P018","P019","P024","P028","P022","P026","P029","P025"], () => api.done()), 1200); } } }
+  function step(t){ raf = requestAnimationFrame(step); const dt = Math.min(.04, (t - (t0 || t)) / 1000); t0 = t;
+   const T = +$("#pT").value, s = state(T), sp = 30 + (T + 20) * 2.2;
+   cx.clearRect(0, 0, W, H); cx.fillStyle = s === "gas" ? "#1a0f4d" : "#14093f"; cx.fillRect(0, 0, W, H);
+   const lvl = H * .45;
+   if (s === "liquid"){ cx.fillStyle = "rgba(76,201,240,.15)"; cx.fillRect(0, lvl, W, H - lvl); }
+   ps.forEach(p => {
+    if (s === "solid"){ p.x += (p.hx - p.x) * .3 + rnd(-1, 1) * (1 + (T + 20) * .08); p.y += (p.hy - p.y) * .3 + rnd(-1, 1) * (1 + (T + 20) * .08); }
+    else { p.vx += rnd(-1, 1) * sp * dt * 4; p.vy += (rnd(-1, 1) * sp * dt * 4) + (s === "liquid" ? 160 * dt : 0); const v = Math.hypot(p.vx, p.vy), mx = s === "gas" ? sp * 1.4 : sp * .5; if (v > mx){ p.vx *= mx / v; p.vy *= mx / v; }
+     p.x += p.vx * dt; p.y += p.vy * dt; const top = s === "liquid" ? lvl : 8;
+     if (p.x < 8 || p.x > W - 8) p.vx *= -1; if (p.y < top || p.y > H - 8) p.vy *= -1; p.x = clampL(p.x, 8, W - 8); p.y = clampL(p.y, top, H - 8); }
+    const r = Math.min(W, H) * .028; cx.fillStyle = s === "solid" ? "#9ad7ff" : s === "liquid" ? "#4CC9F0" : "#ffd54f"; cx.beginPath(); cx.arc(p.x, p.y, r, 0, 7); cx.fill(); cx.fillStyle = "rgba(255,255,255,.5)"; cx.beginPath(); cx.arc(p.x - r * .3, p.y - r * .3, r * .3, 0, 7); cx.fill(); });
+  }
+  fit(); raf = requestAnimationFrame(step); CUR.stop = () => cancelAnimationFrame(raf);
+  $("#pT").oninput = upd; upd();
+  el.querySelectorAll("[data-h]").forEach(b => b.onclick = () => { const s = $("#pT"); s.value = clampL(+s.value + +b.dataset.h, -20, 130); upd(); });
+  hookCard(el, IMG(3, "hook_states"), ["Ice… water… steam! 🧊💧💨", "It's all the SAME water!", "Heat changes the state of matter. Let's zoom in!"], () => api.hoot("Slide the temperature and watch the particles! 🔥", "m_point"));
+ }});
+
+/* 4 — CHEMICAL CHANGE */
+W3.stations.push({ id:"chem", icon:"🎈", short:"Chemical Change", title:"Chemical Change", covers:["P031","P032","P033","P034","P035","P037","P040"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid half"><div class="lcard"><h2>🎈 Fizz Lab</h2><div class="stage3" id="fz"><img src="${I2("t_vinegar")}" alt="Vinegar" id="fzV"><svg viewBox="0 0 120 200" style="width:clamp(90px,16vmin,160px)"><ellipse id="bal" cx="60" cy="40" rx="8" ry="8" fill="#ff6fb1"/><path d="M45 70 h30 v10 l15 20 v90 h-60 v-90 l15 -20z" fill="rgba(200,230,255,.7)" stroke="#9cc9ea" stroke-width="3"/><rect id="foam" x="31" y="190" width="58" height="0" fill="#fff"/></svg><img src="${I2("t_soda")}" alt="Baking soda" id="fzS"></div>
+   <div class="lrow" style="justify-content:center;margin-top:6px"><button class="lbtn y" id="fzGo">🧪 Mix them!</button><button class="lbtn" id="fzR">↺</button></div><p id="fzT" style="font-weight:700"></p></div>
+   <div class="lcard"><h2>⚖️ Weigh it!</h2><div class="bal"><svg viewBox="0 0 300 170"><g id="beam" style="transition:transform 1s;transform-origin:150px 40px"><rect x="40" y="36" width="220" height="8" rx="4" fill="#795548"/><path d="M50 44 L30 100 H90 L70 44" fill="none" stroke="#999" stroke-width="2"/><path d="M230 44 L210 100 H270 L250 44" fill="none" stroke="#999" stroke-width="2"/><rect x="25" y="100" width="70" height="8" rx="4" fill="#ffca28"/><rect x="205" y="100" width="70" height="8" rx="4" fill="#ffca28"/><text x="60" y="92" text-anchor="middle" font-size="16" font-weight="900" fill="#5B3FD9">Before</text><text x="240" y="92" text-anchor="middle" font-size="16" font-weight="900" fill="#5B3FD9">After</text></g><rect x="145" y="40" width="10" height="110" fill="#5d4037"/><rect x="110" y="150" width="80" height="12" rx="6" fill="#5d4037"/></svg></div>
+    <p>In a <b>closed</b> bottle, the mass <b>before</b> = the mass <b>after</b>. This is the <span class="kw">law of conservation of mass</span>.</p></div></div>
+   <div class="lcard"><h3>🔎 Clues of a chemical reaction</h3><div class="lrow"><span class="chip2" data-lock="1">🫧 Gas / bubbles</span><span class="chip2" data-lock="1">🎨 Color change</span><span class="chip2" data-lock="1">🔥 Heat or light</span><span class="chip2" data-lock="1">✨ A NEW substance forms</span></div>
+   <p>💧 <b>Water (H₂O)</b> is a <span class="kw">compound</span>: elements joined in <b>fixed proportions</b>. A <span class="kw2">mixture</span> has no fixed proportions and can be separated by physical methods.</p></div>`;
+  $("#fzGo").onclick = () => { if (el.dataset.f) return; el.dataset.f = 1; $("#fzV").style.transform = "translateX(70%) rotate(-40deg)"; sfx.tap();
+   lt(() => { $("#fzV").style.transform = ""; let h = 0; const iv = setInterval(() => { h = Math.min(110, h + 4); $("#foam").setAttribute("height", h); $("#foam").setAttribute("y", 190 - h); const r = 8 + h * .32; $("#bal").setAttribute("rx", r); $("#bal").setAttribute("ry", r); $("#bal").setAttribute("cy", 40 - r * .2); if (h >= 110){ clearInterval(iv);
+    $("#fzT").innerHTML = `🫧 Bubbles + a new gas = <span class="kw">carbon dioxide</span> filled the balloon! That's a <b>chemical change</b>.`; api.hoot("Vinegar + baking soda make a NEW substance: <b>carbon dioxide</b> gas! 🎈", "m_celebrate"); confetti(30);
+    $("#beam").style.transform = "rotate(0deg)"; } }, 60); TIMERS.push(iv); tone([300, 500, 700], .08, "triangle", .08); }, 700); };
+  $("#fzR").onclick = () => { delete el.dataset.f; $("#foam").setAttribute("height", 0); $("#foam").setAttribute("y", 190); ["rx","ry"].forEach(a => $("#bal").setAttribute(a, 8)); $("#bal").setAttribute("cy", 40); $("#fzT").textContent = ""; };
+  sortGame(el, { title:"🧪 Physical or chemical change?", sub:"<span class='kw2'>Physical</span> = same substance, new shape or state. <span class='kw'>Chemical</span> = a NEW substance forms.", items:[["x_fire","Burning wood","c"],["x_rust","Rusting nail","c"],["x_cake","Baking a cake","c"],["x_egg","Frying an egg","c"],["x_icecream","Melting ice cream","p"],["x_paper","Cutting paper","p"],["x_can","Crushing a can","p"],["t_sugar","Dissolving sugar","p"]],
+   bins:[["p","✂️ Physical change"],["c","🔥 Chemical change"]], min:150, onDone: () => { api.hoot("Burning, rusting, baking and cooking make NEW substances! 🔥", "m_star"); miniQuiz(quizBox(el), ["P031","P034","P035","P032","P033","P037","P040"], () => api.done()); } });
+  hookCard(el, IMG(3, "hook_react"), ["Vinegar + baking soda… FIZZ! 🫧", "The balloon blows up all by itself! 🎈", "Something NEW was made. Let's investigate!"], () => api.hoot("Press <b>Mix them!</b> 🧪", "m_point"));
+ }});
+
+/* 5 — SOLUTION MAKER */
+W3.stations.push({ id:"solution", icon:"🥤", short:"Solutions", title:"Solution Maker", covers:["P038","P039","P041","P042","P043","P044","P045","P046","P047","P048","P049","P057"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🥤 Make a sugar solution</h2><div class="lgrid half"><div class="glass"><div class="g"><div class="w" id="sw"></div><div id="sgr"></div><div class="pile" id="spile" style="height:0"></div></div></div>
+    <div><div class="lrow"><button class="lbtn y" id="sAdd">🥄 Add sugar</button><button class="lbtn t" id="sStir">🌀 Stir</button><button class="lbtn" id="sRe">↺</button></div>
+     <p style="font-weight:800;margin:8px 0 2px">🌡️ Water temperature: <span id="sTv">20</span>°C</p><input type="range" class="slider" id="sT" min="10" max="90" value="20" aria-label="Temperature">
+     <div class="meter"><span class="d">Dilute</span><span class="c">Concentrated</span><span class="s">Saturated</span></div><p id="sTx" style="font-weight:700"></p></div></div></div>
+   <div><div class="lcard"><h3>Solution words</h3><p>🍬 <span class="kw">Solute</span> = what dissolves (sugar). 💧 <span class="kw2">Solvent</span> = what it dissolves in (water — also the solvent in a soft drink!).</p><p>A solution is a <b>homogeneous</b> mixture — the same throughout.</p><p><span class="kw">Solubility</span> = how well a solute mixes evenly in a solvent.</p><p>🔥 Hot water dissolves <b>more solid</b>. 🧊 <b>Gases</b> dissolve better in <b>cold</b> liquids (cold soda stays fizzy!). 🌀 Stirring makes it dissolve <b>faster</b>.</p></div></div></div>`;
+  let sugar = 0, dissolved = 0, stir = 0;
+  const cap = () => Math.round(4 + (+$("#sT").value - 10) / 10);
+  function upd(){
+   const c = cap(); dissolved = Math.min(sugar, c); const extra = sugar - dissolved, r = dissolved / c;
+   $("#spile").style.height = Math.min(40, extra * 6) + "%"; $("#sw").style.background = `linear-gradient(rgba(130,200,255,${.5 + r * .2}),rgba(${80 + r * 100},${160 - r * 40},240,${.7 + r * .2}))`;
+   const lvl = extra > 0 ? "s" : r > .5 ? "c" : sugar > 0 ? "d" : "";
+   el.querySelectorAll(".meter span").forEach(s => s.classList.toggle("on", s.classList.contains(lvl)));
+   $("#sTx").innerHTML = lvl === "s" ? `🛑 <b>Saturated!</b> It can't dissolve any more — extra sugar stays at the bottom (${extra} spoon${extra > 1 ? "s" : ""}).` : lvl === "c" ? "💜 <b>Concentrated</b> — lots of solute." : lvl === "d" ? "💙 <b>Dilute</b> — only a little solute." : "Plain water. Add some sugar!";
+   $("#sTv").textContent = $("#sT").value;
+   if (lvl === "s" && !el.dataset.sat){ el.dataset.sat = 1; api.hoot("Saturated! Try heating the water 🔥 — what happens to the extra sugar?", "m_think"); }
+  }
+  $("#sAdd").onclick = () => { sugar++; sfx.tap(); const g = $("#sgr"); for (let i = 0; i < 8; i++){ const d = document.createElement("i"); d.className = "gr"; d.style.left = rnd(20, 80) + "%"; d.style.top = "0%"; d.style.transition = `top ${stir ? .6 : 1.4}s linear,opacity .4s`; g.appendChild(d); requestAnimationFrame(() => requestAnimationFrame(() => { d.style.top = "85%"; })); setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 400); }, stir ? 600 : 1400); } lt(upd, stir ? 600 : 1400); };
+  $("#sStir").onclick = () => { stir = 1; $("#sw").animate([{ transform:"rotate(0)" }, { transform:"rotate(4deg)" }, { transform:"rotate(-4deg)" }, { transform:"rotate(0)" }], { duration:600, iterations:3 }); api.hoot("Stirring helps the solute dissolve <b>faster</b>! 🌀", "m_thumbs"); };
+  $("#sT").oninput = () => { const was = el.querySelector(".meter .s.on"); upd(); if (was && !el.querySelector(".meter .s.on")) api.hoot("Hotter water dissolved the extra sugar! Higher temperature = <b>more solubility</b> for solids. 🔥", "m_wow"); };
+  $("#sRe").onclick = () => { sugar = 0; stir = 0; delete el.dataset.sat; upd(); };
+  upd();
+  sortGame(el, { title:"🥗 Same throughout — or not?", sub:"<span class='kw'>Homogeneous</span> = looks the same everywhere. <span class='kw3'>Heterogeneous</span> = you can see different parts.", items:[["x_sugarwater","Sugar water","o"],["t_salt","Salt dissolved in water","o"],["x_soda","Soft drink","o"],["x_salad","Fruit salad","e"],["x_oilwater","Oil and water","e"],["x_sandiron","Sand and iron filings","e"]],
+   bins:[["o","🥛 Homogeneous (solution)"],["e","🥗 Heterogeneous"]], onDone: () => { api.hoot("Solutions are homogeneous mixtures! 🥤", "m_star"); miniQuiz(quizBox(el), ["P041","P042","P043","P044","P045","P038","P039","P046","P047","P048","P049","P057"], () => api.done()); } });
+  api.hoot("Add sugar spoon by spoon… when does it stop dissolving? 🥄", "m_point");
+ }});
+
+/* 6 — SEPARATION LAB */
+const SEP = [
+ { id:"x_sandiron", n:"Sand + iron filings", t:"t_magnet", why:"Iron is attracted to a <b>magnet</b>!" },
+ { id:"x_sugarwater", n:"Salt water", t:"t_evap", why:"<b>Evaporation</b>: the water evaporates and the salt is left behind." },
+ { id:"x_oilwater", n:"Oil + water", t:"t_sepfunnel", why:"A <b>separating funnel</b>: open the tap and let the bottom layer (water) out." },
+ { id:"t_beaker", n:"Sand + water", t:"t_filter", why:"<b>Filtration</b> separates by <b>particle size</b> — big sand grains stay in the paper." },
+ { id:"x_soda", n:"Two liquids (different boiling points)", t:"t_distill", why:"<b>Distillation</b> separates by <b>boiling points</b> — it's also used to <b>purify water</b>." }];
+W3.stations.push({ id:"separate", icon:"🧲", short:"Separation Lab", title:"Separation Lab", covers:["P036","P050","P051","P052","P053","P054","P055","P056","P058"],
+ render(el, api){
+  el.innerHTML = `<div class="lcard"><h2>🧲 Mixture detective</h2><p>Mixtures can be separated by <b>physical methods</b>. Pick a mixture, then pick the right tool!</p>
+   <h3>1️⃣ Mixture</h3><div class="mixes" id="sxM">${SEP.map((m, i) => `<button data-m="${i}"><img src="${I2(m.id)}" alt="">${m.n}</button>`).join("")}</div>
+   <h3 style="margin-top:10px">2️⃣ Tool</h3><div class="mixes" id="sxT">${shuffle(SEP.map(m => m.t)).map(t => `<button data-t="${t}"><img src="${I2(t)}" alt="">${{ t_magnet:"Magnet", t_evap:"Evaporation", t_sepfunnel:"Separating funnel", t_filter:"Filter", t_distill:"Distillation" }[t]}</button>`).join("")}</div>
+   <div class="stage3" id="sxS" style="margin-top:10px"><span style="font-weight:800;color:#7a6bb3">Choose a mixture and a tool 🔬</span></div></div><div id="sxQ"></div>`;
+  let m = null; const solved = new Set();
+  el.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { m = +b.dataset.m; el.querySelectorAll("[data-m]").forEach(x => x.classList.toggle("on", x === b)); sfx.tap(); api.hoot(`How can we separate <b>${SEP[m].n}</b>? Pick a tool! 🛠️`, "m_think"); });
+  el.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+   if (m === null) return api.hoot("Pick a mixture first! 👆", "m_point");
+   const S = SEP[m];
+   if (b.dataset.t !== S.t){ bad(b, "That tool won't work for this mixture — think about what's different about the parts! 🤔"); return; }
+   solved.add(m); el.querySelector(`[data-m="${m}"]`).classList.add("ok"); sfx.ok();
+   $("#sxS").innerHTML = `<img src="${I2(S.id)}" alt=""><span style="font-size:40px">➜</span><img src="${I2(S.t)}" alt="" style="animation:apop2 .8s 2"><span style="font-size:40px">➜</span><span style="font-size:clamp(30px,6vmin,60px)">✅</span>`;
+   api.hoot(S.why, "m_wow");
+   if (solved.size === SEP.length && !el.dataset.q){ el.dataset.q = 1; confetti(50); miniQuiz($("#sxQ"), ["P036","P050","P051","P052","P053","P054","P055","P056","P058"], () => api.done()); }
+  });
+  hookCard(el, IMG(3, "hook_separate"), ["Uh-oh! Iron got mixed into the sand! 😱", "Detective Hoot to the rescue 🕵️", "Each mixture needs the RIGHT tool!"], () => api.hoot("Pick a mixture, then pick the tool that separates it! 🧲", "m_point"));
+ }});
+
+/* 7–9 */
+W3.stations.push(bigStation([
+ { r:[0.5,10,33,22], lb:[4.1,27.1,26.0,3.6], t:"Mass, volume & density", s:0, f:["Mass → <b>grams</b>; volume → <b>milliliters</b>.","<b>Density = mass ÷ volume</b> — a measurable physical property.","Cutting an object in half changes its <b>mass</b>."] },
+ { r:[34,10,32,22], lb:[37.8,27.1,24.6,3.6], t:"Float or sink (buoyancy)", s:0, f:["<b>Density</b> decides if an object floats or sinks.","Ice floats: <b>lower density</b> than water.","A brick is very dense — it sinks."] },
+ { r:[66.5,10,33,22], lb:[69.9,27.1,26.0,3.6], t:"Conductors & insulators", s:1, f:["<b>Copper</b> is a good conductor → used in wires.","<b>Insulators</b> (rubber, plastic) don't conduct heat or electricity well.","Wires are coated with <b>plastic</b>."] },
+ { r:[1,33.5,98,19], lb:[22.6,48.6,54.8,3.3], t:"States of matter & changes", s:2, f:["Solid: tightly packed, vibrate in place. Liquid: fixed volume, no fixed shape. Gas: fills the container.","Adding/removing <b>heat</b> changes state; heated particles move faster.","Melting, freezing, boiling, condensation, <b>sublimation</b> (solid → gas), <b>deposition</b> (frost)."] },
+ { r:[0.5,54,49,21], lb:[7.6,71.2,35.7,3.5], t:"Chemical change", s:3, f:["Burning wood is a chemical change; clues: gas, color change, new substance.","Vinegar + baking soda → <b>carbon dioxide</b>.","Mass stays the same (<b>conservation of mass</b>). Water (H₂O) is a compound."] },
+ { r:[51.5,54,48,21], lb:[58.1,71.2,34.0,3.5], t:"Solutions", s:4, f:["Sugar = <b>solute</b>, water = <b>solvent</b>. A solution is <b>homogeneous</b>.","Dilute → concentrated → <b>saturated</b> (no more dissolves).","Hot liquid dissolves more solid; cold liquid holds more gas; stirring is faster."] },
+ { r:[1,76,98,23.5], lb:[17.9,95.4,61.8,3.4], t:"Separating mixtures", s:5, f:["Magnet: iron from sand. Filtration: by particle size.","Evaporation: salt from salt water. Separating funnel: oil and water.","Distillation: by <b>boiling points</b> (purifying water)."] }
+], IMG(3, "infographic"), [[15.6,1.5,68.6,6.7], "Week 3: Matter, Mixtures & Solutions"]));
+W3.stations.push(cardsStation(W3, [["t_balance","Mass","Amount of matter; measured in grams"],["t_cyl","Volume","Space an object takes; milliliters"],["m_brick","Density","Mass ÷ volume"],["m_duck","Buoyancy","The ability to float in water"],["m_copper","Conductor","Lets heat & electricity flow (copper)"],["m_eraser","Insulator","Blocks heat & electricity (rubber, plastic)"],["m_ice","Melting","Solid → liquid (absorbs heat)"],["❄️","Freezing","Liquid → solid (heat removed)"],["💧","Condensation","Gas → liquid"],["💨","Sublimation","Solid → gas directly"],["🌨️","Deposition","Gas → solid (frost)"],["x_fire","Chemical change","A new substance forms (burning)"],["⚖️","Conservation of mass","Mass stays the same in a closed system"],["💧","Compound","Elements in fixed proportions (H₂O)"],["t_sugar","Solute","The substance that dissolves"],["x_sugarwater","Solvent","Does the dissolving (water)"],["🛑","Saturated","Can't dissolve any more solute"],["💙","Dilute","Only a little solute"],["x_salad","Heterogeneous","Different throughout"],["t_filter","Filtration","Separates by particle size"],["t_evap","Evaporation","Gets salt out of salt water"],["t_distill","Distillation","Separates by boiling points"]]));
+W3.stations.push(challengeStation(3));
+W3.notes = [
+ ["⚖️ Measuring matter", ["Physical properties: color, mass, volume, density.", "Mass → grams; volume → milliliters. <b>Density = mass ÷ volume</b>.", "Cutting in half changes the mass.", "Density decides float/sink (buoyancy). Ice floats — lower density; a brick is very dense."], "#5B3FD9"],
+ ["💡 Conductors", ["Conductors (copper) carry heat & electricity — copper is used in wires.", "Insulators (rubber, plastic) don't conduct well. Wires are coated with plastic."], "#f59e0b"],
+ ["🔥 States of matter", ["Solid: tightly packed, vibrate in fixed positions.", "Liquid: fixed volume, no fixed shape. Gas: moves freely, fills container.", "Liquid → gas: attraction forces get weaker. Heating → particles move faster.", "Adding/removing heat causes state changes."], "#ef4444"],
+ ["🔄 Changes of state", ["Melting (solid→liquid, absorbs heat), freezing (needs heat removed), boiling (liquid→gas), condensation (gas→liquid).", "Sublimation: solid → gas. Deposition: gas → solid (frost).", "Water's volume increases when it freezes."], "#0ea5e9"],
+ ["🎈 Chemical change", ["Burning wood = chemical change. Evidence: color change, gas, new substance.", "Vinegar + baking soda → carbon dioxide.", "Mass stays the same (conservation of mass, closed system).", "Compound (H₂O) has fixed proportions; mixtures don't."], "#ec4899"],
+ ["🥤 Solutions", ["Solute dissolves in a solvent (water is the solvent in soft drinks).", "Solution = homogeneous; heterogeneous = different throughout.", "Dilute / saturated (extra stays undissolved). Solubility = how well a solute mixes evenly.", "Higher temp → more solid dissolves; lower temp → more gas dissolves; stirring = faster."], "#14B8A6"],
+ ["🧲 Separating mixtures", ["Mixtures are separated by physical methods.", "Filtration (particle size), evaporation (salt water), magnet (iron & sand).", "Separating funnel (oil & water), distillation (boiling points; purifying water)."], "#22a34a"]
+];
+LAB[3] = W3;
 
 window.__lab = { openLab, labHome, LAB };
 })();
