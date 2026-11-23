@@ -2960,8 +2960,8 @@ function labHome(){
  $("#lT").textContent = "Professor Hoot's Lab"; $("#lSub").textContent = "Learn it · Try it · Play it"; $("#lNav").innerHTML = ""; $("#lPrev").classList.add("hide"); $("#lNext").classList.add("hide");
  const wk = WEEKS.filter(w => w.type === "study");
  stage.innerHTML = `<div class="lhome">${wk.map(w => { const lab = LAB[w.src], n = lab ? doneList(lab).length : 0;
-  return `<button class="wk ${lab ? "" : "soon"}" data-lw="${w.src}"><span style="font-size:40px">${lab ? lab.emoji : "🔒"}</span><b>Week ${w.n}</b><span style="font-weight:700">${esc(w.title)}</span>
-   <small style="color:#7a6bb3;font-weight:700">${lab ? `${n}/${lab.stations.length} stations done ${n === lab.stations.length ? "🏆" : ""}` : "Opening soon…"}</small></button>`; }).join("")}</div>`;
+  return `<button class="wk ${lab ? "" : "soon"}" data-lw="${w.src}"><span style="font-size:40px">${lab ? lab.emoji : "🛠️"}</span><b>Week ${w.n}</b><span style="font-weight:700">${esc(w.title)}</span>
+   <small style="color:#7a6bb3;font-weight:700">${lab ? `${n}/${lab.stations.length} stations done ${n === lab.stations.length ? "🏆" : ""}` : "Being built — coming soon! 🛠️"}</small></button>`; }).join("")}</div>`;
  hoot("Hoo-hoo! Pick a week to study. Every station you finish gives you coins! 🪙", "m_wave");
 }
 stage.addEventListener("click", e => { const b = e.target.closest("[data-lw]"); if (b && LAB[b.dataset.lw]) openLab(b.dataset.lw); });
