@@ -2764,10 +2764,10 @@ st.textContent = `
 .lsvg [data-part]:hover{filter:brightness(1.1) drop-shadow(0 0 6px rgba(255,201,60,.9))}
 .lsvg .hl{filter:drop-shadow(0 0 8px #FFC93C) drop-shadow(0 0 4px #FFC93C)!important;animation:lpulse 1s infinite}
 @keyframes lpulse{50%{opacity:.75}}
-.info{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,#f7f3ff,#eefcff);border-radius:18px;padding:12px;border:3px solid #e6defd;animation:lin .35s}
-.info .ic{font-size:clamp(34px,6vmin,64px);line-height:1}
-.info b{color:var(--p);font-size:clamp(18px,2.9vmin,30px);font-family:var(--hf)}
-.info p{margin:2px 0}
+.linfo{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,#f7f3ff,#eefcff);border-radius:18px;padding:12px;border:3px solid #e6defd;animation:lin .35s}
+.linfo .ic{font-size:clamp(34px,6vmin,64px);line-height:1}
+.linfo b{color:var(--p);font-size:clamp(18px,2.9vmin,30px);font-family:var(--hf)}
+.linfo p{margin:2px 0}
 @keyframes lin{from{transform:translateY(10px);opacity:0}}
 .bins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bin{min-height:clamp(110px,18vmin,200px);border:4px dashed #cbbdf8;border-radius:20px;padding:8px;background:#faf8ff;transition:background .2s,border-color .2s}
@@ -2779,7 +2779,7 @@ st.textContent = `
 .chip2.ok{background:#d9fbe9;border-color:var(--ok);cursor:default}
 .chip2.bad{animation:shake .4s;border-color:var(--bad)}
 .tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px;background:#f6f3ff;border-radius:18px;min-height:60px}
-.ghost{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-50%) rotate(-4deg) scale(1.08);opacity:.95}
+.lghost{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-50%) rotate(-4deg) scale(1.08);opacity:.95}
 .mq{border-radius:18px;background:#f7f4ff;padding:12px;margin-top:8px}
 .mq h4{margin:0 0 8px;font-size:clamp(16px,2.6vmin,27px);color:var(--ink)}
 .mq .aopts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -2806,7 +2806,7 @@ st.textContent = `
 .labban{display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,#fff7d6,#ffe9f0);border:3px solid #FFC93C;border-radius:18px;padding:8px 12px;margin:6px 0 10px;cursor:pointer;font-weight:800;color:var(--pd)}
 .labban img{width:54px}.labban .btn{margin-left:auto;min-height:42px;padding:6px 16px;font-size:16px}
 .chip2 img.ci{width:clamp(36px,6vmin,64px);height:clamp(36px,6vmin,64px);object-fit:contain;margin:-4px 0}
-.info .ic{flex:none}.info .ic img{width:clamp(70px,12vmin,130px);display:block;filter:drop-shadow(0 6px 8px rgba(0,0,0,.18))}
+.linfo .ic{flex:none}.linfo .ic img{width:clamp(70px,12vmin,130px);display:block;filter:drop-shadow(0 6px 8px rgba(0,0,0,.18))}
 .hook{position:relative;border-radius:clamp(16px,2.4vmin,26px);overflow:hidden;margin-bottom:12px;box-shadow:0 12px 34px rgba(10,0,60,.45);height:min(48vh,56vw);transition:height .8s cubic-bezier(.4,0,.2,1);background:#1c0f55;cursor:pointer}
 .hook.small{height:min(18vh,22vw)}
 .hook>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:kb 14s ease-in-out infinite alternate}
@@ -2890,7 +2890,7 @@ function dnd(root, sel, drop){
  root.addEventListener("pointerdown", e => {
   const it = e.target.closest(sel); if (!it || it.classList.contains("ok") || it.dataset.lock) return;
   e.preventDefault(); src = it; sx = e.clientX; sy = e.clientY; moved = false;
-  g = it.cloneNode(true); g.classList.add("ghost"); g.style.width = it.offsetWidth + "px"; document.body.appendChild(g); pos(e);
+  g = it.cloneNode(true); g.classList.add("lghost"); g.style.width = it.offsetWidth + "px"; document.body.appendChild(g); pos(e);
   it.style.opacity = .35; it.setPointerCapture && it.setPointerCapture(e.pointerId);
  });
  root.addEventListener("pointermove", e => { if (!g) return; pos(e); if (Math.hypot(e.clientX - sx, e.clientY - sy) > 6) moved = true;
@@ -3020,7 +3020,7 @@ function animalCellSVG(id = ""){
 }
 const PIMG = { wall:"o_wall", membrane:"o_membrane", cyto:"o_cyto", nucleus:"o_nucleus", mito:"o_mito", chloro:"o_chloro", vac:"o_vac" };
 const pimg = k => `<img class="ci" src="img/lab1/${PIMG[k]}.webp" alt="">`;
-function infoHTML(k){ const p = PARTS[k]; return `<div class="info"><div class="ic"><img src="img/lab1/${PIMG[k]}.webp" alt=""></div><div><b>${p.n}</b><p>${p.txt}</p><p style="color:#7a6bb3;font-weight:800">🏙️ In Cell City: ${p.city}</p></div></div>`; }
+function infoHTML(k){ const p = PARTS[k]; return `<div class="linfo"><div class="ic"><img src="img/lab1/${PIMG[k]}.webp" alt=""></div><div><b>${p.n}</b><p>${p.txt}</p><p style="color:#7a6bb3;font-weight:800">🏙️ In Cell City: ${p.city}</p></div></div>`; }
 
 /* =====================================================================
    WEEK 1 STATIONS
@@ -3206,8 +3206,8 @@ W1.stations.push({ id:"energy", icon:"☀️", short:"Energy Factory", title:"En
    <div class="lgrid half" style="margin-top:10px">
     <div class="bin" data-drop="chloro" style="background:linear-gradient(#eafbe0,#d4f5c0);border-color:#7cc24b"><img src="img/lab1/o_chloro.webp" alt="" style="width:clamp(60px,10vmin,110px);display:block;margin:auto"><b>CHLOROPLAST</b><p style="text-align:center;margin:0;font-weight:700;color:#2a7d2c">🌿 Plants only · green chlorophyll</p><div class="chips" id="eC"></div><div class="cap" id="eCo"></div></div>
     <div class="bin" data-drop="mito" style="background:linear-gradient(#fff1e4,#ffe0c2);border-color:#ff9a4d"><img src="img/lab1/o_mito.webp" alt="" style="width:clamp(60px,10vmin,110px);display:block;margin:auto"><b>MITOCHONDRIA</b><p style="text-align:center;margin:0;font-weight:700;color:#c45a14">🌿 + 🐾 Plants AND animals</p><div class="chips" id="eM"></div><div class="cap" id="eMo"></div></div></div>
-   <div class="lgrid half" style="margin-top:10px"><div class="info" style="border-color:#bfe8a4"><div class="ic">🌿</div><div><b>Photosynthesis</b><p>sunlight + water + CO₂ → <b>sugar (food)</b> + <b>oxygen</b>. It happens in the <span class="kw">leaves</span>, inside chloroplasts. Oxygen is the <span class="kw">by-product</span> we breathe!</p></div></div>
-   <div class="info" style="border-color:#ffd0a8"><div class="ic">⚡</div><div><b>Cellular respiration</b><p>sugar + oxygen → <b>energy</b> + CO₂ + water. It happens in the <span class="kw">mitochondria</span> — the powerhouse — of <b>both</b> plant and animal cells.</p></div></div></div>
+   <div class="lgrid half" style="margin-top:10px"><div class="linfo" style="border-color:#bfe8a4"><div class="ic">🌿</div><div><b>Photosynthesis</b><p>sunlight + water + CO₂ → <b>sugar (food)</b> + <b>oxygen</b>. It happens in the <span class="kw">leaves</span>, inside chloroplasts. Oxygen is the <span class="kw">by-product</span> we breathe!</p></div></div>
+   <div class="linfo" style="border-color:#ffd0a8"><div class="ic">⚡</div><div><b>Cellular respiration</b><p>sugar + oxygen → <b>energy</b> + CO₂ + water. It happens in the <span class="kw">mitochondria</span> — the powerhouse — of <b>both</b> plant and animal cells.</p></div></div></div>
    <div id="eQ"></div></div>`;
   const need = { chloro:["sun","water","co2"], mito:["sugar","o2"] }, have = { chloro:[], mito:[] }, runs = { chloro:0, mito:0 };
   function chip(k){ return `<span class="chip2" data-k="${k}"><span class="em">${IN[k][0]}</span>${IN[k][1]}</span>`; }
@@ -3261,7 +3261,7 @@ W1.stations.push({ id:"plant", icon:"🌻", short:"Plant Power", title:"Plant Po
     <div class="lcard"><h3>🎮 Who does what?</h3><div class="tray" id="pTray"></div><div class="bins" style="grid-template-columns:repeat(3,1fr);margin-top:8px" id="pBins"></div></div><div id="pQ"></div></div></div>`;
   const seen = new Set(), svg = $("#pSvg");
   svg.addEventListener("click", e => { const g = e.target.closest("[data-part]"); if (!g) return; const k = g.dataset.part; seen.add(k); const [n, t] = PPARTS[k];
-   $("#pInfo").innerHTML = `<div class="info"><div class="ic">${n.split(" ")[0]}</div><div><b>${n.slice(n.indexOf(" ") + 1)}</b><p>The ${n.slice(n.indexOf(" ") + 1).toLowerCase()} ${t}</p></div></div>`; sfx.tap();
+   $("#pInfo").innerHTML = `<div class="linfo"><div class="ic">${n.split(" ")[0]}</div><div><b>${n.slice(n.indexOf(" ") + 1)}</b><p>The ${n.slice(n.indexOf(" ") + 1).toLowerCase()} ${t}</p></div></div>`; sfx.tap();
    svg.querySelectorAll(".hl").forEach(x => x.classList.remove("hl")); g.classList.add("hl"); api.hoot(`${n}: ${t}`, "m_point"); });
   function flow(kind){
    const g = $("#pDots"), up = kind === "w", x = up ? 155.5 : 164.5, col = up ? "#1e88e5" : "#e65100"; let n = 0;
@@ -3322,7 +3322,7 @@ W1.stations.push({ id:"body", icon:"🧍‍♀️", short:"Body Systems", title:
   const seen = new Set();
   function showSys(k){ document.querySelectorAll("#bSvg2 [data-sys]").forEach(g => { g.style.transition = "opacity .5s"; g.setAttribute("opacity", g.dataset.sys === k ? 1 : 0); });
    el.querySelectorAll("#sysBtns [data-sys]").forEach(b => b.classList.toggle("on", b.dataset.sys === k)); const s = SYS[k]; seen.add(k);
-   $("#sInfo").innerHTML = `<div class="info"><div class="ic"><img src="img/lab1/${s.im}.webp" alt=""></div><div><b>${s.n} system</b><p>${s.t}</p></div></div>`; api.hoot(`${s.ic} <b>${s.n} system</b>: ${s.t}`, "m_point"); sfx.tap(); }
+   $("#sInfo").innerHTML = `<div class="linfo"><div class="ic"><img src="img/lab1/${s.im}.webp" alt=""></div><div><b>${s.n} system</b><p>${s.t}</p></div></div>`; api.hoot(`${s.ic} <b>${s.n} system</b>: ${s.t}`, "m_point"); sfx.tap(); }
   el.querySelectorAll("#sysBtns [data-sys]").forEach(b => b.onclick = () => showSys(b.dataset.sys));
   const J = {
    o2:{ sys:["respiratory","circulatory"], col:"#4CC9F0", pts:[[150,95],[150,130],[130,170],[150,165],[205,255],[150,175],[132,470]], cap:["Breathe in through the nose… 👃","Oxygen goes down to the lungs 🫁","The lungs pass oxygen into the blood","The heart ❤️ pumps the blood…","…to the arms 💪","…and down to the legs 🦵","Respiratory + circulatory systems work together! 🤝"] },
