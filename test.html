@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connection test</title>
+<style>body{font:16px/1.5 system-ui,sans-serif;max-width:760px;margin:30px auto;padding:0 16px;color:#2a1d5c}button{font:inherit;padding:12px 20px;border-radius:12px;border:0;background:#5B3FD9;color:#fff;cursor:pointer}pre{background:#f4f1ff;padding:12px;border-radius:12px;white-space:pre-wrap;word-break:break-all}</style>
+<script src="config.js"></script></head><body>
+<h2>Nafes Science Quest · connection test</h2>
+<p>Press the button and send a screenshot of the result to Claude.</p>
+<button id="go">Run test</button>
+<pre id="out">…</pre>
+<script>
+const out=document.getElementById('out'), log=t=>out.textContent+=t+'\n';
+document.getElementById('go').onclick=async()=>{
+ out.textContent=''; const U=(window.NAFES_API_URL||'').trim();
+ log('URL: '+(U||'(empty)'));
+ try{ const r=await fetch(U+'?q='+encodeURIComponent(JSON.stringify({action:'ping'}))+'&t='+Date.now()); log('GET  status '+r.status+' → '+(await r.text()).slice(0,300)); }catch(e){ log('GET  ERROR: '+e.message); }
+ try{ const r=await fetch(U,{method:'POST',body:JSON.stringify({action:'ping'})}); log('POST status '+r.status+' → '+(await r.text()).slice(0,300)); }catch(e){ log('POST ERROR: '+e.message); }
+ try{ const r=await fetch(U+'?q='+encodeURIComponent(JSON.stringify({action:'getQuestions'}))+'&t='+Date.now()); const t=await r.text(); log('SHEET status '+r.status+' → '+t.slice(0,200)); }catch(e){ log('SHEET ERROR: '+e.message); }
+};
+</script></body></html>
