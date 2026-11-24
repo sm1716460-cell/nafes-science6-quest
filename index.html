@@ -1713,9 +1713,10 @@ Object.assign(GAMES, {
  slice:   { name:"Science Slice", icon:"⚔️" },
  boss:    { name:"Boss Battle", icon:"👾" },
  jump:    { name:"Jelly Jump", icon:"🦘" },
- race:    { name:"Safari Race", icon:"🏎️" }
+ race:    { name:"Safari Race", icon:"🏎️" },
+ maze:    { name:"Cell Maze", icon:"🧫" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -1723,7 +1724,7 @@ gameFor = function(w, mi){
  if (w.type === "review") return "boss";
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
- if (w.n === 1 && mi < 4) return ["jump", "slice", "kitchen", "jump"][mi];
+ if (w.n === 1) return ["jump", "maze", "slice", "jump", "maze", "kitchen"][mi % 6];
  if (w.n === 2) return ["jump", "race", "slice", "jump", "race", "kitchen"][mi % 6];
  const NEW = ["dash", "kitchen", "slice"];
  return NEW[(mi + w.n - 1) % 3];
@@ -2896,6 +2897,348 @@ function makeJump(){
 }
 const clampL = (v, a, b) => Math.max(a, Math.min(b, v));
 
+/* =====================================================================
+   CELL MAZE — top-down maze: walk (swipe / tap) to the right answer gate
+   ===================================================================== */
+const mcss = document.createElement("style");
+mcss.textContent = `
+#arc[data-kind=maze] .spanel{padding:8px 12px}
+#arc[data-kind=maze] .spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}
+#arc[data-kind=maze] .spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}
+#arc[data-kind=maze] .spanel .aopt b{background:var(--oc)}
+#arc[data-kind=maze] .spanel .tip{display:none}
+@media (orientation:landscape){#arc[data-kind=maze] .spanel{left:8px;transform:none;width:38vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}
+ #arc[data-kind=maze] .spanel .aopts{grid-template-columns:1fr}}
+@media (orientation:portrait){#arc[data-kind=maze] .spanel{max-height:42%;overflow:auto}}
+`;
+document.head.appendChild(mcss);
+
+function makeMaze(){
+ const av = prof().avatar || 1;
+ const HS = { run:P3(`h${av}_run`), stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`), jump:P3(`h${av}_jump`) };
+ ["w1_bg","en_germ","en_virus","it_coin","it_gem","it_box","ui_star","w1_finish"].forEach(P3);
+ const hard = (Q.mi || 0) >= 3 ? 1 : 0;
+ G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
+ const DIRS = [[0,-1,1,4],[1,0,2,8],[0,1,4,1],[-1,0,8,2]]; // dx,dy,bit,oppositeBit  (N,E,S,W)
+ const s = { t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
+ let W = view.w, H = view.h, cs = 40, ox = 0, oy = 0, panelBox = null;
+ const port = () => view.h > view.w * 1.05;
+
+ /* ---------- maze generation ---------- */
+ function build(){
+  const P = port(); s.C = P ? 7 : 11; s.R = P ? 8 : 7;
+  if (view.w < 700 && !P){ s.C = 10; s.R = 6; }
+  const C = s.C, R = s.R;
+  s.open = Array.from({ length:R }, () => Array(C).fill(0));
+  const seen = Array.from({ length:R }, () => Array(C).fill(false)), st = [[ri(0, C - 1), ri(0, R - 1)]];
+  seen[st[0][1]][st[0][0]] = true;
+  while (st.length){
+   const [c, r] = st[st.length - 1];
+   const nb = DIRS.map((d, i) => [c + d[0], r + d[1], i]).filter(([x, y]) => x >= 0 && y >= 0 && x < C && y < R && !seen[y][x]);
+   if (!nb.length){ st.pop(); continue; }
+   const [x, y, i] = pick(nb); s.open[r][c] |= DIRS[i][2]; s.open[y][x] |= DIRS[i][3]; seen[y][x] = true; st.push([x, y]);
+  }
+  // knock out extra walls → loops (escape routes from germs)
+  const extra = Math.round(C * R * .16);
+  for (let k = 0; k < extra * 4 && k < 400; k++){
+   const c = ri(0, C - 2), r = ri(0, R - 1), horiz = Math.random() < .5;
+   if (horiz){ if (!(s.open[r][c] & 2)){ s.open[r][c] |= 2; s.open[r][c + 1] |= 8; if (k > extra * 2) break; } }
+   else if (r < R - 1 && !(s.open[r][c] & 4)){ s.open[r][c] |= 4; s.open[r + 1][c] |= 1; }
+  }
+  // start cell
+  const sc = s.hero ? [Math.round(s.hero.x), Math.round(s.hero.y)] : [0, Math.floor(R / 2)];
+  sc[0] = Math.max(0, Math.min(C - 1, sc[0])); sc[1] = Math.max(0, Math.min(R - 1, sc[1]));
+  s.hero = { x:sc[0], y:sc[1], tx:sc[0], ty:sc[1], dir:-1, face:1 };
+  s.path = null; s.qd = -1;
+  // gates: far + spread out
+  const dist = bfs(sc[0], sc[1]).d, cells = [];
+  let mx = 0; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) mx = Math.max(mx, dist[r][c]);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (dist[r][c] >= mx * .4) cells.push([c, r]);
+  const g = [];
+  const n = Q.items[Q.i] ? Q.items[Q.i].order.length : 4;
+  while (g.length < n && cells.length){
+   let best = null, bs = -1;
+   for (const cl of cells){ if (g.some(q => q[0] === cl[0] && q[1] === cl[1])) continue;
+    const sp = g.length ? Math.min(...g.map(q => Math.abs(q[0] - cl[0]) + Math.abs(q[1] - cl[1]))) : 0;
+    const score = sp * 3 + dist[cl[1]][cl[0]] * .6 + (bits(s.open[cl[1]][cl[0]]) === 1 ? 2 : 0) + Math.random();
+    if (score > bs){ bs = score; best = cl; } }
+   if (!best) break; g.push(best);
+  }
+  s.gates = shuffle(g).map((p, k) => ({ x:p[0], y:p[1], k, dead:false, glow:0 }));
+  // coins, box, gem
+  s.ents = [];
+  const occ = (c, r) => (c === sc[0] && r === sc[1]) || s.gates.some(q => q.x === c && q.y === r);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (!occ(c, r) && Math.random() < .6) s.ents.push({ type:"coin", x:c, y:r, ph:Math.random() * 6, alive:true });
+  const free = []; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (!occ(c, r) && dist[r][c] > 2) free.push([c, r]);
+  const take = () => { if (!free.length) return null; const i = ri(0, free.length - 1); const p = free[i]; free.splice(i, 1); s.ents = s.ents.filter(e => !(e.x === p[0] && e.y === p[1])); return p; };
+  let p = take(); if (p) s.ents.push({ type:"box", x:p[0], y:p[1], alive:true });
+  if (G.gems + gemsLeftUsed < 3 && Math.random() < .75){ p = take(); if (p){ s.ents.push({ type:"gem", x:p[0], y:p[1], alive:true }); gemsLeftUsed++; } }
+  // germs
+  s.germs = [];
+  const ng = Math.min(3, 1 + Math.floor(Q.i / 4) + hard) - (Q.i === 0 ? 1 : 0);
+  for (let k = 0; k < ng; k++){ const far = free.filter(q => dist[q[1]][q[0]] >= 4); const q = far.length ? pick(far) : take(); if (!q) break;
+   s.germs.push({ x:q[0], y:q[1], tx:q[0], ty:q[1], dir:-1, kind:k % 2 ? "en_virus" : "en_germ", sp:1.6 + hard * .35 + Math.min(.6, Q.i * .05) }); }
+  s.fade = 1;
+ }
+ let gemsLeftUsed = 0;
+ const bits = v => (v & 1) + (v >> 1 & 1) + (v >> 2 & 1) + (v >> 3 & 1);
+ function bfs(c0, r0, block){
+  const d = Array.from({ length:s.R }, () => Array(s.C).fill(-1)), prev = {};
+  const q = [[c0, r0]]; d[r0][c0] = 0;
+  while (q.length){ const [c, r] = q.shift();
+   DIRS.forEach(([dx, dy, b]) => { if (!(s.open[r][c] & b)) return; const x = c + dx, y = r + dy; if (d[y][x] >= 0 || (block && block(x, y))) return; d[y][x] = d[r][c] + 1; prev[x + "," + y] = [c, r]; q.push([x, y]); }); }
+  return { d, prev };
+ }
+ function pathTo(c, r){
+  const h = s.hero, c0 = h.tx, r0 = h.ty;
+  let { d, prev } = bfs(c0, r0, (x, y) => !(x === c && y === r) && s.gates.some(g => !g.dead && g.x === x && g.y === y));
+  if (d[r][c] < 0) ({ d, prev } = bfs(c0, r0));
+  if (d[r][c] < 0) return null;
+  const out = []; let cur = [c, r];
+  while (!(cur[0] === c0 && cur[1] === r0)){ out.unshift(cur); cur = prev[cur[0] + "," + cur[1]]; }
+  return out;
+ }
+
+ /* ---------- question panel ---------- */
+ const panel = document.createElement("div"); panel.className = "spanel hide"; layer.appendChild(panel);
+ const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Swipe to walk · or tap where you want to go<br>Reach the gate with the right letter!"; layer.appendChild(tip);
+ later(() => tip.style.opacity = 0, 4500); later(() => tip.remove(), 5100);
+ function ask(){
+  Q.answered = false; s.state = "play";
+  const it = Q.items[Q.i], q = it.q, gold = Q.i === G.golden, hl = Q.hints + G.extraHints;
+  panel.classList.toggle("gold", gold); panel.classList.remove("hide");
+  panel.innerHTML = `<div class="aqh"><span class="tag d-${q.d}">${esc(q.l)}</span>${gold ? `<span class="tag agold">✨ Golden x2</span>` : ""}<span class="tip">🧭 Walk to the right gate</span><span class="sp"></span><button class="tool sm" data-aread aria-label="Read">🔊</button><button class="tool sm" data-ahint ${hl <= 0 ? "disabled" : ""} aria-label="Hint">💡${hl}</button></div>
+   <h3>${esc(q.q)}</h3><div class="aopts">${it.order.map((oi, k) => `<button class="aopt" data-mk="${k}" style="--oc:${OPTC[k]}"><b>${LET[k]}</b><span>${esc(q.o[oi])}</span></button>`).join("")}</div><div class="afb"></div>`;
+  hud(); later(measure, 30);
+ }
+ panel.addEventListener("click", e => {
+  const b = e.target.closest("[data-mk]");
+  if (b){ const g = s.gates[+b.dataset.mk]; if (g && !g.dead && s.state === "play"){ s.path = pathTo(g.x, g.y); s.qd = -1; tone([520], .04, "triangle", .06); } return; }
+  if (e.target.closest("[data-aread]")) return readQ();
+  if (e.target.closest("[data-ahint]")){ const rm = useHint(); if (!rm) return; const bs = panel.querySelectorAll(".aopt"); rm.forEach(k => { bs[k] && bs[k].classList.add("gone"); if (s.gates[k]) s.gates[k].dead = true; }); panel.querySelector("[data-ahint]").disabled = true; return; }
+  if (e.target.closest("[data-mgo]")) next();
+ });
+ function choose(k){
+  if (s.state !== "play" || Q.answered) return;
+  const g = s.gates[k]; if (!g || g.dead) return;
+  const r = grade(k), bs = panel.querySelectorAll(".aopt");
+  bs[k] && bs[k].classList.add(r.ok ? "ok" : "bad"); if (!r.ok && bs[r.ck]) bs[r.ck].classList.add("ok");
+  panel.querySelectorAll("[data-ahint]").forEach(b => b.disabled = true);
+  s.path = null; s.qd = -1; s.hero.dir = -1;
+  if (r.ok){
+   s.state = "cheer"; s.pose = "cheer"; s.spin = 1; g.glow = 1;
+   burst(g.x, g.y, 28, ["#ffd23f", "#fff", "#7cc13a"]); FX.starRain(r.gold ? 26 : 14);
+   banner(r.gold ? "✨ GOLDEN!" : Q.streak >= 3 ? `🔥 COMBO x${comboMult()}!` : pick(["AMAZING! ⭐", "BRILLIANT! 🌟", "SUPER! 🚀", "PERFECT! 💎"]));
+   panel.querySelector(".afb").innerHTML = `<b class="good">${pick(GPH.ok)} +${r.val} 🪙</b>`;
+   s.gates.forEach(o => { if (o !== g) o.dead = true; });
+   later(next, 1500);
+  } else {
+   s.state = "wrong"; s.pose = "dizzy"; g.dead = true; g.shake = .5; tone([200, 120], .14, "sawtooth", .1);
+   s.gates[r.ck] && (s.gates[r.ck].glow = 1);
+   panel.querySelector(".afb").innerHTML = `<span>❌ The answer is <b>${LET[r.ck]}) ${esc(r.it.q.o[r.it.q.a])}</b></span><button class="btn" data-mgo>Keep going ➜</button>`;
+  }
+ }
+ function next(){
+  if (s.state !== "cheer" && s.state !== "wrong") return;
+  Q.i++; hud(); s.pose = "stand";
+  if (Q.i >= Q.items.length){
+   panel.classList.add("hide"); s.state = "end"; s.ended = true; s.pose = "cheer"; s.spin = 1;
+   FX.starRain(34); sfx.win(); banner("🏆 MAZE MASTER!"); later(arcDone, 2200); return;
+  }
+  build(); banner(pick(["🧫 New maze!", "🌀 Next maze!", "🧬 Keep exploring!"])); ask();
+ }
+
+ /* ---------- geometry ---------- */
+ function measure(){
+  const r = sec.getBoundingClientRect();
+  if (panel.classList.contains("hide")) panelBox = null;
+  else { const b = panel.getBoundingClientRect(); panelBox = { x0:b.left - r.left, y0:b.top - r.top, x1:b.right - r.left, y1:b.bottom - r.top }; }
+ }
+ function geo(){
+  W = view.w; H = view.h;
+  const top = Math.max(58, Math.min(90, Math.min(W, H) * .1)) + 6, pad = 10;
+  let ax0 = pad, ay0 = top, ax1 = W - pad, ay1 = H - pad;
+  if (panelBox){ if (port()) ay0 = Math.max(ay0, panelBox.y1 + 8); else ax0 = Math.max(ax0, panelBox.x1 + 12); }
+  cs = Math.max(18, Math.min((ax1 - ax0) / s.C, (ay1 - ay0) / s.R));
+  ox = ax0 + ((ax1 - ax0) - cs * s.C) / 2; oy = ay0 + ((ay1 - ay0) - cs * s.R) / 2;
+ }
+
+ /* ---------- movement ---------- */
+ function canGo(c, r, i){ return c >= 0 && r >= 0 && c < s.C && r < s.R && (s.open[r][c] & DIRS[i][2]); }
+ function stepMover(m, sp, dt, choose){
+  let left = sp * dt;
+  for (let guard = 0; guard < 4 && left > 0; guard++){
+   const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.abs(dx) + Math.abs(dy);
+   if (d > 1e-4){ const mv = Math.min(d, left); m.x += Math.sign(dx) * Math.min(Math.abs(dx), mv); m.y += Math.sign(dy) * Math.min(Math.abs(dy), mv); left -= mv; if (dx) m.face = Math.sign(dx); continue; }
+   m.x = m.tx; m.y = m.ty;
+   const i = choose(m); if (i < 0){ m.dir = -1; return false; }
+   m.dir = i; m.tx = m.x + DIRS[i][0]; m.ty = m.y + DIRS[i][1];
+  }
+  return true;
+ }
+ function heroChoice(h){
+  arrive(h.x, h.y);
+  if (s.state !== "play") return -1;
+  if (s.path && s.path.length){ const [c, r] = s.path.shift(); const i = DIRS.findIndex(d => h.x + d[0] === c && h.y + d[1] === r); if (i >= 0 && canGo(h.x, h.y, i)) return i; s.path = null; return -1; }
+  s.path = null;
+  if (s.qd >= 0 && canGo(h.x, h.y, s.qd)){ const i = s.qd; return i; }
+  if (h.dir >= 0 && canGo(h.x, h.y, h.dir)) return h.dir;
+  return -1;
+ }
+ function germChoice(m){
+  const opts = [0,1,2,3].filter(i => canGo(m.x, m.y, i) && !s.gates.some(g => !g.dead && g.x === m.x + DIRS[i][0] && g.y === m.y + DIRS[i][1]));
+  if (!opts.length) return -1;
+  const back = m.dir >= 0 ? (m.dir + 2) % 4 : -1, fw = opts.filter(i => i !== back);
+  const h = s.hero, chase = Q.i > 2 && Math.random() < .35;
+  if (chase && fw.length){ fw.sort((a, b) => (Math.abs(m.x + DIRS[a][0] - h.x) + Math.abs(m.y + DIRS[a][1] - h.y)) - (Math.abs(m.x + DIRS[b][0] - h.x) + Math.abs(m.y + DIRS[b][1] - h.y))); return fw[0]; }
+  return fw.length ? pick(fw) : opts[0];
+ }
+ function arrive(c, r){
+  for (const e of s.ents){ if (!e.alive || e.x !== c || e.y !== r) continue;
+   if (e.type === "coin"){ e.alive = false; G.coinsRun++; G.coins++; G.extra++; hud(); tone([1300, 1700], .03, "square", .04); burst(c, r, 5, ["#ffd23f"]); }
+   else if (e.type === "gem"){ e.alive = false; G.gems++; coins(15); banner(`💎 Gem ${G.gems}/3!`); burst(c, r, 20, ["#7cff8a", "#fff"]); sfx.star(); }
+   else if (e.type === "box"){ e.alive = false; reward(c, r); }
+  }
+  const g = s.gates.find(q => q.x === c && q.y === r && !q.dead);
+  if (g && s.state === "play") choose(g.k);
+ }
+ function reward(c, r){
+  tone([700, 1000], .06, "square", .08); burst(c, r, 12, ["#ffd23f", "#fff"]);
+  const x = Math.random();
+  if (x < .35){ s.magnet = 9; banner("🧲 Coin magnet!"); }
+  else if (x < .65){ s.shield = 1; banner("🛡️ Bubble shield!"); }
+  else if (x < .8 && G.hearts < 3){ G.hearts++; hud(); banner("❤️ +1 heart!"); }
+  else { s.freezeG = 5; banner("❄️ Germs frozen!"); }
+ }
+ function hurt(){
+  if (s.inv > 0 || s.state !== "play") return;
+  if (s.shield){ s.shield = 0; s.inv = 1.2; banner("🛡️ Saved!"); tone([300, 500], .06, "triangle", .1); return; }
+  G.hearts--; s.inv = 2; s.poseT = .9; sfx.bad(); hud(); banner(pick(["Ouch! 🦠", "Watch out! 🦠"]));
+  if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; });
+ }
+ function burst(c, r, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x:c, y:r, vx:rnd(-2.4, 2.4), vy:rnd(-3, -.5), life:rnd(.4, .9), c:pick(cols), r:rnd(.05, .1) }); }
+
+ /* ---------- update ---------- */
+ function update(dt){
+  s.t += dt;
+  ["inv","magnet","poseT","spin","fade","freezeG"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt * (k === "spin" ? 2 : k === "fade" ? 2.5 : 1)); });
+  s.gates.forEach(g => { if (g.glow) g.glow = Math.max(0, g.glow - dt * .5); if (g.shake) g.shake = Math.max(0, g.shake - dt); });
+  const h = s.hero;
+  if (s.state === "play" && !G.hold){
+   const moving = stepMover(h, (Q.i < 1 ? 3.4 : 3.9), dt, heroChoice);
+   s.pose = s.poseT > 0 ? "dizzy" : moving && h.dir >= 0 ? "run" : "stand";
+  }
+  if (s.state === "play" && !(s.freezeG > 0)) for (const m of s.germs) stepMover(m, m.sp, dt, germChoice);
+  if (s.state === "play") for (const m of s.germs){ if (Math.hypot(m.x - h.x, m.y - h.y) < .55) hurt(); }
+  if (s.magnet > 0) for (const e of s.ents){ if (e.alive && e.type === "coin" && Math.hypot(e.x - h.x, e.y - h.y) < 2.2){ e.alive = false; G.coinsRun++; G.coins++; G.extra++; hud(); tone([1300, 1700], .03, "square", .04); burst(e.x, e.y, 3, ["#ffd23f"]); } }
+  s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 6 * dt; }); s.parts = s.parts.filter(p => p.life > 0);
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ measure(); pows(); }
+ }
+ function pows(){
+  const a = [`<span>💎 ${G.gems}/3</span>`];
+  if (s.magnet > 0) a.push(`<span>🧲 ${Math.ceil(s.magnet)}</span>`);
+  if (s.shield) a.push(`<span>🛡️ ON</span>`);
+  if (s.freezeG > 0) a.push(`<span>❄️ ${Math.ceil(s.freezeG)}</span>`);
+  $("#aPow").innerHTML = a.join("");
+ }
+
+ /* ---------- draw ---------- */
+ const CX = c => ox + (c + .5) * cs, CY = r => oy + (r + .5) * cs;
+ function img(name, x, y, w, opt = {}){ const im = P3(name); if (!ready(im)) return 0; const h = w * im.naturalHeight / im.naturalWidth;
+  cx.save(); cx.globalAlpha = opt.a == null ? 1 : opt.a; cx.translate(x, y); if (opt.rot) cx.rotate(opt.rot); cx.scale(opt.sx || 1, opt.sy || 1); if (opt.flip) cx.scale(-1, 1);
+  cx.drawImage(im, -w / 2, opt.bottom ? -h : -h / 2, w, h); cx.restore(); return h; }
+ function rr(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+ function draw(){
+  geo();
+  const bg = P3("w1_bg");
+  cx.fillStyle = "#6b4aa8"; cx.fillRect(0, 0, W, H);
+  if (ready(bg)) cover(bg, 0, 0, W, H, 0);
+  cx.fillStyle = "rgba(40,20,70,.28)"; cx.fillRect(0, 0, W, H);
+  const mw = cs * s.C, mh = cs * s.R, br = cs * .5;
+  // membrane frame
+  cx.save(); cx.shadowColor = "rgba(0,0,0,.35)"; cx.shadowBlur = 24; cx.shadowOffsetY = 8;
+  rr(ox - cs * .28, oy - cs * .28, mw + cs * .56, mh + cs * .56, br); cx.fillStyle = "#7cc13a"; cx.fill(); cx.restore();
+  rr(ox - cs * .16, oy - cs * .16, mw + cs * .32, mh + cs * .32, br * .8); cx.fillStyle = "#b8e58a"; cx.fill();
+  // cytoplasm floor
+  const fg = cx.createRadialGradient(ox + mw * .4, oy + mh * .3, cs, ox + mw / 2, oy + mh / 2, Math.max(mw, mh) * .75);
+  fg.addColorStop(0, "#fff6ff"); fg.addColorStop(1, "#ead3fb");
+  rr(ox - cs * .06, oy - cs * .06, mw + cs * .12, mh + cs * .12, br * .6); cx.fillStyle = fg; cx.fill();
+  // little floating organelle dots
+  cx.fillStyle = "rgba(186,140,230,.25)";
+  for (let r = 0; r < s.R; r++) for (let c = 0; c < s.C; c++){ const k = (c * 7 + r * 13) % 5; if (k < 2){ cx.beginPath(); cx.arc(CX(c) + (k - .5) * cs * .3, CY(r) + ((c + r) % 3 - 1) * cs * .25, cs * .06, 0, 7); cx.fill(); } }
+  // gates (floor pads)
+  for (const g of s.gates){
+   const x = CX(g.x) + (g.shake ? rnd(-3, 3) : 0), y = CY(g.y), rad = cs * .38 * (1 + Math.sin(s.t * 3 + g.k) * .05);
+   cx.save(); cx.globalAlpha = g.dead ? .25 : 1;
+   if (!g.dead){ cx.shadowColor = OPTC[g.k]; cx.shadowBlur = 14 + 30 * g.glow; }
+   cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(x, y, rad + cs * .06, 0, 7); cx.fill();
+   cx.fillStyle = OPTC[g.k]; cx.beginPath(); cx.arc(x, y, rad, 0, 7); cx.fill(); cx.shadowBlur = 0;
+   cx.strokeStyle = "rgba(255,255,255,.5)"; cx.lineWidth = cs * .04; cx.beginPath(); cx.arc(x, y, rad * .72, Math.PI * 1.1, Math.PI * 1.6); cx.stroke();
+   cx.fillStyle = "#fff"; cx.font = `900 ${rad * 1.15}px 'Baloo 2',sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(LET[g.k], x, y + rad * .06);
+   if (g.dead && !g.glow){ cx.strokeStyle = "#e2483d"; cx.lineWidth = cs * .07; cx.beginPath(); cx.moveTo(x - rad * .6, y - rad * .6); cx.lineTo(x + rad * .6, y + rad * .6); cx.moveTo(x + rad * .6, y - rad * .6); cx.lineTo(x - rad * .6, y + rad * .6); cx.stroke(); }
+   cx.restore();
+  }
+  // walls (jelly membranes)
+  const seg = [];
+  for (let r = 0; r < s.R; r++) for (let c = 0; c < s.C; c++){
+   const o = s.open[r][c], x0 = ox + c * cs, y0 = oy + r * cs;
+   if (!(o & 2) && c < s.C - 1) seg.push([x0 + cs, y0, x0 + cs, y0 + cs]);
+   if (!(o & 4) && r < s.R - 1) seg.push([x0, y0 + cs, x0 + cs, y0 + cs]);
+  }
+  cx.lineCap = "round";
+  const pass = (col, w, dy) => { cx.strokeStyle = col; cx.lineWidth = w; cx.beginPath(); seg.forEach(([a, b, c, d]) => { cx.moveTo(a, b + dy); cx.lineTo(c, d + dy); }); cx.stroke(); };
+  pass("rgba(60,20,90,.25)", cs * .26, cs * .06);
+  pass("#8e4fd0", cs * .24, 0);
+  pass("#c18cf0", cs * .12, -cs * .03);
+  pass("rgba(255,255,255,.55)", cs * .04, -cs * .05);
+  // items
+  for (const e of s.ents){ if (!e.alive) continue; const x = CX(e.x), y = CY(e.y);
+   if (e.type === "coin") img("it_coin", x, y, cs * .34, { sx:.35 + .65 * Math.abs(Math.cos(s.t * 4 + e.ph)) });
+   else if (e.type === "gem") img("it_gem", x, y + Math.sin(s.t * 3) * cs * .05, cs * .5);
+   else if (e.type === "box") img("it_box", x, y + Math.sin(s.t * 2.4) * cs * .03, cs * .58); }
+  // germs
+  for (const m of s.germs){ const x = CX(m.x), y = CY(m.y); cx.fillStyle = "rgba(0,0,0,.15)"; cx.beginPath(); cx.ellipse(x, y + cs * .3, cs * .28, cs * .07, 0, 0, 7); cx.fill();
+   img(m.kind, x, y + cs * .36 - Math.abs(Math.sin(s.t * 8 + m.sp)) * cs * .06, cs * .74, { bottom:1, flip:(m.face || 1) > 0, a:s.freezeG > 0 ? .6 : 1, rot:m.kind === "en_virus" && !(s.freezeG > 0) ? Math.sin(s.t * 3) * .2 : 0 });
+   if (s.freezeG > 0){ cx.fillStyle = "rgba(160,220,255,.45)"; cx.beginPath(); cx.arc(x, y, cs * .42, 0, 7); cx.fill(); } }
+  // hero
+  const h = s.hero, hx = CX(h.x), hy = CY(h.y) + cs * .38, hh = cs * 1.22;
+  const pose = s.state === "cheer" || s.state === "end" ? "cheer" : s.state === "wrong" || s.poseT > 0 ? "dizzy" : s.pose;
+  const im = HS[pose] || HS.stand;
+  if (ready(im)){
+   const w = hh * im.naturalWidth / im.naturalHeight;
+   cx.fillStyle = "rgba(0,0,0,.2)"; cx.beginPath(); cx.ellipse(hx, hy - cs * .04, w * .32, cs * .07, 0, 0, 7); cx.fill();
+   cx.save(); if (s.inv > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .55;
+   const bob = pose === "run" ? -Math.abs(Math.sin(s.t * 13)) * hh * .05 : pose === "cheer" ? -Math.abs(Math.sin(s.t * 6)) * hh * .2 : 0;
+   cx.translate(hx, hy + bob); if (pose === "run") cx.rotate(Math.sin(s.t * 13) * .05); if (s.spin > 0) cx.rotate((1 - s.spin) * Math.PI * 2); if (pose === "dizzy") cx.rotate(Math.sin(s.t * 9) * .12);
+   if (h.face < 0 && pose === "run") cx.scale(-1, 1);
+   cx.drawImage(im, -w / 2, -hh, w, hh);
+   if (s.shield){ cx.globalAlpha = .4; cx.fillStyle = "#9be7ff"; cx.beginPath(); cx.arc(0, -hh / 2, hh * .55, 0, 7); cx.fill(); }
+   cx.restore();
+   if (pose === "dizzy") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; img("ui_star", hx + Math.cos(a) * w * .35, hy - hh * 1.02 + Math.sin(a) * hh * .06, hh * .16); }
+  }
+  // path preview
+  if (s.path && s.path.length){ cx.fillStyle = "rgba(255,210,63,.75)"; s.path.forEach(([c, r], i) => { cx.beginPath(); cx.arc(CX(c), CY(r), cs * .07, 0, 7); cx.fill(); }); }
+  s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(CX(p.x), CY(p.y), p.r * cs, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+  if (s.fade > 0){ cx.fillStyle = `rgba(255,255,255,${s.fade * .8})`; cx.fillRect(ox - cs, oy - cs, mw + cs * 2, mh + cs * 2); }
+ }
+
+ /* ---------- input: swipe = direction · tap = walk there ---------- */
+ let sw = null;
+ const down = e => { if (G.hold || s.state !== "play") return; sw = { ...ptr(e), used:false }; };
+ const move = e => { if (!sw || sw.used) return; const p = ptr(e), dx = p.x - sw.x, dy = p.y - sw.y;
+  if (Math.hypot(dx, dy) > 26){ sw.used = true; const i = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0); s.path = null; s.qd = i; const h = s.hero; if (h.dir >= 0 && (h.dir + 2) % 4 === i){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = i; } } };
+ const up = e => { if (!sw) return; if (!sw.used && s.state === "play"){ const c = Math.floor((sw.x - ox) / cs), r = Math.floor((sw.y - oy) / cs);
+   if (c >= 0 && r >= 0 && c < s.C && r < s.R){ s.path = pathTo(c, r); s.qd = -1; if (s.path && s.path.length) tone([520], .04, "triangle", .06); } }
+  sw = null; };
+ cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
+ function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); s.path = null; s.qd = m; } }
+ const rz = () => later(measure, 60); addEventListener("resize", rz);
+ $("#aCtl").classList.add("hide");
+ build(); ask(); pows();
+ window.__mz = s;
+ return { update, draw, key, resize(){ measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
+}
+
 /* ---------------- start / stop ---------------- */
 function stopArc(){
  if (A && A.cleanup) A.cleanup(); A = null;
@@ -2910,7 +3253,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(true) : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(true) : kind === "maze" ? makeMaze() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
@@ -2942,6 +3285,7 @@ const _gre = gameResultExtras;
 gameResultExtras = function(a, pct){
  const kind = G && G.kind;
  let html = _gre(a, pct);
+ if (kind === "maze") html += `<div><img src="img/p3/it_gem.webp" alt=""><br><b>${G.gems}/3 gems · ${G.coinsRun} coins</b></div>`;
  if (kind === "race") html += `<div><img src="img/p3/k_${(prof().avatar || 1) % 2 ? "purple" : "teal"}.webp" alt=""><br><b>${G.dist} m · ${G.coinsRun} coins grabbed</b></div>`;
  if (kind === "dash") html += `<div><img src="img/g2/ob_flag.webp" alt=""><br><b>${G.dist} m · ${G.coinsRun} coins grabbed</b></div>`;
  if (kind === "kitchen") html += `<div><img src="img/g2/k_bottlefull.webp" alt=""><br><b>${G.served} potions · ${G.happy} happy customers</b></div>`;
