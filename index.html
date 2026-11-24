@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795561820";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795562355";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2013,7 +2013,7 @@ async function boot(){
 const IMC = {};
 function IM(p){ if (!IMC[p]){ const i = new Image(); i.decoding = "async"; i.src = p; IMC[p] = i; } return IMC[p]; }
 const g2 = n => IM("img/g2/" + n + ".webp"), r1 = n => IM("img/" + n + ".webp");
-const worldBg = () => Q && Q.w && Q.w.n === 7 ? IM("img/p3/w7_bg.webp") : Q && Q.w && Q.w.n === 6 ? IM("img/p3/w6_bg.webp") : Q && Q.w && Q.w.n === 5 ? IM("img/p3/w5_bg.webp") : Q && Q.w && Q.w.n === 4 ? IM("img/p3/w4_bg.webp") : Q && Q.w && Q.w.n === 3 ? IM("img/p3/w3_bg.webp") : Q && Q.w && Q.w.n === 1 ? IM("img/p3/w1_bg.webp") : Q && Q.w && Q.w.n === 2 ? IM("img/p3/w2_bg.webp") : r1("world" + G.world);
+const worldBg = () => Q && Q.w && Q.w.n === 8 ? IM("img/p3/w8_bg.webp") : Q && Q.w && Q.w.n === 7 ? IM("img/p3/w7_bg.webp") : Q && Q.w && Q.w.n === 6 ? IM("img/p3/w6_bg.webp") : Q && Q.w && Q.w.n === 5 ? IM("img/p3/w5_bg.webp") : Q && Q.w && Q.w.n === 4 ? IM("img/p3/w4_bg.webp") : Q && Q.w && Q.w.n === 3 ? IM("img/p3/w3_bg.webp") : Q && Q.w && Q.w.n === 1 ? IM("img/p3/w1_bg.webp") : Q && Q.w && Q.w.n === 2 ? IM("img/p3/w2_bg.webp") : r1("world" + G.world);
 const ready = i => i && i.complete && i.naturalWidth > 0;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), rnd = (a, b) => a + Math.random() * (b - a), ri = (a, b) => Math.floor(rnd(a, b + 1));
 const ING = Array.from({ length:16 }, (_, i) => "ing" + (i + 1));
@@ -2039,9 +2039,11 @@ Object.assign(GAMES, {
  coaster: { name:"Coaster Rush", icon:"🎢" },
  machine: { name:"Machine Catch", icon:"🛠️" },
  surf:    { name:"Surf Rush", icon:"🏄‍♀️" },
- light:   { name:"Light Catcher", icon:"💡" }
+ light:   { name:"Light Catcher", icon:"💡" },
+ spark:   { name:"Spark Rush", icon:"🛹" },
+ conductor: { name:"Conductor Catch", icon:"⚡" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -2050,6 +2052,7 @@ gameFor = function(w, mi){
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
  if (w.n === 1) return ["jump", "maze", "slice", "jump", "maze", "kitchen"][mi % 6];
+ if (w.n === 8) return ["jump", "spark", "conductor", "jump", "spark", "conductor"][mi % 6];
  if (w.n === 7) return ["jump", "surf", "light", "jump", "surf", "light"][mi % 6];
  if (w.n === 6) return ["jump", "coaster", "machine", "jump", "coaster", "machine"][mi % 6];
  if (w.n === 5) return ["jump", "speed", "magnet", "jump", "speed", "magnet"][mi % 6];
@@ -2809,12 +2812,12 @@ function makeKitchen(){
    ===================================================================== */
 function makeBoss(){
  const w = Q.w, d = w && w.type === "review" ? "final" : (w && w.missions[0] && w.missions[0][0] ? w.missions[0][0].d : "life");
- const JNK = d !== "final" && w && w.n === 2, GOO = d !== "final" && w && w.n === 3, LAVA = d !== "final" && w && w.n === 4, BRK = d !== "final" && w && w.n === 5, RST = d !== "final" && w && w.n === 6, SQL = d !== "final" && w && w.n === 7;
- const B = JNK ? { img:"boss5", name:"Junk Monster" } : GOO ? { img:"boss6", name:"Professor Goo" } : LAVA ? { img:"boss7", name:"Lava King" } : BRK ? { img:"boss8", name:"Captain Friction" } : RST ? { img:"boss9", name:"Rusty the Machine Monster" } : SQL ? { img:"boss10", name:"Squall the Storm Octopus" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
+ const JNK = d !== "final" && w && w.n === 2, GOO = d !== "final" && w && w.n === 3, LAVA = d !== "final" && w && w.n === 4, BRK = d !== "final" && w && w.n === 5, RST = d !== "final" && w && w.n === 6, SQL = d !== "final" && w && w.n === 7, VLT = d !== "final" && w && w.n === 8;
+ const B = JNK ? { img:"boss5", name:"Junk Monster" } : GOO ? { img:"boss6", name:"Professor Goo" } : LAVA ? { img:"boss7", name:"Lava King" } : BRK ? { img:"boss8", name:"Captain Friction" } : RST ? { img:"boss9", name:"Rusty the Machine Monster" } : SQL ? { img:"boss10", name:"Squall the Storm Octopus" } : VLT ? { img:"boss11", name:"Voltz the Short-Circuit King" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
  const fin = d === "final";
  const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "h" : B.img), down: r1(B.img + "x"), run: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "r" : B.img) };
  if (fin) G.bossImg = "boss4";
- const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : GOO ? ["../p3/en3_slime", "../p3/en3_spark", "../p3/en3_steam"] : LAVA ? ["../p3/en4_fire", "../p3/en4_acid", "../p3/d4_rock"] : BRK ? ["../p3/en5_tire", "../p3/en5_cone", "../p3/en5_robot"] : RST ? ["../p3/en6_gear", "../p3/en6_screw", "../p3/en6_beetle"] : SQL ? ["../p3/en7_crab", "../p3/en7_jelly", "../p3/en7_speaker"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
+ const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : GOO ? ["../p3/en3_slime", "../p3/en3_spark", "../p3/en3_steam"] : LAVA ? ["../p3/en4_fire", "../p3/en4_acid", "../p3/d4_rock"] : BRK ? ["../p3/en5_tire", "../p3/en5_cone", "../p3/en5_robot"] : RST ? ["../p3/en6_gear", "../p3/en6_screw", "../p3/en6_beetle"] : SQL ? ["../p3/en7_crab", "../p3/en7_jelly", "../p3/en7_speaker"] : VLT ? ["../p3/en8_spark", "../p3/en8_wire", "../p3/en8_fuse"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
  SHOT.forEach(g2);
  const av = prof().avatar || 1, me = IM("img/p3/h" + av + "_jump.webp"), bg = worldBg(), star = r1("o_star");
  const s = { t:0, px:.5, tx:.5, dir:0, stars:[], shots:[], parts:[], fire:1.2, sh:0, charge:0, asking:false, inv:0, hitT:0, beam:0, shake:0, laugh:0, end:0, run:0 };
@@ -2932,7 +2935,7 @@ document.head.appendChild(jcss);
 function makeJump(){
  const av = prof().avatar || 1;
  const HS = { run:P3(`h${av}_run`), jump:P3(`h${av}_jump`), stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
- const JG = !!(Q.w && Q.w.n === 2), FC = !!(Q.w && Q.w.n === 3), VL = !!(Q.w && Q.w.n === 4), RC = !!(Q.w && Q.w.n === 5), GW = !!(Q.w && Q.w.n === 6), WL = !!(Q.w && Q.w.n === 7);
+ const JG = !!(Q.w && Q.w.n === 2), FC = !!(Q.w && Q.w.n === 3), VL = !!(Q.w && Q.w.n === 4), RC = !!(Q.w && Q.w.n === 5), GW = !!(Q.w && Q.w.n === 6), WL = !!(Q.w && Q.w.n === 7), SC = !!(Q.w && Q.w.n === 8);
  const TM = { w1_bg:"w2_bg", w1_plat_long:"w2_plat_long", w1_plat_short:"w2_plat_short", w1_plat_crumble:"w2_plat_crumble", w1_plat_move:"w2_plat_move", w1_spring:"w2_spring", w1_flag:"w2_flag", w1_finish:"w2_finish",
   en_germ:"en2_walk", en_virus:"en2_spike", en_fly:"en2_fly", it_coin:"w2_coin", it_gem:"w2_gem", it_heart:"w2_heart", it_box:"w2_box" };
  const TM3 = { w1_bg:"w3_bg", w1_plat_long:"w3_plat_long", w1_plat_short:"w3_ice", w1_plat_crumble:"w3_plat_crumble", w1_plat_move:"w3_plat_move", w1_spring:"w3_spring", w1_flag:"w3_flag", w1_finish:"w3_finish",
@@ -2945,7 +2948,9 @@ function makeJump(){
   en_germ:"en6_gear", en_virus:"en6_screw", en_fly:"en6_beetle", it_coin:"w6_coin", it_gem:"w6_orb" };
  const TM7 = { w1_bg:"w7_bg", w1_plat_long:"w7_plat_long", w1_plat_short:"w7_plat_rock", w1_plat_crumble:"w7_plat_rock", w1_plat_move:"w7_plat_dock", w1_flag:"d7_lighthouse", w1_finish:"w7_chest", w1_spring:"w7_spring",
   en_germ:"en7_crab", en_virus:"en7_jelly", en_fly:"en7_speaker", it_coin:"w7_coin", it_gem:"w7_gem" };
- const A = n => P3(WL && TM7[n] ? TM7[n] : GW && TM6[n] ? TM6[n] : RC && TM5[n] ? TM5[n] : VL && TM4[n] ? TM4[n] : FC && TM3[n] ? TM3[n] : JG && TM[n] ? TM[n] : n);
+ const TM8 = { w1_bg:"w8_bg", w1_plat_long:"w8_plat_long", w1_plat_short:"w8_plat_glass", w1_plat_crumble:"w8_plat_glass", w1_plat_move:"w8_plat_batt", w1_flag:"d8_bulb", w1_finish:"w8_trophy", w1_spring:"w8_spring",
+  en_germ:"en8_wire", en_virus:"en8_spark", en_fly:"en8_fuse", it_coin:"w8_coin", it_gem:"w8_gem" };
+ const A = n => P3(SC && TM8[n] ? TM8[n] : WL && TM7[n] ? TM7[n] : GW && TM6[n] ? TM6[n] : RC && TM5[n] ? TM5[n] : VL && TM4[n] ? TM4[n] : FC && TM3[n] ? TM3[n] : JG && TM[n] ? TM[n] : n);
  ["w1_bg","w1_plat_long","w1_plat_short","w1_plat_crumble","w1_plat_move","w1_spring","w1_flag","w1_finish","en_germ","en_virus","en_fly","it_coin","it_gem","it_heart","it_box","ui_star","d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"].forEach(A);
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
@@ -2961,7 +2966,7 @@ function makeJump(){
  const ent = (type, x, y, ex = {}) => { const e = Object.assign({ type, x, y, alive:true, ph:Math.random() * 6 }, ex); s.ents.push(e); return e; };
  const coinLine = (x0, y, n, dx = .1) => { for (let i = 0; i < n; i++) ent("coin", x0 + i * dx, y); };
  const coinArc = (x0, x1, y0, y1, h = .22) => { const n = 5; for (let i = 0; i < n; i++){ const t = (i + .5) / n; ent("coin", x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * h); } };
- const DECO = WL ? ["d7_lighthouse","d7_turbine","d7_drum","d7_megaphone","d7_prism","d7_mirror","d7_lens","d7_torch","d7_bulb","d7_fire","d7_solar","d7_fork"] : GW ? ["d6_seesaw","d6_pulley","d6_ramp","d6_screw","d6_axe","d6_wheel","d6_spring","d6_scale","d6_cart","d6_battery","d6_wrench","d6_crate"] : RC ? ["d5_flag","d5_speedo","d5_watch","d5_magnet","d5_compass","d5_apple","d5_chute","d5_cart","d5_rocket","d5_nitro","d5_trophy"] : VL ? ["d4_palm","d4_rock","d4_pool","d4_volcano","d4_lemon","d4_soap","d4_vinegar","d4_soda","d4_fire","d4_anchor","d4_lizard","d4_flower"] : FC ? ["d3_flask","d3_tubes","d3_boiler","d3_barrel","d3_bottles","d3_table","d3_bulb","d3_robot","d3_plant","w3_crate"] : JG ? ["d2_fern","d2_flower","d2_torch","d2_sign","d2_banana","d2_rock","an_monkey","an_parrot","an_frog","w2_crate"] : ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
+ const DECO = SC ? ["d8_battery","d8_bulb","d8_switch","d8_copper","d8_balloon","d8_magnet","d8_bolt","d8_plug","d8_glasses","d8_guitar","d8_megaphone","d8_lamp"] : WL ? ["d7_lighthouse","d7_turbine","d7_drum","d7_megaphone","d7_prism","d7_mirror","d7_lens","d7_torch","d7_bulb","d7_fire","d7_solar","d7_fork"] : GW ? ["d6_seesaw","d6_pulley","d6_ramp","d6_screw","d6_axe","d6_wheel","d6_spring","d6_scale","d6_cart","d6_battery","d6_wrench","d6_crate"] : RC ? ["d5_flag","d5_speedo","d5_watch","d5_magnet","d5_compass","d5_apple","d5_chute","d5_cart","d5_rocket","d5_nitro","d5_trophy"] : VL ? ["d4_palm","d4_rock","d4_pool","d4_volcano","d4_lemon","d4_soap","d4_vinegar","d4_soda","d4_fire","d4_anchor","d4_lizard","d4_flower"] : FC ? ["d3_flask","d3_tubes","d3_boiler","d3_barrel","d3_bottles","d3_table","d3_bulb","d3_robot","d3_plant","w3_crate"] : JG ? ["d2_fern","d2_flower","d2_torch","d2_sign","d2_banana","d2_rock","an_monkey","an_parrot","an_frog","w2_crate"] : ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
  DECO.concat(JG ? ["an_croc"] : []).forEach(A);
  const deco = p => { if (p.w > .8 && Math.random() < .6) ent("deco", p.x + rnd(.15, p.w - .15), p.y, { img:pick(DECO), sz:rnd(.12, .2) }); };
  let gemsLeft = 3;
@@ -3189,9 +3194,9 @@ function makeJump(){
   // background parallax (seamless tiles)
   const bg = A("w1_bg");
   cx.fillStyle = "#8fd3ff"; cx.fillRect(0, 0, W, H);
-  if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; const sc = s.cam * U * .35; let ti = Math.floor(sc / bw), ox = -(sc - ti * bw); for (let x = ox; x < W; x += bw, ti++){ if ((RC || GW || WL) && ti % 2){ cx.save(); cx.translate(x + bw, H - bh * .97); cx.scale(-1, 1); cx.drawImage(bg, 0, 0, bw, bh); cx.restore(); } else cx.drawImage(bg, x, H - bh * .97, bw, bh); } }
+  if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; const sc = s.cam * U * .35; let ti = Math.floor(sc / bw), ox = -(sc - ti * bw); for (let x = ox; x < W; x += bw, ti++){ if ((RC || GW || WL || SC) && ti % 2){ cx.save(); cx.translate(x + bw, H - bh * .97); cx.scale(-1, 1); cx.drawImage(bg, 0, 0, bw, bh); cx.restore(); } else cx.drawImage(bg, x, H - bh * .97, bw, bh); } }
   // sea
-  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); if (WL){ g.addColorStop(0, "#4fd1ff"); g.addColorStop(.5, "#1e88e5"); g.addColorStop(1, "#0b3d7a"); } else if (GW){ g.addColorStop(0, "#ffcc80"); g.addColorStop(.5, "#a1683a"); g.addColorStop(1, "#4e342e"); } else if (RC){ g.addColorStop(0, "#90a4ae"); g.addColorStop(.5, "#546e7a"); g.addColorStop(1, "#263238"); } else if (VL){ g.addColorStop(0, "#ffb347"); g.addColorStop(.5, "#ff6a1f"); g.addColorStop(1, "#a4260b"); } else if (FC){ g.addColorStop(0, "#a8ec6a"); g.addColorStop(.5, "#4fbf4a"); g.addColorStop(1, "#1f6b3a"); } else if (JG){ g.addColorStop(0, "#5fd6d0"); g.addColorStop(.5, "#22a3b0"); g.addColorStop(1, "#11667a"); } else { g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85"); }
+  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); if (SC){ g.addColorStop(0, "#b388ff"); g.addColorStop(.5, "#5e35b1"); g.addColorStop(1, "#1a0b3d"); } else if (WL){ g.addColorStop(0, "#4fd1ff"); g.addColorStop(.5, "#1e88e5"); g.addColorStop(1, "#0b3d7a"); } else if (GW){ g.addColorStop(0, "#ffcc80"); g.addColorStop(.5, "#a1683a"); g.addColorStop(1, "#4e342e"); } else if (RC){ g.addColorStop(0, "#90a4ae"); g.addColorStop(.5, "#546e7a"); g.addColorStop(1, "#263238"); } else if (VL){ g.addColorStop(0, "#ffb347"); g.addColorStop(.5, "#ff6a1f"); g.addColorStop(1, "#a4260b"); } else if (FC){ g.addColorStop(0, "#a8ec6a"); g.addColorStop(.5, "#4fbf4a"); g.addColorStop(1, "#1f6b3a"); } else if (JG){ g.addColorStop(0, "#5fd6d0"); g.addColorStop(.5, "#22a3b0"); g.addColorStop(1, "#11667a"); } else { g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85"); }
   cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, H);
   for (let x = 0; x <= W + 20; x += 20) cx.lineTo(x, sy + Math.sin(x * .02 + s.t * 2.4 + s.cam * 4) * U * .008);
   cx.lineTo(W, H); cx.fill();
@@ -3220,7 +3225,7 @@ function makeJump(){
    else if (e.type === "box") img("it_box", ex, ey, U * .09, { a:e.used ? .55 : 1 });
    else if (e.type === "spring"){ const sq = e.sq > 0 ? (e.sq -= 1 / 60, .7) : 1; img("w1_spring", ex, ey + 2, U * .1, { bottom:1, sy:sq }); }
    else if (e.type === "germ") img("en_germ", ex, ey + Math.abs(Math.sin(s.t * 8)) * -4 + 2, U * .11, { bottom:1, flip:e.dir > 0 });
-   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * (JG || FC || VL || RC || GW || WL ? .11 : .1), JG || FC || VL || RC || GW || WL ? { sx:1 + Math.sin(s.t * 6) * .04 } : { rot:s.t * 2 });
+   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * (JG || FC || VL || RC || GW || WL || SC ? .11 : .1), JG || FC || VL || RC || GW || WL || SC ? { sx:1 + Math.sin(s.t * 6) * .04 } : { rot:s.t * 2 });
    else if (e.type === "fly") img("en_fly", ex, ey, U * .11, { sy:.9 + Math.abs(Math.sin(s.t * 14)) * .12 });
    else if (e.type === "flag") img("w1_flag", ex, ey + 2, U * .2, { bottom:1 });
    else if (e.type === "finish") img("w1_finish", ex, ey + 4, U * .36, { bottom:1 });
@@ -4325,7 +4330,7 @@ function makePH(){
    WEEK 5 RACEWAY GAMES — Kart Rush (speed) · Magnet Grab (magnet)
    ===================================================================== */
 const g6css = document.createElement("style");
-g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
+g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light", "spark", "conductor"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
  `@media (orientation:landscape){#arc[data-kind=${k}] .spanel{left:8px;transform:none;width:36vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}#arc[data-kind=${k}] .spanel .aopts{grid-template-columns:1fr}}@media (orientation:portrait){#arc[data-kind=${k}] .spanel{max-height:40%;overflow:auto}}`).join("");
 document.head.appendChild(g6css);
 function rr6(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
@@ -4553,6 +4558,14 @@ const makeLight = () => makeMagnet({ bg:"w7_bg", tool:"p7_jar", coin:"w7_coin", 
  nonMsg:n => n === "Moon" || n === "Mirror" ? `🚫 The ${n.toLowerCase()} only REFLECTS light — it doesn't make it!` : `🚫 A ${n.toLowerCase()} doesn't give off light!`, firstMsg:n => `💡 ${n}! It gives off its own light.`,
  goal:"💡 Catch things that MAKE light — dodge jellyfish & crabs!", qgoal:"🫙 Catch the shell coin with the right answer!", win:"🏆 LIGHT MASTER!", hurt:"🦀 Ouch! Dodge the sea creatures!", ok:"BRIGHT! 💡" });
 
+/* Week 8 Spark City skins */
+const makeSpark = () => makeSpeed({ bg:"w8_bg", karts:["k8_teal", "k8_pink", "k8_yellow"], stand:true, en:"en8_", ens:["spark", "wire", "fuse"], big:["wire"], coin:"w8_coin", gem:"w8_gem", flag:"d8_bulb", boost:"w8_gem", win:"🏆 SPARK CHAMPION!" });
+const makeConductor = () => makeMagnet({ bg:"w8_bg", tool:"p8_magnet", coin:"w8_coin", haz:["en8_spark", "en8_wire"], pull:false, toolRot:0,
+ mag:[["p8_key", "Metal key"], ["p8_spoon", "Steel spoon"], ["p8_coin", "Copper coin"], ["p8_nail", "Iron nail"], ["d8_copper", "Copper wire"]],
+ non:[["p8_glove", "Rubber glove"], ["p8_cup", "Plastic cup"], ["p8_stick", "Wooden stick"], ["p8_marble", "Glass marble"]],
+ nonMsg:n => `🚫 ${n} is an INSULATOR — electricity can't flow through it!`, firstMsg:n => `⚡ ${n}! Metals are good CONDUCTORS.`,
+ goal:"⚡ Catch the CONDUCTORS — dodge sparks & tangled wires!", qgoal:"⚡ Catch the coin with the right answer!", win:"🏆 CIRCUIT MASTER!", hurt:"⚡ Zap! Dodge the sparks!", ok:"CONDUCTOR! ⚡" });
+
 /* ---------------- start / stop ---------------- */
 function stopArc(){
  if (A && A.cleanup) A.cleanup(); A = null;
@@ -4567,7 +4580,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
