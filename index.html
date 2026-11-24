@@ -1700,6 +1700,7 @@ async function boot(){
 const IMC = {};
 function IM(p){ if (!IMC[p]){ const i = new Image(); i.decoding = "async"; i.src = p; IMC[p] = i; } return IMC[p]; }
 const g2 = n => IM("img/g2/" + n + ".webp"), r1 = n => IM("img/" + n + ".webp");
+const worldBg = () => Q && Q.w && Q.w.n === 1 ? IM("img/p3/w1_bg.webp") : Q && Q.w && Q.w.n === 2 ? IM("img/p3/w2_bg.webp") : r1("world" + G.world);
 const ready = i => i && i.complete && i.naturalWidth > 0;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), rnd = (a, b) => a + Math.random() * (b - a), ri = (a, b) => Math.floor(rnd(a, b + 1));
 const ING = Array.from({ length:16 }, (_, i) => "ing" + (i + 1));
@@ -2228,7 +2229,7 @@ function makeDash(jungle){
    2) SCIENCE SLICE — swipe through the right answer
    ===================================================================== */
 function makeSlice(){
- const bg = r1("world" + G.world), bomb = g2("bo_bomb");
+ const bg = worldBg(), bomb = g2("bo_bomb");
  ING.forEach(g2);
  const s = { objs:[], halves:[], trail:[], parts:[], state:"wait", removed:[], t:0, flash:0, tossT:0, bonusT:0 };
  G.hearts = 3; G.sliced = 0;
@@ -2444,11 +2445,11 @@ function makeBoss(){
  const w = Q.w, d = w && w.type === "review" ? "final" : (w && w.missions[0] && w.missions[0][0] ? w.missions[0][0].d : "life");
  const B = BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
  const fin = d === "final";
- const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(B.img), down: r1(B.img + "x"), run: r1(B.img) };
+ const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(B.img === "boss1" ? "boss1h" : B.img), down: r1(B.img + "x"), run: r1(B.img === "boss1" ? "boss1r" : B.img) };
  if (fin) G.bossImg = "boss4";
  const SHOT = { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
  SHOT.forEach(g2);
- const av = prof().avatar || 1, me = IM("img/p3/h" + av + "_jump.webp"), bg = r1("world" + G.world), star = r1("o_star");
+ const av = prof().avatar || 1, me = IM("img/p3/h" + av + "_jump.webp"), bg = worldBg(), star = r1("o_star");
  const s = { t:0, px:.5, tx:.5, dir:0, stars:[], shots:[], parts:[], fire:1.2, sh:0, charge:0, asking:false, inv:0, hitT:0, beam:0, shake:0, laugh:0, end:0, run:0 };
  G.hearts = 3;
  let W, H, bw, mw, by;
