@@ -592,6 +592,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <div><h2 class="h">Teacher Dashboard</h2><div style="opacity:.85;font-size:14px">Nafes Science Quest · Miss Basma Ahmed</div></div>
   <span class="sp"></span>
   <a class="btn ghost" id="tSheet" target="_blank" rel="noopener" style="text-decoration:none">Open Google Sheet</a>
+  <button class="btn yel" id="tStu" onclick="const p=document.getElementById('stuPanel');p&&p.scrollIntoView({behavior:'smooth'})">👩‍🎓 Students</button>
   <button class="btn teal" id="tRefresh">Refresh</button>
   <button class="btn ghost" id="tExit">Exit</button>
  </div>
@@ -1254,21 +1255,38 @@ function showLeaderboard(){
  d.querySelectorAll("[data-lbf]").forEach(b => b.onclick = () => { LBM = b.dataset.lbf; d.remove(); showLeaderboard(); const lp = $("#lbPanel"); if (lp) lp.outerHTML = leaderPanel(); });
  try { confetti(80); } catch(e){}
 }
+function certWin(list, title){
+ const w = window.open("", "_blank"); if (!w) return toast("Please allow pop-ups to print.");
+ const U = f => new URL(f, location.href).href, logo = U("img/logo.webp"), bg = U("img/cert_bg.webp"), dt = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
+ const place = ["First", "Second", "Third"], medal = ["#f2c14e", "#c9d1dc", "#d99559"];
+ w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Certificate</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+ <style>@page{size:A4 landscape;margin:0}html,body{margin:0}body{font-family:Poppins,Arial,sans-serif;color:#2a1d5c;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .c{width:297mm;height:210mm;position:relative;page-break-after:always;overflow:hidden;background:#fffaf0 url('${bg}') center/100% 100% no-repeat}
+ .fb{position:absolute;inset:8mm;border:3mm solid #5B3FD9;border-radius:6mm;box-shadow:inset 0 0 0 1.2mm #fffaf0,inset 0 0 0 2mm #d4a537}
+ .has-bg .fb{display:none}
+ .in{position:absolute;inset:22mm 28mm;display:flex;flex-direction:column;align-items:center;text-align:center}
+ .lg{height:26mm}.sch{font-weight:700;letter-spacing:.18em;font-size:3.4mm;color:#7a6bb3;margin:2mm 0 4mm}
+ .t1{font-family:Cinzel,serif;font-size:13mm;color:#5B3FD9;margin:0;letter-spacing:.04em}.t2{font-size:4.6mm;letter-spacing:.3em;color:#b8860b;margin:1mm 0 5mm;font-weight:700}
+ .pr{font-size:4.2mm;margin:0}.nm{font-family:'Great Vibes',cursive;font-size:22mm;line-height:1.1;color:#2a1d5c;margin:2mm 0 1mm;padding:0 12mm;border-bottom:.6mm solid #d4a537}
+ .why{font-size:4.4mm;max-width:190mm;margin:4mm 0 0;line-height:1.5}
+ .medal{position:absolute;top:18mm;right:24mm;width:28mm;height:28mm;border-radius:50%;display:grid;place-items:center;font-family:Cinzel,serif;font-weight:700;font-size:9mm;color:#fff;box-shadow:0 1mm 0 rgba(0,0,0,.2),inset 0 -1.5mm 0 rgba(0,0,0,.15)}
+ .medal small{display:block;font-size:2.6mm;letter-spacing:.1em;margin-top:-2mm}
+ .ft{position:absolute;left:30mm;right:30mm;bottom:22mm;display:flex;justify-content:space-between;align-items:flex-end;font-size:3.6mm}
+ .ft div{text-align:center;min-width:60mm}.ft b{display:block;border-top:.4mm solid #2a1d5c;padding-top:1.5mm;margin-top:10mm;font-size:4mm}</style></head><body>
+ ${list.map(x => `<div class="c"><div class="fb"></div><div class="medal" style="background:${medal[x.rank]}">${x.rank + 1}<small>PLACE</small></div><div class="in">
+  <img class="lg" src="${logo}" alt=""><div class="sch">ANDALUS INTERNATIONAL SCHOOLS · GRADE 6 SCIENCE</div>
+  <p class="t1">Certificate of Achievement</p><p class="t2">${esc(title).toUpperCase()}</p><p class="pr">This certificate is proudly presented to</p>
+  <div class="nm">${esc(x.name)}</div><p class="why">for earning <b>${place[x.rank]} Place</b> in <b>Nafes Science Quest</b> with ${esc(x.why)}. Keep shining, young scientist!</p></div>
+  <div class="ft"><div><b>${dt}</b>Date</div><div><b>Miss Basma Ahmed</b>Science Teacher</div></div></div>`).join("")}
+ <script>const i=new Image();i.onload=()=>document.body.classList.add("has-bg");i.src="${bg}";setTimeout(()=>print(),1500)<\/script></body></html>`);
+ w.document.close();
+}
+const whyTxt = (x, mode) => mode === "week" ? `${x.week} correct answers this week` : mode === "improved" ? `an improvement of ${x.imp}%` : `${x.stars} stars and ${x.coins} coins earned`;
+const certTitle = mode => mode === "improved" ? "Most Improved Scientist" : mode === "week" ? "Top Scientist of the Week" : "Top Scientist";
 function printCerts(){
  const L = leaderRows().slice(0, 3); if (!L.length) return toast("No scores yet for this board.");
- const logo = new URL("img/logo.webp", location.href).href, title = LBM === "improved" ? "Most Improved Scientist" : LBM === "week" ? "Top Scientist of the Week" : "Top Scientist";
- const w = window.open("", "_blank"); if (!w) return toast("Please allow pop-ups to print.");
- w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Certificates</title><style>@page{size:A4 landscape;margin:0}body{margin:0;font-family:Georgia,serif;color:#2a1d5c}
-  .c{width:297mm;height:210mm;box-sizing:border-box;padding:14mm;page-break-after:always;background:#fffdf6}.in{height:100%;box-sizing:border-box;border:6px double #c9a35a;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10mm;position:relative}
-  .in img.lg{height:34mm}.sch{font-family:Arial,sans-serif;font-weight:700;letter-spacing:.04em;color:#7a6bb3;margin:2mm 0 6mm}.t1{font-size:15mm;color:#5B3FD9;margin:0}.t2{font-size:7mm;margin:2mm 0 8mm;color:#a8741a}
-  .nm{font-size:16mm;font-weight:700;border-bottom:2px solid #c9a35a;padding:0 14mm 2mm;margin-bottom:6mm}.why{font-size:6mm;max-width:200mm}.medal{position:absolute;top:10mm;right:14mm;font-size:22mm}.hero{position:absolute;bottom:10mm;left:14mm;height:52mm}
-  .sig{position:absolute;bottom:14mm;right:18mm;font-family:Arial,sans-serif;text-align:center}.sig b{display:block;border-top:2px solid #2a1d5c;padding-top:2mm;margin-top:12mm;min-width:60mm}.dt{position:absolute;bottom:14mm;left:50%;transform:translateX(-50%);font-family:Arial,sans-serif;color:#7a6bb3}</style></head><body>
-  ${L.map((x, i) => `<div class="c"><div class="in"><span class="medal">${["🥇","🥈","🥉"][i]}</span><img class="lg" src="${logo}" alt=""><div class="sch">ANDALUS INTERNATIONAL SCHOOLS · GRADE 6 SCIENCE</div>
-   <p class="t1">Certificate of Achievement</p><p class="t2">${title} · ${["1st", "2nd", "3rd"][i]} place</p><div class="nm">${esc(x.name)}</div>
-   <p class="why">For outstanding effort in <b>Nafes Science Quest</b> — ${lbScore(x, LBM).replace(/[⭐🪙✅📈]/g, "").trim()}. Keep shining, young scientist!</p>
-   ${x.avatar ? `<img class="hero" src="${new URL(heroImg(x.avatar), location.href).href}" alt="">` : ""}<div class="dt">${new Date().toLocaleDateString()}</div><div class="sig"><b>Miss Basma Ahmed</b>Science Teacher</div></div></div>`).join("")}
-  <script>setTimeout(()=>print(),900)<\/script></body></html>`);
- w.document.close();
+ certWin(L.map((x, i) => ({ name:x.name, rank:i, why:whyTxt(x, LBM) })), certTitle(LBM));
 }
 function renderTeacher(){
  const { students, attempts } = TD;
@@ -1300,6 +1318,7 @@ function renderTeacher(){
    <div class="kpi"><b>${attempts.length}</b><span>missions played</span></div>
    <div class="kpi"><b>${Math.round(avg*100)}%</b><span>average score</span></div>
   </div>
+  ${studentsPanel()}
   <div class="panel"><h3>Class progress — best score per week</h3>
    <p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">Big number = best score · small = first-attempt score and missions done. Tap a name for details.</p>
    <div class="scroll"><table class="grid"><thead><tr><th>Student</th>${WEEKS.map(w => `<th>${esc(w.type === "study" ? "W" + w.n : w.title.replace("Grand ","").replace("Mock Exam ","Mock "))}</th>`).join("")}<th>Last active</th></tr></thead>
@@ -1307,7 +1326,6 @@ function renderTeacher(){
   </div>
   ${goalPanel()}
   ${leaderPanel()}
-  ${studentsPanel()}
   <div class="row2">
    <div class="panel"><h3>Most-missed questions</h3><div class="miss">${top.map(([id, c]) => { const q = qById(id); return `<div><b class="c">${c}×</b><span>${esc(q.q)}<small>✔ ${esc(q.o[q.a])} · W${q.w} · ${esc(q.l)} · ${id}</small></span></div>`; }).join("") || "<p>No mistakes recorded yet.</p>"}</div></div>
    <div class="panel"><h3>Lessons that need re-teaching</h3>${lt.map(([l, c]) => `<div class="lessonbar"><div><div style="font-size:14px">${esc(l)}</div><div class="bar"><i style="width:${c/lmax*100}%;background:linear-gradient(90deg,#FF6B8B,#FFC93C)"></i></div></div><b style="text-align:right">${c}</b></div>`).join("") || "<p>No data yet.</p>"}
@@ -1408,8 +1426,10 @@ async function openTop(){
    <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
    ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${TOPM === "week" ? "✅ " + L[i].week : "⭐ " + L[i].stars + " · 🪙 " + L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>`
     : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}
+   ${(() => { const i = L.findIndex(x => x.name.toLowerCase() === me); return i >= 0 ? `<div style="text-align:center;margin-top:10px"><p style="margin:0 0 6px;font-weight:900;color:#e2483d">🎉 You are in ${["1st","2nd","3rd"][i]} place!</p><button class="btn yel" id="myCert" data-r="${i}">🖨️ Print my certificate</button></div>` : ""; })()}
    <p style="text-align:center;margin:10px 0 0;font-weight:700">Play missions, earn ⭐ stars and answer correctly to climb the board! 💪</p>`; };
- body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw(); } });
+ body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw(); return; }
+  const c = e.target.closest("#myCert"); if (c){ const L = TOPM === "week" ? r.week : r.all, x = L[+c.dataset.r]; certWin([{ name:x.name, rank:+c.dataset.r, why:whyTxt(x, TOPM) }], certTitle(TOPM)); } });
  draw();
 }
 function coinsInfo(){
