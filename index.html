@@ -701,12 +701,12 @@ function demoApi(action, d){
    db.students[key(n)] = { name:n, pass:d.pass, joined:new Date().toISOString(), last:new Date().toISOString() }; save();
    return { ok:true, name:n, token:"demo", attempts:[] };
   }
-  case "addStudent": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." };
+  case "addStudent": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." };
    const n = String(d.name||"").trim().replace(/\s+/g," "); if (n.length < 2) return { ok:false, error:"Please write the student's name." };
    if (String(d.pass||"").length < 4) return { ok:false, error:"Password must be at least 4 characters." };
    if (db.students[key(n)]) return { ok:false, error:"This name is already registered." };
    db.students[key(n)] = { name:n, pass:d.pass, joined:new Date().toISOString(), last:"" }; save(); return { ok:true, name:n }; }
-  case "deleteStudent": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." };
+  case "deleteStudent": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." };
    if (!db.students[key(d.name)]) return { ok:false, error:"Student not found." };
    delete db.students[key(d.name)]; db.attempts = db.attempts.filter(a => key(a.student) !== key(d.name)); save(); return { ok:true }; }
   case "top": { const since = Date.now() - 7 * 864e5; const S = Object.values(db.students).map(x => ({ name:x.name, avatar:x.avatar || 0, coins:x.coins || 0, stars:x.stars || 0,
@@ -727,16 +727,16 @@ function demoApi(action, d){
   }
   case "sync": return { ok:true, attempts: mine(d.name), goal: db.goal ? demoGoal(db) : null };
   case "awards": return { ok:true, awards: db.awards || [] };
-  case "publishAward": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.awards = db.awards || [];
+  case "publishAward": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." }; db.awards = db.awards || [];
    db.awards.unshift({ id: Math.random().toString(36).slice(2, 10), date: new Date().toISOString(), title: d.award.title, from: d.award.from, to: d.award.to, winners: d.award.winners }); save(); return { ok:true, awards: db.awards }; }
-  case "deleteAward": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.awards = (db.awards || []).filter(a => a.id !== d.id); save(); return { ok:true, awards: db.awards }; }
+  case "deleteAward": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." }; db.awards = (db.awards || []).filter(a => a.id !== d.id); save(); return { ok:true, awards: db.awards }; }
   case "classGoal": return { ok:true, goal: db.goal ? demoGoal(db) : null };
-  case "setGoal": if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.goal = d.target ? { target:+d.target, reward:d.reward || "", start:new Date().toISOString() } : null; save(); return { ok:true, goal: db.goal ? demoGoal(db) : null };
+  case "setGoal": if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." }; db.goal = d.target ? { target:+d.target, reward:d.reward || "", start:new Date().toISOString() } : null; save(); return { ok:true, goal: db.goal ? demoGoal(db) : null };
   case "saveProfile": { const st = db.students[key(d.name)]; if (st){ st.coins = d.coins; st.stars = d.stars; st.avatar = (d.profile || {}).avatar || 0; save(); } return { ok:true }; }
   case "getQuestions": return { ok:true, questions: db.questions };
   case "saveQuestions": db.questions = d.append ? db.questions.concat(d.questions) : d.questions; save(); return { ok:true, count:d.questions.length };
   case "teacherData":
-   if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password. (Demo password: Basma2030)" };
+   if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password. (Demo password: demo1234)" };
    return { ok:true, students:Object.values(db.students), attempts:db.attempts, sheetUrl:"", goal: db.goal ? demoGoal(db) : null };
   case "resetPassword": {
    const s = db.students[key(d.name)]; if (!s) return { ok:false, error:"Student not found." };
