@@ -1716,11 +1716,12 @@ Object.assign(GAMES, {
  jump:    { name:"Jelly Jump", icon:"🦘" },
  race:    { name:"Safari Race", icon:"🏎️" },
  density: { name:"Density Drop", icon:"🫧" },
+ state:   { name:"State Shift", icon:"🧊" },
  maze:    { name:"Cell Maze", icon:"🧫" },
  fly:     { name:"Parrot Flight", icon:"🦜" },
  frog:    { name:"Frog Feast", icon:"🐸" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -1729,7 +1730,7 @@ gameFor = function(w, mi){
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
  if (w.n === 1) return ["jump", "maze", "slice", "jump", "maze", "kitchen"][mi % 6];
- if (w.n === 3) return ["jump", "race", "density", "jump", "slice", "race"][mi % 6];
+ if (w.n === 3) return ["jump", "race", "density", "state", "jump", "race"][mi % 6];
  if (w.n === 2) return ["jump", "fly", "race", "frog", "jump", "kitchen"][mi % 6];
  const NEW = ["dash", "kitchen", "slice"];
  return NEW[(mi + w.n - 1) % 3];
@@ -3687,6 +3688,163 @@ function makeDensity(){
  return { update, draw, key(e){ if (e.key === "ArrowUp") predict(1); if (e.key === "ArrowDown") predict(0); }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); removeEventListener("resize", rz); } };
 }
 
+/* ---------------------------------------------------------------------
+   STATE SHIFT — heat / cool the blob: ice smashes glass, water flows
+   through pipes, steam floats over hot gaps
+   --------------------------------------------------------------------- */
+const g4css = document.createElement("style");
+g4css.textContent = [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => "#arc[data-kind=state] " + r).join("") +
+ "@media (orientation:landscape){#arc[data-kind=state] .spanel{left:8px;transform:none;width:36vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}#arc[data-kind=state] .spanel .aopts{grid-template-columns:1fr}}@media (orientation:portrait){#arc[data-kind=state] .spanel{max-height:40%;overflow:auto}}";
+document.head.appendChild(g4css);
+function makeState(){
+ const IMS = ["st_ice","st_water","st_steam","st_dizzy","st_wall","st_pipe","st_vent","st_hiplat","st_cool","st_heat","st_burner","st_trophy","w3_bg","w3_plat_long","w3_coin","w3_gem","ui_star","d3_flask","d3_barrel","d3_tubes","d3_boiler","d3_plant"];
+ IMS.forEach(P3);
+ const hard = (Q.mi || 0) >= 3 ? 1 : 0;
+ G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.shifts = 0;
+ const ST = ["st_ice", "st_water", "st_steam"], NAME = ["SOLID 🧊", "LIQUID 💧", "GAS ☁️"];
+ const NEED = { wall:0, pipe:1, gap:2 }, HOW = { wall:"Only SOLID ice can smash glass!", pipe:"Only LIQUID water can flow through pipes!", gap:"Only GAS steam can float over the gap!" };
+ const s = { t:0, x:0, st:1, y:0, cam:0, obs:[], coins:[], parts:[], inv:0, state:"run", nextQ:3.2, dizzy:0, cheer:0, spin:0, msg:null, bub:[], taught:{}, nextObs:1.4, fallT:0, started:false };
+ const SPEED = .5 + hard * .07;
+ let A = playArea({}), U = A.h;
+ const P = qPanel({ pick:k => choose(k), hint:rm => rm.forEach(k => { if (s.bub[k]) s.bub[k].dead = true; }), go:() => cont() });
+ const geo = () => { A = playArea(P); U = Math.min(A.h, A.w * .95); };
+ const FY = () => A.h > A.w * 1.05 ? A.y1 - Math.min(U * .24, A.w * .2) - U * .16 : A.y1 - U * .2;                         // floor y (screen)
+ const BX = () => A.x0 + A.w * .26;                      // blob screen x
+ const WX = wx => BX() + (wx - s.x) * U;
+ let seq = ["wall", "pipe", "gap"];
+ function spawn(wx){
+  const t = seq.length ? seq.shift() : pick(["wall", "pipe", "gap", "gap", "wall", "pipe"]);
+  const o = { t, x:wx, w:t === "gap" ? .9 : .18, done:false, hit:false };
+  s.obs.push(o);
+  if (t === "gap") for (let i = 0; i < 4; i++) s.coins.push({ x:wx + .1 + i * .22, y:.44, got:false });
+  else for (let i = 0; i < 3; i++) s.coins.push({ x:wx - .7 + i * .2, y:.1, got:false });
+ }
+ function setState(n, how){
+  if (n < 0 || n > 2 || n === s.st || s.state === "wrong" || s.state === "end") return;
+  const from = s.st; s.st = n; G.shifts++;
+  const word = from === 0 && n === 1 ? "MELTING" : from === 1 && n === 2 ? "EVAPORATING" : from === 2 && n === 1 ? "CONDENSING" : "FREEZING";
+  s.msg = { t:`${how === "heat" ? "🔥" : "❄️"} ${word}! → ${NAME[n]}`, life:1.4, c:how === "heat" ? "#ffd2a8" : "#bfe9ff" };
+  tone(how === "heat" ? [400, 700] : [700, 400], .07, "triangle", .08);
+  for (let i = 0; i < 14; i++) s.parts.push({ x:s.x, y:s.y, vx:rnd(-.6, .6), vy:rnd(-.9, -.1), life:rnd(.3, .7), c:how === "heat" ? pick(["#ffb347", "#fff"]) : pick(["#bfe9ff", "#fff"]), r:rnd(.008, .016) });
+ }
+ const heat = () => setState(s.st + 1, "heat"), cool = () => setState(s.st - 1, "cool");
+ function hurt(why){
+  if (s.inv > 0) return;
+  G.hearts--; s.inv = 1.4; s.dizzy = 1; sfx.bad(); hud(); s.msg = { t:"💫 " + why, life:2.4, c:"#ffb4a8" };
+  if (G.hearts <= 0) outOfHearts(() => { s.inv = 2; });
+ }
+ function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length; s.bub = [];
+  for (let k = 0; k < n; k++) s.bub.push({ k, x:(k + .5) / n, dead:false, pop:0 }); s.state = "q"; }, 60); }
+ function choose(k){
+  if (s.state !== "q" || Q.answered) return; const b = s.bub[k]; if (!b || b.dead) return;
+  const r = grade(k); P.mark(k, r);
+  if (r.ok){ b.pop = 1; s.cheer = 1.4; s.spin = 1; FX.starRain(r.gold ? 26 : 14); banner(r.gold ? "✨ GOLDEN!" : pick(["AMAZING! ⭐", "BRILLIANT! 🌟", "MATTER MASTER! 🧪", "PERFECT! 💎"]));
+   s.bub.forEach(o => o.dead = true); s.state = "cheer"; later(() => { P.hide(); next(); }, 1300); }
+  else { b.dead = true; s.dizzy = 99; s.state = "wrong"; tone([200, 120], .14, "sawtooth", .1); }
+ }
+ function cont(){ if (s.state !== "wrong") return; s.dizzy = 0; P.hide(); next(); }
+ function next(){
+  Q.i++; hud(); s.bub = [];
+  if (Q.i >= Q.items.length){ s.state = "end"; s.cheer = 99; FX.starRain(34); sfx.win(); banner("🏆 STATE SHIFT CHAMPION!"); later(arcDone, 2400); return; }
+  s.state = "run"; s.nextQ = 7 + hard; geo();
+ }
+ function onFloor(wx){ return !s.obs.some(o => o.t === "gap" && wx > o.x && wx < o.x + o.w); }
+ function update(dt){
+  s.t += dt; geo();
+  ["inv","spin"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt * (k === "spin" ? 2 : 1)); });
+  if (s.dizzy > 0 && s.dizzy < 50) s.dizzy = Math.max(0, s.dizzy - dt); if (s.cheer > 0 && s.cheer < 50) s.cheer = Math.max(0, s.cheer - dt);
+  if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; }
+  const run = s.state === "run" || s.state === "pre";
+  const sp = !s.started ? 0 : s.state === "run" ? SPEED * (A.h > A.w * 1.05 ? .7 : 1) : s.state === "pre" ? SPEED * .4 : 0;
+  if (s.fallT > 0){ s.fallT -= dt; s.y += dt * 1.2; if (s.fallT <= 0){ s.y = 0; const g = s.obs.find(o => o.t === "gap" && s.x > o.x - .1 && s.x < o.x + o.w + .1); if (g) s.x = g.x + g.w + .05; } }
+  else {
+   s.x += sp * dt;
+   const ty = s.st === 2 ? -.4 : 0; s.y += (ty - s.y) * Math.min(1, dt * 5);
+   if (s.st !== 2 && !onFloor(s.x) && s.y > -.05){ s.fallT = .6; hurt(HOW.gap); }
+  }
+  // obstacles
+  for (const o of s.obs){
+   if (o.done) continue;
+   if (o.t === "gap"){ if (s.x > o.x + o.w){ o.done = true; if (!o.hit) coins(3); } continue; }
+   if (s.x + .08 > o.x){
+    o.done = true;
+    if (s.st === NEED[o.t]){ coins(3); burst(o.x, o.t === "wall" ? -.15 : -.05, 16, o.t === "wall" ? ["#cfefff", "#fff", "#9fd8ee"] : ["#5fb8ff", "#fff"]); tone([600, 900], .05, "square", .06);
+     if (o.t === "wall") o.broken = true; else o.through = true; }
+    else { o.hit = true; hurt(HOW[o.t]); if (o.t === "wall") o.broken = true; else o.through = true; }
+   }
+  }
+  // teaching sign for first appearance
+  for (const o of s.obs) if (!s.taught[o.t] && o.x - s.x < 1.6 && o.x > s.x){ s.taught[o.t] = 1; s.msg = { t:"👀 " + HOW[o.t], life:2.6, c:"#ffe9b0" }; }
+  // coins
+  for (const c of s.coins){ if (c.got) continue; if (Math.abs(c.x - s.x) < .07 && Math.abs(c.y - (-s.y)) < .12){ c.got = true; G.coinsRun++; G.coins++; G.extra++; hud(); tone([1300, 1700], .03, "square", .04); burst(c.x, -c.y, 5, ["#ffd23f"]); } }
+  if (s.state === "run" && s.started){ s.nextObs -= sp * dt; if (s.nextObs <= 0){ spawn(s.x + A.w / U + .3); s.nextObs = rnd(1.5, 2.1) - hard * .2; }
+   s.nextQ -= dt; if (s.nextQ <= 0 && Q.i < Q.items.length && !s.obs.some(o => !o.done && o.x - s.x < 1.2)) ask(); }
+  if (s.cheer > 0 && G.gems < 3 && G.shifts >= (G.gems + 1) * 8){ G.gems++; banner(`💎 Shape-shifter! Gem ${G.gems}/3`); sfx.star(); }
+  s.obs = s.obs.filter(o => o.x + o.w > s.x - 2); s.coins = s.coins.filter(c => c.x > s.x - 2);
+  s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 1.5 * dt; }); s.parts = s.parts.filter(p => p.life > 0);
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>${NAME[s.st]}</span><span>💎 ${G.gems}/3</span>`; }
+ }
+ function burst(wx, y, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x:wx, y, vx:rnd(-.8, .8), vy:rnd(-1, -.1), life:rnd(.4, .9), c:pick(cols), r:rnd(.008, .016) }); }
+ function rr(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+ const BTN = () => { const sz = Math.min(U * .24, A.w * .2); return { cool:{ x:A.x0 + 14 + sz / 2, y:A.y1 - sz * .55, r:sz / 2 }, heat:{ x:A.x1 - 14 - sz / 2, y:A.y1 - sz * .55, r:sz / 2 } }; };
+ function draw(){
+  geo(); const W = view.w, H = view.h, bg = P3("w3_bg"), fy = FY();
+  cx.fillStyle = "#e9c99a"; cx.fillRect(0, 0, W, H);
+  if (ready(bg)){ const bh = H * 1.1, bw = bh * bg.naturalWidth / bg.naturalHeight; let ox = -((s.x * U * .3) % bw); if (ox > 0) ox -= bw; for (let x = ox; x < W; x += bw) cx.drawImage(bg, x, H - bh * .97, bw, bh); }
+  cx.fillStyle = "rgba(40,25,10,.15)"; cx.fillRect(0, 0, W, H);
+  // floor with gaps
+  const fl = P3("w3_plat_long"), tw = U * .5, x0 = Math.floor((s.x - (BX() - A.x0) / U - 1) / .5) * .5;
+  for (let wx = x0; WX(wx) < W + tw; wx += .5){
+   if (!onFloor(wx + .25)) continue;
+   if (ready(fl)){ const th = tw * fl.naturalHeight / fl.naturalWidth; cx.drawImage(fl, WX(wx) - 2, fy - th * .18, tw + 4, th); }
+  }
+  cx.fillStyle = "rgba(90,55,25,.9)"; for (let wx = x0; WX(wx) < W + tw; wx += .5) if (onFloor(wx + .25)) cx.fillRect(WX(wx), fy + U * .12, tw + 1, H);
+  for (const o of s.obs){ const x = WX(o.x);
+   if (o.t === "gap"){ const w = o.w * U, g = cx.createLinearGradient(0, fy, 0, H); g.addColorStop(0, "#a8ec6a"); g.addColorStop(1, "#1f6b3a"); cx.fillStyle = g;
+    cx.beginPath(); cx.moveTo(x, H); for (let k = 0; k <= 12; k++) cx.lineTo(x + w * k / 12, fy + U * .1 + Math.sin(k + s.t * 3) * 4); cx.lineTo(x + w, H); cx.fill();
+    drawImg("st_vent", x - U * .02, fy + U * .03, U * .2, { bottom:1 }); drawImg("st_burner", x + w * .5, H - 4, U * .2, { bottom:1, a:.9 }); }
+  }
+  for (const o of s.obs){ const x = WX(o.x);
+   if (o.t === "wall"){ if (o.broken) drawImg("st_wall", x + U * .1, fy + U * .02, U * .3, { bottom:1, a:Math.max(0, .35), rot:.6, sy:.3 }); else drawImg("st_wall", x + U * .08, fy + U * .03, U * .3, { bottom:1 }); }
+   if (o.t === "pipe") drawImg("st_pipe", x + U * .1, fy + U * .04, U * .34, { bottom:1 });
+  }
+  for (const c of s.coins){ if (c.got) continue; drawImg("w3_coin", WX(c.x), fy - U * (c.y + .1), U * .07, { sx:.35 + .65 * Math.abs(Math.cos(s.t * 4 + c.x * 9)) }); }
+  // blob
+  const nm = s.state === "wrong" || s.dizzy > 0 ? "st_dizzy" : ST[s.st], bw = U * (s.st === 2 ? .23 : .18), bx = BX(), by = fy - s.y * U + U * .02;
+  const im = P3(nm);
+  if (ready(im)){ const h = bw * im.naturalHeight / im.naturalWidth; cx.save(); if (s.inv > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .55;
+   cx.translate(bx, by - (s.cheer > 0 ? Math.abs(Math.sin(s.t * 7)) * U * .1 : s.st === 2 ? Math.sin(s.t * 3) * U * .02 : Math.abs(Math.sin(s.t * 10)) * U * .015));
+   if (s.spin > 0) cx.rotate((1 - s.spin) * Math.PI * 2); if (s.st === 1 && s.state === "run") cx.scale(1 + Math.sin(s.t * 10) * .04, 1 - Math.sin(s.t * 10) * .04);
+   cx.drawImage(im, -bw / 2, -h, bw, h); cx.restore();
+   if (s.dizzy > 0 && nm !== "st_dizzy") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; drawImg("ui_star", bx + Math.cos(a) * bw * .35, by - h, bw * .14); } }
+  // question bubbles in the sky
+  for (const b of s.bub){ const x = A.x0 + A.w * (.38 + b.x * .58), y = FY() - U * .62 + Math.sin(s.t * 2 + b.k) * 6, r = Math.min(U * .075, A.w * .06); b.sx = x; b.sy = y; b.sr = r;
+   if (b.pop){ cx.strokeStyle = "#fff"; cx.lineWidth = 4; cx.beginPath(); cx.arc(x, y, r * (1 + (1 - b.pop) * 2), 0, 7); cx.stroke(); b.pop = Math.max(0, b.pop - .03); continue; }
+   if (s.state === "cheer" && b.dead) continue; letterBadge(x, y, r, b.k, b.dead ? .3 : 1); }
+  // heat / cool buttons
+  const B = BTN(), act = s.state === "run" || s.state === "pre";
+  drawImg("st_cool", B.cool.x, B.cool.y, B.cool.r * 2, { a:act && s.st > 0 ? 1 : .4 }); drawImg("st_heat", B.heat.x, B.heat.y, B.heat.r * 2, { a:act && s.st < 2 ? 1 : .4 });
+  cx.font = `900 ${Math.max(13, B.cool.r * .3)}px 'Baloo 2',sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.lineWidth = 4; cx.strokeStyle = "rgba(31,40,56,.85)";
+  [["COOL", B.cool, "#bfe9ff"], ["HEAT", B.heat, "#ffd2a8"]].forEach(([t, b, c]) => { cx.strokeText(t, b.x, b.y - b.r * 1.05); cx.fillStyle = c; cx.fillText(t, b.x, b.y - b.r * 1.05); });
+  // state label
+  cx.fillStyle = "rgba(31,40,56,.8)"; const lw = 150; rr(bx - lw / 2, by + U * .03, lw, 30, 12); cx.fill(); cx.fillStyle = "#fff"; cx.font = "900 16px 'Baloo 2',sans-serif"; cx.fillText(NAME[s.st], bx, by + U * .03 + 15);
+  if (s.msg){ cx.globalAlpha = Math.min(1, s.msg.life * 2); cx.font = `900 ${Math.max(15, Math.min(22, A.w * .03))}px 'Baloo 2',sans-serif`; const tw2 = cx.measureText(s.msg.t).width + 30, mx = A.x0 + A.w / 2, my = A.y0 + U * .04;
+   cx.fillStyle = "rgba(31,40,56,.9)"; rr(mx - tw2 / 2, my, tw2, 40, 14); cx.fill(); cx.fillStyle = s.msg.c; cx.fillText(s.msg.t, mx, my + 20); cx.globalAlpha = 1; }
+  if (!s.started){ cx.fillStyle = "rgba(31,40,56,.88)"; const tw2 = Math.min(A.w * .9, 520), mx = A.x0 + A.w / 2, my = A.y0 + U * .3; rr(mx - tw2 / 2, my, tw2, 92, 16); cx.fill();
+   cx.fillStyle = "#ffe9b0"; cx.font = "900 18px 'Baloo 2',sans-serif"; cx.fillText("🔥 HEAT = melt / evaporate   ❄️ COOL = condense / freeze", mx, my + 28); cx.fillStyle = "#fff"; cx.fillText("Tap anywhere to start!", mx, my + 64); }
+  s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(WX(p.x), fy + p.y * U, p.r * U, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+ }
+ const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); const p = ptr(e), B = BTN();
+  if (Math.hypot(p.x - B.cool.x, p.y - B.cool.y) < B.cool.r * 1.25){ s.started = true; return cool(); }
+  if (Math.hypot(p.x - B.heat.x, p.y - B.heat.y) < B.heat.r * 1.25){ s.started = true; return heat(); }
+  if (s.state === "q"){ for (const b of s.bub){ if (!b.dead && b.sx != null && Math.hypot(p.x - b.sx, p.y - b.sy) < b.sr * 1.4) return choose(b.k); } return; }
+  s.started = true; };
+ cv.addEventListener("pointerdown", down);
+ const rz = () => later(P.measure, 60); addEventListener("resize", rz);
+ $("#aCtl").classList.add("hide"); window.__st = s;
+ return { update, draw, key(e){ if (e.key === "ArrowUp" || e.key === "ArrowRight") { s.started = true; heat(); } if (e.key === "ArrowDown" || e.key === "ArrowLeft") { s.started = true; cool(); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); removeEventListener("resize", rz); } };
+}
+
 /* ---------------- start / stop ---------------- */
 function stopArc(){
  if (A && A.cleanup) A.cleanup(); A = null;
@@ -3701,7 +3859,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
@@ -3733,6 +3891,7 @@ const _gre = gameResultExtras;
 gameResultExtras = function(a, pct){
  const kind = G && G.kind;
  let html = _gre(a, pct);
+ if (kind === "state") html += `<div><img src="img/p3/st_water.webp" alt=""><br><b>${G.shifts || 0} state changes · ${G.gems}/3 gems</b></div>`;
  if (kind === "density") html += `<div><img src="img/p3/dn_duck.webp" alt=""><br><b>${G.sorted || 0} objects tested · ${G.gems}/3 gems</b></div>`;
  if (kind === "fly") html += `<div><img src="img/p3/an_parrot.webp" alt=""><br><b>${G.bananas} bananas · ${G.coinsRun} coins · ${G.gems}/3 gems</b></div>`;
  if (kind === "frog") html += `<div><img src="img/p3/an_frog.webp" alt=""><br><b>${G.eaten} bugs eaten · ${G.gems}/3 golden bugs</b></div>`;
