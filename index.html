@@ -318,10 +318,15 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .goalchip{position:sticky;top:6px;z-index:3;margin:6px auto 0;width:min(560px,92%);background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;border:2px solid #6e451a;box-shadow:0 0 0 2px #c9a35a,0 4px 10px rgba(0,0,0,.35);border-radius:18px;padding:6px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:700}
 .goalchip b{font-size:15px}.goalchip i{display:block;height:10px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden}.goalchip em{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .badge .mb{font-size:44px;line-height:1.2}
+.mpod{display:flex;justify-content:center;align-items:flex-end;gap:8px}.mp{display:flex;flex-direction:column;align-items:center;width:32%;text-align:center}
+.mp img{height:clamp(80px,16vh,150px)}.mp b{font-size:15px;color:#2a1d5c;line-height:1.1}.mp span{font-size:12px;font-weight:800;color:#6b5fa8}
+.mp .blk{width:100%;margin-top:4px;border-radius:12px 12px 0 0;background:linear-gradient(#ffd23f,#e0a100);font-size:30px;display:grid;place-items:center}
+.mp.p1 .blk{height:70px}.mp.p2 .blk{height:48px;background:linear-gradient(#e8edf5,#aab4c4)}.mp.p3 .blk{height:34px;background:linear-gradient(#f0b27a,#b8692e)}.mp.me b{color:#e2483d}
 .cinfo{display:grid;gap:8px}.cinfo>div{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;background:#faf8ff;border:2px solid #e6defd;border-radius:16px;padding:8px 12px;font-size:14px;color:#4a3f80}
 .cinfo>div span{grid-row:span 2;font-size:30px}.cinfo>div b{color:#2a1d5c;font-size:16px}.cinfo .btn{grid-column:2;justify-self:start;margin-top:6px;padding:6px 14px}
 .lbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.lbtabs button{background:#f1edff;color:#5B3FD9;font-weight:800;border-radius:99px;padding:6px 14px}.lbtabs button.on{background:#5B3FD9;color:#fff}
 .lbtabs.dark{justify-content:center}.lbtabs.dark button{background:rgba(255,255,255,.15);color:#fff;font-size:clamp(14px,2.2vh,20px)}.lbtabs.dark button.on{background:#ffd23f;color:#2a1d5c}
+.pwrow{display:flex;gap:4px}.pwrow .inp{width:130px;padding:6px 10px}.pwrow .btn,[data-del]{padding:6px 12px;font-size:14px}
 .gbar{height:14px;border-radius:99px;background:#eee;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .lbfull{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 30%,#4b2fa8,#1c0f4a);color:#fff;overflow:auto;padding:2vh 3vw;text-align:center;font-family:var(--hf,inherit)}
 .lbfull h1{margin:1vh 0 0;font-size:clamp(30px,6vh,64px);color:#ffd23f}.lbsub{margin:0 0 2vh;opacity:.85;font-weight:700}.lbx{position:absolute;top:2vh;right:2vw}
@@ -534,7 +539,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <button class="round" id="bOut" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button>
  </div>
  <div id="mapScroll"><div class="goalchip hide" id="goalChip"></div><div class="brandchip" id="brandChip"><img src="img/logo.webp" alt="Andalus International Schools logo"><div>Nafes Science Quest<small>Teacher Basma Ahmed</small></div></div><div id="map"></div></div>
- <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
+ <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="round" id="bTop" title="Top scientists" aria-label="Top scientists">🏆</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
 </section>
 
 <!-- QUIZ -->
@@ -691,6 +696,17 @@ function demoApi(action, d){
    db.students[key(n)] = { name:n, pass:d.pass, joined:new Date().toISOString(), last:new Date().toISOString() }; save();
    return { ok:true, name:n, token:"demo", attempts:[] };
   }
+  case "addStudent": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." };
+   const n = String(d.name||"").trim().replace(/\s+/g," "); if (n.length < 2) return { ok:false, error:"Please write the student's name." };
+   if (String(d.pass||"").length < 4) return { ok:false, error:"Password must be at least 4 characters." };
+   if (db.students[key(n)]) return { ok:false, error:"This name is already registered." };
+   db.students[key(n)] = { name:n, pass:d.pass, joined:new Date().toISOString(), last:"" }; save(); return { ok:true, name:n }; }
+  case "deleteStudent": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." };
+   if (!db.students[key(d.name)]) return { ok:false, error:"Student not found." };
+   delete db.students[key(d.name)]; db.attempts = db.attempts.filter(a => key(a.student) !== key(d.name)); save(); return { ok:true }; }
+  case "top": { const since = Date.now() - 7 * 864e5; const S = Object.values(db.students).map(x => ({ name:x.name, avatar:x.avatar || 0, coins:x.coins || 0, stars:x.stars || 0,
+    week: db.attempts.filter(a => key(a.student) === key(x.name) && new Date(a.ts).getTime() >= since).reduce((t, a) => t + (a.score || 0), 0) }));
+   return { ok:true, all: S.slice().sort((a, b) => b.stars - a.stars || b.coins - a.coins).slice(0, 3), week: S.filter(x => x.week > 0).sort((a, b) => b.week - a.week || b.stars - a.stars).slice(0, 3) }; }
   case "login": {
    const s = db.students[key(d.name)];
    if (!s) return { ok:false, error:'Name not found. Are you a new student? Tap "New student".' };
@@ -1208,9 +1224,18 @@ function leaderPanel(){
  const L = leaderRows();
  return `<div class="panel" id="lbPanel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button><button class="btn teal" id="lbCert">🖨️ Certificates</button></div>
   <div class="lbtabs">${Object.entries(LBT).map(([k, t]) => `<button class="${k === LBM ? "on" : ""}" data-lbm="${k}">${t[0]}</button>`).join("")}</div>
+  ${L.length ? `<div class="mpod" style="margin:6px 0 10px">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${lbScore(L[i], LBM)}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>` : ""}
   <p style="margin:4px 0 8px;color:#6b5ca8;font-size:13px">${LBT[LBM][1]}. ❤️ = revives this week (out of hearts — may need extra help).</p>
-  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>${LBM === "week" ? "✅ This week" : LBM === "improved" ? "📈 Change" : "⭐ Stars"}</th><th>🪙 Coins</th><th>❤️</th></tr></thead><tbody>
+  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>${LBM === "week" ? "✅ This week" : LBM === "improved" ? "📈 Change" : "⭐ Stars"}</th><th>🪙 Earned</th><th>❤️</th></tr></thead><tbody>
   ${L.map((x, i) => `<tr><td>${i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</td><td>${LBM === "week" ? x.week : LBM === "improved" ? "+" + x.imp + "%" : x.stars}</td><td>${x.coins}</td><td>${x.rev ? `<b style="color:#e2483d">${x.rev}</b>` : "–"}</td></tr>`).join("") || `<tr><td colspan="5">No data yet</td></tr>`}</tbody></table></div></div>`;
+}
+function studentsPanel(){
+ const S = (TD.students || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+ return `<div class="panel" id="stuPanel"><h3 style="margin:0 0 6px">👩‍🎓 Manage students</h3>
+  <form class="tform" id="addStu" style="flex-wrap:wrap"><input class="inp" id="asName" placeholder="Student's full name" style="flex:2;min-width:180px"><input class="inp" id="asPass" placeholder="Password (4+ letters)" style="flex:1;min-width:140px"><button class="btn" type="submit">➕ Add student</button></form><div id="asMsg" style="margin:4px 0 8px"></div>
+  <div class="scroll"><table class="grid"><thead><tr><th>Student</th><th>Joined</th><th>Last active</th><th>New password</th><th></th></tr></thead><tbody>
+  ${S.map(x => `<tr><td class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</td><td>${x.joined ? new Date(x.joined).toLocaleDateString("en-GB") : "–"}</td><td>${x.last ? new Date(x.last).toLocaleDateString("en-GB") : "–"}</td>
+   <td><span class="pwrow"><input class="inp" data-pw="${esc(x.name)}" placeholder="new password"><button class="btn teal" data-setpw="${esc(x.name)}">🔑 Change</button></span></td><td><button class="btn cor" data-del="${esc(x.name)}">🗑️ Delete</button></td></tr>`).join("") || `<tr><td colspan="5">No students yet.</td></tr>`}</tbody></table></div></div>`;
 }
 function goalPanel(){
  const g = TD.goal, pc = g && g.target ? Math.min(100, Math.round((g.progress || 0) / g.target * 100)) : 0;
@@ -1282,6 +1307,7 @@ function renderTeacher(){
   </div>
   ${goalPanel()}
   ${leaderPanel()}
+  ${studentsPanel()}
   <div class="row2">
    <div class="panel"><h3>Most-missed questions</h3><div class="miss">${top.map(([id, c]) => { const q = qById(id); return `<div><b class="c">${c}×</b><span>${esc(q.q)}<small>✔ ${esc(q.o[q.a])} · W${q.w} · ${esc(q.l)} · ${id}</small></span></div>`; }).join("") || "<p>No mistakes recorded yet.</p>"}</div></div>
    <div class="panel"><h3>Lessons that need re-teaching</h3>${lt.map(([l, c]) => `<div class="lessonbar"><div><div style="font-size:14px">${esc(l)}</div><div class="bar"><i style="width:${c/lmax*100}%;background:linear-gradient(90deg,#FF6B8B,#FFC93C)"></i></div></div><b style="text-align:right">${c}</b></div>`).join("") || "<p>No data yet.</p>"}
@@ -1293,7 +1319,21 @@ function renderTeacher(){
    </div>
   </div>`;
 }
+$("#tBody").addEventListener("submit", async e => {
+ if (e.target.id !== "addStu") return; e.preventDefault();
+ const name = $("#asName").value.trim(), pass = $("#asPass").value.trim();
+ try { const r = await api("addStudent", { teacherPass: TP, name, pass }); if (!r.ok) throw new Error(r.error);
+  toast(`✔ ${r.name} added`); await reloadTeacher(); const m = $("#asMsg"); if (m) m.innerHTML = `<span class="ok-msg">✔ ${esc(r.name)} can now log in with the password you set.</span>`; }
+ catch(err){ $("#asMsg").innerHTML = `<span class="err">${esc(err.message)}</span>`; }
+});
+async function reloadTeacher(){ const r = await api("teacherData", { teacherPass: TP }); if (r.ok){ TD = r; renderTeacher(); } }
 $("#tBody").addEventListener("click", async e => {
+ const sp = e.target.closest("[data-setpw]"); if (sp){ const nm = sp.dataset.setpw, inp = [...document.querySelectorAll("[data-pw]")].find(x => x.dataset.pw === nm), np = inp ? inp.value.trim() : "";
+  if (np.length < 4) return toast("Password must be at least 4 characters");
+  try { const r = await api("resetPassword", { teacherPass: TP, name: nm, newPass: np }); if (!r.ok) throw new Error(r.error); inp.value = ""; toast(`🔑 Password changed for ${nm}`); } catch(err){ toast(err.message); } return; }
+ const dl = e.target.closest("[data-del]"); if (dl){ const nm = dl.dataset.del;
+  if (!confirm(`Delete ${nm}?\n\nHer account, scores, coins and stars will be removed. She will need to register again.`)) return;
+  try { const r = await api("deleteStudent", { teacherPass: TP, name: nm }); if (!r.ok) throw new Error(r.error); toast(`🗑️ ${nm} deleted`); await reloadTeacher(); } catch(err){ toast(err.message); } return; }
  if (e.target.id === "lbShow") return showLeaderboard();
  if (e.target.id === "lbCert") return printCerts();
  const m = e.target.closest("[data-lbm]"); if (m){ LBM = m.dataset.lbm; $("#lbPanel").outerHTML = leaderPanel(); return; }
@@ -1357,6 +1397,21 @@ let MODE = store.get("mode", "");
 const isGame = () => MODE === "game";
 function profKey(){ return "prof_" + (USER ? USER.name.toLowerCase() : "x"); }
 function prof(){ return Object.assign({ avatar:0, bonus:0, spent:0, owned:[], equip:{}, stickers:[], hints:0, lastSpin:"" }, store.get(profKey(), {})); }
+let TOPM = "week";
+async function openTop(){
+ modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Top Scientists 🏆</h2><p>Updated every time someone finishes a mission</p></div></div><div id="topBody"><p style="text-align:center">Loading… ⏳</p></div>`);
+ let r; try { r = await api("top", {}); } catch(e){ r = null; }
+ const body = $("#topBody"); if (!body) return;
+ if (!r || !r.ok){ body.innerHTML = `<p style="text-align:center">Couldn't load the board right now. Try again later 🙏</p>`; return; }
+ const draw = () => { const L = TOPM === "week" ? r.week : r.all, me = USER ? USER.name.toLowerCase() : "";
+  body.innerHTML = `<div class="lbtabs" style="justify-content:center"><button data-topm="week" class="${TOPM === "week" ? "on" : ""}">⚡ This week</button><button data-topm="all" class="${TOPM === "all" ? "on" : ""}">🏆 All time</button></div>
+   <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
+   ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${TOPM === "week" ? "✅ " + L[i].week : "⭐ " + L[i].stars + " · 🪙 " + L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>`
+    : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}
+   <p style="text-align:center;margin:10px 0 0;font-weight:700">Play missions, earn ⭐ stars and answer correctly to climb the board! 💪</p>`; };
+ body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw(); } });
+ draw();
+}
 function coinsInfo(){
  modal(`<div class="whead"><img src="img/w_coins.webp" alt=""><div><h2 class="h">Your coins: ${wallet()} 🪙</h2><p>What can I do with my coins?</p></div></div>
   <div class="cinfo"><div><span>⚡</span><b>Power-ups</b>Before a mission, buy an extra heart, an extra hint or a coin doubler.</div>
@@ -1380,9 +1435,9 @@ function renderGoal(){ const el = $("#goalChip"); if (!el) return; if (!GOAL || 
  el.innerHTML = `<b>🎯 Class goal</b><span>${GOAL.progress || 0} / ${GOAL.target} correct answers${GOAL.reward ? ` → ${esc(GOAL.reward)}` : ""}</span><i><em style="width:${pc}%"></em></i>${pc >= 100 ? "<span>🎉 Goal reached! Ask Miss Basma for your reward!</span>" : ""}`; }
 let PSYNC = 0;
 function saveProf(p){ p.ts = Date.now(); store.set(profKey(), p); pushProf(); }
-function pushProf(){ if (!USER) return; clearTimeout(PSYNC); PSYNC = setTimeout(() => { if (!USER) return; let coins = 0, stars = 0; try { coins = wallet(); stars = totals().stars; } catch(e){}
+function pushProf(){ if (!USER) return; clearTimeout(PSYNC); PSYNC = setTimeout(() => { if (!USER) return; let coins = 0, stars = 0; try { const t = totals(); coins = t.xp + (prof().bonus || 0); stars = t.stars; } catch(e){}
  api("saveProfile", { name:USER.name, token:USER.token, profile:store.get(profKey(), {}), coins, stars }).catch(() => {}); }, 2500); }
-document.addEventListener("click", e => { if (e.target.closest("#coinChip")) coinsInfo(); else if (e.target.closest("#starChip")) starsInfo(); else if (e.target.id === "ciIsl"){ closeModal(); try { openIsland(); } catch(err){} } });
+document.addEventListener("click", e => { if (e.target.closest("#bTop")) openTop(); else if (e.target.closest("#coinChip")) coinsInfo(); else if (e.target.closest("#starChip")) starsInfo(); else if (e.target.id === "ciIsl"){ closeModal(); try { openIsland(); } catch(err){} } });
 function adoptProf(sp){ if (!sp || !USER) return; const lp = store.get(profKey(), null); if (!lp || (sp.ts || 0) > (lp.ts || 0)) store.set(profKey(), sp); else if ((lp.ts || 0) > (sp.ts || 0)) pushProf(); }
 function wallet(){ const p = prof(); return totals().xp + p.bonus - p.spent; }
 function weeksPassed(){ return weekState(progress()).filter(s => s.passed && s.w.type === "study").length; }
@@ -4228,17 +4283,17 @@ function openCrystals(){
    SCIENCE ISLAND (build with coins, daily income)
    ===================================================================== */
 const ISL = [
- { id:"is_lab", n:"Science Lab", c:0, inc:5 }, { id:"is_green", n:"Greenhouse", c:60, inc:6 }, { id:"is_garden", n:"Garden", c:90, inc:8 },
- { id:"is_fount", n:"Fountain", c:120, inc:10 }, { id:"is_wind", n:"Wind Turbine", c:160, inc:12 }, { id:"is_aqua", n:"Aquarium", c:220, inc:15 },
- { id:"is_weather", n:"Weather Station", c:280, inc:18 }, { id:"is_obs", n:"Observatory", c:350, inc:22, cr:3 }, { id:"is_mine", n:"Crystal Mine", c:430, inc:26, cr:5 },
- { id:"is_volc", n:"Volcano Lab", c:520, inc:30, cr:7 }, { id:"is_rocket", n:"Rocket Pad", c:650, inc:40, cr:9 } ];
+ { id:"is_lab", n:"Science Lab", c:0, inc:5, wk:0 }, { id:"is_green", n:"Greenhouse", c:120, inc:6, wk:1 }, { id:"is_garden", n:"Garden", c:180, inc:8, wk:2 },
+ { id:"is_fount", n:"Fountain", c:250, inc:10, wk:3 }, { id:"is_wind", n:"Wind Turbine", c:330, inc:12, wk:4 }, { id:"is_aqua", n:"Aquarium", c:420, inc:15, wk:5 },
+ { id:"is_weather", n:"Weather Station", c:520, inc:18, wk:6 }, { id:"is_obs", n:"Observatory", c:640, inc:22, cr:3, wk:7 }, { id:"is_mine", n:"Crystal Mine", c:780, inc:26, cr:5, wk:8 },
+ { id:"is_volc", n:"Volcano Lab", c:940, inc:30, cr:7, wk:9 }, { id:"is_rocket", n:"Rocket Pad", c:1150, inc:40, cr:9, wk:10 } ];
 function openIsland(){
- const p = prof(), built = p.isl || ["is_lab"], w = wallet(), cr = p.gems || 0;
+ const p = prof(), built = p.isl || ["is_lab"], w = wallet(), cr = p.gems || 0, wp = crystalCount();
  const inc = ISL.filter(b => built.includes(b.id)).reduce((a, b) => a + b.inc, 0), canCollect = p.islDay !== today();
- modal(`<div class="whead"><img src="img/g2/is_lab.webp" alt=""><div><h2 class="h">My Science Island</h2><p><span class="wallet"><img src="img/o_coin.webp" alt="">${w}</span> coins · <b>💎 ${cr}</b> gems · island makes <b>${inc}</b> coins a day</p><p style="font-size:13px;margin:0">💎 Collect gems inside the games to build the special buildings!</p></div></div>
+ modal(`<div class="whead"><img src="img/g2/is_lab.webp" alt=""><div><h2 class="h">My Science Island</h2><p><span class="wallet"><img src="img/o_coin.webp" alt="">${w}</span> coins · <b>💎 ${cr}</b> gems · island makes <b>${inc}</b> coins a day</p><p style="font-size:13px;margin:0">🔓 A new building opens each time you <b>pass a week</b> · 💎 special buildings also need gems from the games.</p></div></div>
   <button class="btn ${canCollect ? "yel" : "ghost"} full" id="islCol" ${canCollect ? "" : "disabled"} style="${canCollect ? "" : "color:#7a6bb3"}">${canCollect ? `🪙 Collect today's ${inc} coins` : "✅ Collected today — come back tomorrow"}</button>
-  <div class="isl" style="margin-top:10px">${ISL.map(b => { const has = built.includes(b.id), lock = b.cr && cr < b.cr;
-   return `<div class="${has ? "" : "no"}"><img src="img/g2/${has ? b.id : b.id}.webp" alt=""><div>${b.n}</div>${has ? `<div class="lk">+${b.inc}/day</div>` : lock ? `<div class="lk">🔒 needs ${b.cr} 💎 gems</div>` : `<button class="btn yel" data-isl="${b.id}" ${w < b.c ? "disabled" : ""}><img class="coinic" src="img/o_coin.webp" alt="">${b.c}${b.cr ? ` + ${b.cr}💎` : ""}</button>`}</div>`; }).join("")}
+  <div class="isl" style="margin-top:10px">${ISL.map(b => { const has = built.includes(b.id), wlock = (b.wk || 0) > wp, lock = !wlock && b.cr && cr < b.cr;
+   return `<div class="${has ? "" : "no"}"><img src="img/g2/${has ? b.id : b.id}.webp" alt=""><div>${b.n}</div>${has ? `<div class="lk">+${b.inc}/day</div>` : wlock ? `<div class="lk">🔒 pass ${b.wk} week${b.wk > 1 ? "s" : ""}</div>` : lock ? `<div class="lk">🔒 needs ${b.cr} 💎 gems</div>` : `<button class="btn yel" data-isl="${b.id}" ${w < b.c ? "disabled" : ""}><img class="coinic" src="img/o_coin.webp" alt="">${b.c}${b.cr ? ` + ${b.cr}💎` : ""}</button>`}</div>`; }).join("")}
    <div><img src="img/g2/is_base.webp" alt=""><div class="lk">More land soon…</div></div></div>`);
 }
 $("#modal").addEventListener("click", e => {
@@ -4246,7 +4301,7 @@ $("#modal").addEventListener("click", e => {
  if (e.target.id === "islCol"){ const p = prof(); if (p.islDay === today()) return; const built = p.isl || ["is_lab"];
   const inc = ISL.filter(b => built.includes(b.id)).reduce((a, b) => a + b.inc, 0); p.bonus += inc; p.islDay = today(); saveProf(p); sfx.win(); confetti(40); updateChips(); applyMode(); openIsland(); return; }
  const b = e.target.closest("[data-isl]"); if (!b) return;
- const it = ISL.find(x => x.id === b.dataset.isl), p = prof(); if (wallet() < it.c || (it.cr && (p.gems || 0) < it.cr)) return;
+ const it = ISL.find(x => x.id === b.dataset.isl), p = prof(); if (wallet() < it.c || (it.cr && (p.gems || 0) < it.cr) || (it.wk || 0) > crystalCount()) return;
  p.isl = (p.isl || ["is_lab"]).concat(it.id); p.spent += it.c; if (it.cr) p.gems -= it.cr; saveProf(p); sfx.win(); confetti(60); updateChips(); openIsland(); toast(`${it.n} built! 🏗️`);
 });
 
