@@ -318,6 +318,8 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .goalchip{position:sticky;top:6px;z-index:3;margin:6px auto 0;width:min(560px,92%);background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;border:2px solid #6e451a;box-shadow:0 0 0 2px #c9a35a,0 4px 10px rgba(0,0,0,.35);border-radius:18px;padding:6px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:700}
 .goalchip b{font-size:15px}.goalchip i{display:block;height:10px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden}.goalchip em{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .badge .mb{font-size:44px;line-height:1.2}
+.myaw{margin-top:10px}.myaw h3{margin:0 0 6px;text-align:center}.myaw>div{display:flex;align-items:center;gap:8px;background:#fff7dd;border:2px solid #f1d27a;border-radius:14px;padding:6px 10px;margin-top:6px}
+.myaw span{flex:1;display:flex;flex-direction:column;font-size:14px}.myaw small{color:#7a6bb3}.myaw .btn{padding:6px 14px}
 .mpod{display:flex;justify-content:center;align-items:flex-end;gap:8px}.mp{display:flex;flex-direction:column;align-items:center;width:32%;text-align:center}
 .mp img{height:clamp(80px,16vh,150px)}.mp b{font-size:15px;color:#2a1d5c;line-height:1.1}.mp span{font-size:12px;font-weight:800;color:#6b5fa8}
 .mp .blk{width:100%;margin-top:4px;border-radius:12px 12px 0 0;background:linear-gradient(#ffd23f,#e0a100);font-size:30px;display:grid;place-items:center}
@@ -327,6 +329,8 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .lbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.lbtabs button{background:#f1edff;color:#5B3FD9;font-weight:800;border-radius:99px;padding:6px 14px}.lbtabs button.on{background:#5B3FD9;color:#fff}
 .lbtabs.dark{justify-content:center}.lbtabs.dark button{background:rgba(255,255,255,.15);color:#fff;font-size:clamp(14px,2.2vh,20px)}.lbtabs.dark button.on{background:#ffd23f;color:#2a1d5c}
 .pwrow{display:flex;gap:4px}.pwrow .inp{width:130px;padding:6px 10px}.pwrow .btn,[data-del]{padding:6px 12px;font-size:14px}
+.awf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.awf label{display:flex;flex-direction:column;font-size:12px;font-weight:800;color:#6b5ca8;flex:1;min-width:120px}.awf .inp{padding:6px 10px}
+.awl{display:flex;align-items:center;gap:8px;border-top:1px solid #eee;padding:6px 0}.awl span{flex:1}.awl .btn{padding:6px 12px;font-size:14px}
 .gbar{height:14px;border-radius:99px;background:#eee;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .lbfull{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 30%,#4b2fa8,#1c0f4a);color:#fff;overflow:auto;padding:2vh 3vw;text-align:center;font-family:var(--hf,inherit)}
 .lbfull h1{margin:1vh 0 0;font-size:clamp(30px,6vh,64px);color:#ffd23f}.lbsub{margin:0 0 2vh;opacity:.85;font-weight:700}.lbx{position:absolute;top:2vh;right:2vw}
@@ -722,6 +726,10 @@ function demoApi(action, d){
    return { ok:true, attemptNo:a.attemptNo };
   }
   case "sync": return { ok:true, attempts: mine(d.name), goal: db.goal ? demoGoal(db) : null };
+  case "awards": return { ok:true, awards: db.awards || [] };
+  case "publishAward": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.awards = db.awards || [];
+   db.awards.unshift({ id: Math.random().toString(36).slice(2, 10), date: new Date().toISOString(), title: d.award.title, from: d.award.from, to: d.award.to, winners: d.award.winners }); save(); return { ok:true, awards: db.awards }; }
+  case "deleteAward": { if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.awards = (db.awards || []).filter(a => a.id !== d.id); save(); return { ok:true, awards: db.awards }; }
   case "classGoal": return { ok:true, goal: db.goal ? demoGoal(db) : null };
   case "setGoal": if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.goal = d.target ? { target:+d.target, reward:d.reward || "", start:new Date().toISOString() } : null; save(); return { ok:true, goal: db.goal ? demoGoal(db) : null };
   case "saveProfile": { const st = db.students[key(d.name)]; if (st){ st.coins = d.coins; st.stars = d.stars; st.avatar = (d.profile || {}).avatar || 0; save(); } return { ok:true }; }
@@ -876,7 +884,7 @@ $("#fLogin").addEventListener("submit", async e => {
   const r = await api(mode === "new" ? "register" : "login", { name, pass });
   if (!r.ok) throw new Error(r.error);
   USER = { name:r.name, token:r.token }; ATT = r.attempts || [];
-  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile); api("classGoal", {}).then(g => { if (g && g.ok) setGoalLocal(g.goal); }).catch(() => {});
+  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile); setTimeout(checkNewAwards, 2500); api("classGoal", {}).then(g => { if (g && g.ok) setGoalLocal(g.goal); }).catch(() => {});
   $("#lPass").value = $("#lPass2").value = "";
   flushQueue(); enterHome(mode === "new");
  }catch(err){ $("#lErr").textContent = err.message || "Something went wrong. Check the internet and try again."; }
@@ -1195,7 +1203,7 @@ $("#modal").addEventListener("submit", async e => {
 async function loadTeacher(){
  const r = await api("teacherData", { teacherPass: TP });
  if (!r.ok) throw new Error(r.error);
- TD = r; renderTeacher();
+ TD = r; try { const aw = await api("awards", {}); TD.awards = aw.awards || []; } catch(e){ TD.awards = []; } renderTeacher();
 }
 $("#tRefresh").onclick = async () => { try{ await loadTeacher(); toast("Updated ✔"); }catch(e){ toast(e.message); } };
 $("#tExit").onclick = () => { TP = null; show(USER ? "home" : "login"); if (USER) renderMap(); };
@@ -1223,7 +1231,7 @@ const lbScore = (x, mode) => mode === "week" ? `✅ ${x.week} correct` : mode ==
 const heroImg = av => av ? `img/p3/h${av}_stand.webp` : "img/m_point2.webp";
 function leaderPanel(){
  const L = leaderRows();
- return `<div class="panel" id="lbPanel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button><button class="btn teal" id="lbCert">🖨️ Certificates</button></div>
+ return `<div class="panel" id="lbPanel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button></div>
   <div class="lbtabs">${Object.entries(LBT).map(([k, t]) => `<button class="${k === LBM ? "on" : ""}" data-lbm="${k}">${t[0]}</button>`).join("")}</div>
   ${L.length ? `<div class="mpod" style="margin:6px 0 10px">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${lbScore(L[i], LBM)}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>` : ""}
   <p style="margin:4px 0 8px;color:#6b5ca8;font-size:13px">${LBT[LBM][1]}. ❤️ = revives this week (out of hearts — may need extra help).</p>
@@ -1238,6 +1246,28 @@ function studentsPanel(){
   ${S.map(x => `<tr><td class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</td><td>${x.joined ? new Date(x.joined).toLocaleDateString("en-GB") : "–"}</td><td>${x.last ? new Date(x.last).toLocaleDateString("en-GB") : "–"}</td>
    <td><span class="pwrow"><input class="inp" data-pw="${esc(x.name)}" placeholder="new password"><button class="btn teal" data-setpw="${esc(x.name)}">🔑 Change</button></span></td><td><button class="btn cor" data-del="${esc(x.name)}">🗑️ Delete</button></td></tr>`).join("") || `<tr><td colspan="5">No students yet.</td></tr>`}</tbody></table></div></div>`;
 }
+let AWF = { from: "", minQ: 20, minP: 70, title: "Top Scientist" };
+function awardRows(){
+ const from = AWF.from ? new Date(AWF.from + "T00:00:00").getTime() : 0, A = TD.attempts || [];
+ return (TD.students || []).map(st => { const k = st.name.trim().toLowerCase(), mine = A.filter(a => String(a.student).trim().toLowerCase() === k && new Date(a.ts).getTime() >= from);
+  const q = mine.reduce((t, a) => t + (a.total || 0), 0), c = mine.reduce((t, a) => t + (a.score || 0), 0), acc = q ? Math.round(c / q * 100) : 0;
+  return { name:st.name, q, c, acc, ok: q >= AWF.minQ && acc >= AWF.minP }; }).filter(x => x.q > 0).sort((a, b) => b.ok - a.ok || b.c - a.c || b.acc - a.acc);
+}
+function awardPanel(){
+ if (!AWF.from){ const last = (TD.awards || [])[0]; AWF.from = (last ? new Date(last.date) : new Date(Date.now() - 6 * 864e5)).toISOString().slice(0, 10); }
+ const R = awardRows(), W = R.filter(x => x.ok).slice(0, 3), list = TD.awards || [];
+ return `<div class="panel" id="awPanel"><h3 style="margin:0 0 4px">🏅 Issue certificates</h3>
+  <p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">Choose the period and the conditions. Check the top 3, then approve — the winners will see a <b>Print</b> button on their account.</p>
+  <div class="awf"><label>From<input class="inp" type="date" id="awFrom" value="${AWF.from}"></label><label>To<input class="inp" value="Today" disabled></label>
+   <label>Min. questions<input class="inp" type="number" id="awQ" value="${AWF.minQ}" min="0"></label><label>Min. correct %<input class="inp" type="number" id="awP" value="${AWF.minP}" min="0" max="100"></label>
+   <label style="flex:2">Certificate title<input class="inp" id="awT" value="${esc(AWF.title)}" list="awTl"><datalist id="awTl"><option>Top Scientist</option><option>Scientist of the Week</option><option>Scientist of the Month</option><option>Top Scientist of the Term</option></datalist></label></div>
+  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>✅ Correct</th><th>Questions</th><th>%</th><th>Qualifies?</th></tr></thead><tbody>
+  ${R.map((x, i) => `<tr style="${x.ok && i < 3 ? "background:#fff7dd" : ""}"><td>${x.ok && i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td>${esc(x.name)}</td><td>${x.c}</td><td>${x.q}</td><td>${x.acc}%</td><td>${x.ok ? "✅" : `<span style="color:#b4002c">${x.q < AWF.minQ ? "few questions" : "low %"}</span>`}</td></tr>`).join("") || `<tr><td colspan="6">Nobody played in this period.</td></tr>`}</tbody></table></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn" id="awPub" ${W.length ? "" : "disabled"}>✅ Approve & publish ${W.length} certificate${W.length === 1 ? "" : "s"}</button>${W.length ? `<button class="btn ghost" id="awPrev">👁️ Preview</button>` : ""}</div>
+  ${list.length ? `<h3 style="margin:14px 0 6px">Published certificates</h3>${list.map(a => `<div class="awl"><span><b>${esc(a.title)}</b> · ${fmtD(a.date)}<br><small>${a.winners.map(w => ["🥇","🥈","🥉"][w.rank] + " " + esc(w.name)).join(" · ")}</small></span><button class="btn yel" data-awp="${a.id}">🖨️ Print</button><button class="btn cor" data-awd="${a.id}">Remove</button></div>`).join("")}` : ""}</div>`;
+}
+function awardWinners(){ const W = awardRows().filter(x => x.ok).slice(0, 3), f = fmtD(AWF.from + "T00:00:00");
+ return W.map((x, i) => ({ name:x.name, rank:i, why:`${x.c} correct answers (${x.acc}%) since ${f}` })); }
 function goalPanel(){
  const g = TD.goal, pc = g && g.target ? Math.min(100, Math.round((g.progress || 0) / g.target * 100)) : 0;
  return `<div class="panel" id="goalPanel"><h3 style="margin:0 0 6px">🎯 Class goal</h3>
@@ -1257,31 +1287,31 @@ function showLeaderboard(){
 }
 function certWin(list, title){
  const w = window.open("", "_blank"); if (!w) return toast("Please allow pop-ups to print.");
- const U = f => new URL(f, location.href).href, logo = U("img/logo.webp"), bg = U("img/cert_bg.webp"), dt = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
- const place = ["First", "Second", "Third"], medal = ["#f2c14e", "#c9d1dc", "#d99559"];
+ const bg = new URL("img/cert_bg.webp", location.href).href;
+ const word = ["First", "Second", "Third"], col = ["#c8961e", "#7d8794", "#b0693a"];
  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Certificate</title>
- <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
- <style>@page{size:A4 landscape;margin:0}html,body{margin:0}body{font-family:Poppins,Arial,sans-serif;color:#2a1d5c;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .c{width:297mm;height:210mm;position:relative;page-break-after:always;overflow:hidden;background:#fffaf0 url('${bg}') center/100% 100% no-repeat}
- .fb{position:absolute;inset:8mm;border:3mm solid #5B3FD9;border-radius:6mm;box-shadow:inset 0 0 0 1.2mm #fffaf0,inset 0 0 0 2mm #d4a537}
- .has-bg .fb{display:none}
- .in{position:absolute;inset:22mm 28mm;display:flex;flex-direction:column;align-items:center;text-align:center}
- .lg{height:26mm}.sch{font-weight:700;letter-spacing:.18em;font-size:3.4mm;color:#7a6bb3;margin:2mm 0 4mm}
- .t1{font-family:Cinzel,serif;font-size:13mm;color:#5B3FD9;margin:0;letter-spacing:.04em}.t2{font-size:4.6mm;letter-spacing:.3em;color:#b8860b;margin:1mm 0 5mm;font-weight:700}
- .pr{font-size:4.2mm;margin:0}.nm{font-family:'Great Vibes',cursive;font-size:22mm;line-height:1.1;color:#2a1d5c;margin:2mm 0 1mm;padding:0 12mm;border-bottom:.6mm solid #d4a537}
- .why{font-size:4.4mm;max-width:190mm;margin:4mm 0 0;line-height:1.5}
- .medal{position:absolute;top:18mm;right:24mm;width:28mm;height:28mm;border-radius:50%;display:grid;place-items:center;font-family:Cinzel,serif;font-weight:700;font-size:9mm;color:#fff;box-shadow:0 1mm 0 rgba(0,0,0,.2),inset 0 -1.5mm 0 rgba(0,0,0,.15)}
- .medal small{display:block;font-size:2.6mm;letter-spacing:.1em;margin-top:-2mm}
- .ft{position:absolute;left:30mm;right:30mm;bottom:22mm;display:flex;justify-content:space-between;align-items:flex-end;font-size:3.6mm}
- .ft div{text-align:center;min-width:60mm}.ft .dtc{min-width:40mm;font-weight:700;color:#5B3FD9}.ft .dtc span{font-weight:500;color:#2a1d5c;font-size:3.4mm}.ft b{display:block;border-top:.4mm solid #2a1d5c;padding-top:1.5mm;margin-top:10mm;font-size:4mm}</style></head><body>
- ${list.map(x => `<div class="c"><div class="fb"></div><div class="medal" style="background:${medal[x.rank]}">${x.rank + 1}<small>PLACE</small></div><div class="in">
-  <img class="lg" src="${logo}" alt=""><div class="sch">ANDALUS INTERNATIONAL SCHOOLS · GRADE 6 SCIENCE</div>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+ <style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{font-family:Poppins,Arial,sans-serif;color:#26235e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .c{width:297mm;height:210mm;position:relative;page-break-after:always;overflow:hidden;background:url('${bg}') center/100% 100% no-repeat}
+ .md{position:absolute;left:87.3%;top:19%;transform:translate(-50%,-50%);text-align:center;font-family:Cinzel,serif;line-height:1}
+ .md b{display:block;font-size:15mm}.md span{font-size:3.3mm;letter-spacing:.12em;font-family:Poppins,sans-serif;font-weight:700}
+ .in{position:absolute;left:19%;right:19%;top:30%;text-align:center}
+ .t1{font-family:Cinzel,serif;font-size:12mm;color:#26235e;margin:0;letter-spacing:.03em}
+ .t2{font-size:4.4mm;letter-spacing:.32em;color:#c8961e;margin:1.5mm 0 4mm;font-weight:700}
+ .pr{font-size:4.2mm;margin:0;color:#4a4785}
+ .nm{font-family:'Great Vibes',cursive;font-size:21mm;line-height:1.15;color:#2c2a7a;margin:1mm auto 0;padding:0 10mm;display:inline-block;border-bottom:.6mm solid #e0b341}
+ .why{font-size:4.2mm;margin:4mm auto 0;line-height:1.55;max-width:170mm}
+ .ft{position:absolute;left:24%;right:24%;top:83%;display:flex;justify-content:space-between;align-items:flex-end;font-size:3.5mm;text-align:center}
+ .ft div{min-width:52mm}.ft b{display:block;border-top:.4mm solid #26235e;padding-top:1.5mm;font-size:4mm}
+ .ft .dt{min-width:34mm;color:#2a86b8;font-weight:700}.ft .dt span{display:block;color:#26235e;font-weight:400;font-size:3.3mm}</style></head><body>
+ ${list.map(x => `<div class="c"><div class="md" style="color:${col[x.rank]}"><b>${x.rank + 1}</b><span>PLACE</span></div><div class="in">
   <p class="t1">Certificate of Achievement</p><p class="t2">${esc(title).toUpperCase()}</p><p class="pr">This certificate is proudly presented to</p>
-  <div class="nm">${esc(x.name)}</div><p class="why">for earning <b>${place[x.rank]} Place</b> in <b>Nafes Science Quest</b> with ${esc(x.why)}. Keep shining, young scientist!</p></div>
-  <div class="ft"><div><b>Miss Basma Ahmed</b>Science Teacher</div><div class="dtc">${dt}<br><span>Date</span></div><div><b>Miss Shatha Alorabi</b>School Principal</div></div></div>`).join("")}
- <script>const i=new Image();i.onload=()=>document.body.classList.add("has-bg");i.src="${bg}";setTimeout(()=>print(),1500)<\/script></body></html>`);
+  <div class="nm">${esc(x.name)}</div><p class="why">for earning <b>${word[x.rank]} Place</b> in <b>Nafes Science Quest</b>${x.why ? " — " + esc(x.why) : ""}.<br>Keep shining, young scientist!</p></div>
+  <div class="ft"><div><b>Miss Basma Ahmed</b>Science Teacher</div><div class="dt">${esc(x.date || fmtD(new Date()))}<span>Date</span></div><div><b>Miss Shatha Alorabi</b>School Principal</div></div></div>`).join("")}
+ <script>const i=new Image();i.onload=i.onerror=()=>setTimeout(()=>print(),900);i.src="${bg}"<\/script></body></html>`);
  w.document.close();
 }
+const fmtD = d => new Date(d).toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
 const whyTxt = (x, mode) => mode === "week" ? `${x.week} correct answers this week` : mode === "improved" ? `an improvement of ${x.imp}%` : `${x.stars} stars and ${x.coins} coins earned`;
 const certTitle = mode => mode === "improved" ? "Most Improved Scientist" : mode === "week" ? "Top Scientist of the Week" : "Top Scientist";
 function printCerts(){
@@ -1324,6 +1354,7 @@ function renderTeacher(){
    <div class="scroll"><table class="grid"><thead><tr><th>Student</th>${WEEKS.map(w => `<th>${esc(w.type === "study" ? "W" + w.n : w.title.replace("Grand ","").replace("Mock Exam ","Mock "))}</th>`).join("")}<th>Last active</th></tr></thead>
    <tbody>${rows.map(r => `<tr><td class="nm" data-stu="${esc(r.s.name)}">${esc(r.s.name)}</td>${WEEKS.map(w => weekCell(r.atts, w)).join("")}<td>${r.atts.length ? new Date(r.atts[r.atts.length-1].ts).toLocaleDateString("en-GB") : "–"}</td></tr>`).join("") || `<tr><td colspan="16">No students yet.</td></tr>`}</tbody></table></div>
   </div>
+  ${awardPanel()}
   ${goalPanel()}
   ${leaderPanel()}
   <div class="row2">
@@ -1337,6 +1368,8 @@ function renderTeacher(){
    </div>
   </div>`;
 }
+$("#tBody").addEventListener("change", e => { const id = e.target.id; if (!["awFrom","awQ","awP","awT"].includes(id)) return;
+ AWF.from = $("#awFrom").value; AWF.minQ = +$("#awQ").value || 0; AWF.minP = +$("#awP").value || 0; AWF.title = $("#awT").value.trim() || "Top Scientist"; $("#awPanel").outerHTML = awardPanel(); });
 $("#tBody").addEventListener("submit", async e => {
  if (e.target.id !== "addStu") return; e.preventDefault();
  const name = $("#asName").value.trim(), pass = $("#asPass").value.trim();
@@ -1344,7 +1377,7 @@ $("#tBody").addEventListener("submit", async e => {
   toast(`✔ ${r.name} added`); await reloadTeacher(); const m = $("#asMsg"); if (m) m.innerHTML = `<span class="ok-msg">✔ ${esc(r.name)} can now log in with the password you set.</span>`; }
  catch(err){ $("#asMsg").innerHTML = `<span class="err">${esc(err.message)}</span>`; }
 });
-async function reloadTeacher(){ const r = await api("teacherData", { teacherPass: TP }); if (r.ok){ TD = r; renderTeacher(); } }
+async function reloadTeacher(){ const r = await api("teacherData", { teacherPass: TP }); if (r.ok){ const aw = TD && TD.awards; TD = r; TD.awards = aw || []; renderTeacher(); } }
 $("#tBody").addEventListener("click", async e => {
  const sp = e.target.closest("[data-setpw]"); if (sp){ const nm = sp.dataset.setpw, inp = [...document.querySelectorAll("[data-pw]")].find(x => x.dataset.pw === nm), np = inp ? inp.value.trim() : "";
   if (np.length < 4) return toast("Password must be at least 4 characters");
@@ -1353,7 +1386,15 @@ $("#tBody").addEventListener("click", async e => {
   if (!confirm(`Delete ${nm}?\n\nHer account, scores, coins and stars will be removed. She will need to register again.`)) return;
   try { const r = await api("deleteStudent", { teacherPass: TP, name: nm }); if (!r.ok) throw new Error(r.error); toast(`🗑️ ${nm} deleted`); await reloadTeacher(); } catch(err){ toast(err.message); } return; }
  if (e.target.id === "lbShow") return showLeaderboard();
- if (e.target.id === "lbCert") return printCerts();
+ if (e.target.id === "awPrev") return certWin(awardWinners().map(x => Object.assign(x, { date:fmtD(new Date()) })), AWF.title);
+ if (e.target.id === "awPub"){ const W = awardWinners(); if (!W.length) return;
+  if (!confirm(`Publish "${AWF.title}" certificates for:\n${W.map(w => ["1st","2nd","3rd"][w.rank] + " – " + w.name).join("\n")}\n\nThey will be able to print them.`)) return;
+  try { const r = await api("publishAward", { teacherPass: TP, award:{ title:AWF.title, from:AWF.from, to:new Date().toISOString().slice(0, 10), winners:W } }); if (!r.ok) throw new Error(r.error);
+   TD.awards = r.awards; AWF.from = ""; $("#awPanel").outerHTML = awardPanel(); toast("🏅 Certificates published!"); } catch(err){ toast(err.message); } return; }
+ const ap = e.target.closest("[data-awp]"); if (ap){ const a = (TD.awards || []).find(x => x.id === ap.dataset.awp); if (a) certWin(a.winners.map(w => Object.assign({}, w, { date:fmtD(a.date) })), a.title); return; }
+ const ad = e.target.closest("[data-awd]"); if (ad){ if (!confirm("Remove this certificate? The students will no longer be able to print it.")) return;
+  try { const r = await api("deleteAward", { teacherPass: TP, id: ad.dataset.awd }); if (!r.ok) throw new Error(r.error); TD.awards = r.awards; $("#awPanel").outerHTML = awardPanel(); } catch(err){ toast(err.message); } return; }
+
  const m = e.target.closest("[data-lbm]"); if (m){ LBM = m.dataset.lbm; $("#lbPanel").outerHTML = leaderPanel(); return; }
  if (e.target.id === "gSave" || e.target.id === "gClear"){
   const target = e.target.id === "gClear" ? 0 : +$("#gT").value, reward = e.target.id === "gClear" ? "" : $("#gR").value.trim();
@@ -1415,7 +1456,20 @@ let MODE = store.get("mode", "");
 const isGame = () => MODE === "game";
 function profKey(){ return "prof_" + (USER ? USER.name.toLowerCase() : "x"); }
 function prof(){ return Object.assign({ avatar:0, bonus:0, spent:0, owned:[], equip:{}, stickers:[], hints:0, lastSpin:"" }, store.get(profKey(), {})); }
-let TOPM = "week";
+let TOPM = "week", AWARDS = store.get("awards", []);
+async function loadAwards(){ try { const r = await api("awards", {}); if (r && r.ok){ AWARDS = r.awards || []; store.set("awards", AWARDS); } } catch(e){} return AWARDS; }
+function myAwards(){ const me = USER ? USER.name.trim().toLowerCase() : ""; const out = []; AWARDS.forEach(a => (a.winners || []).forEach(w => { if (String(w.name).trim().toLowerCase() === me) out.push({ a, w }); })); return out; }
+function myAwardsHTML(){ const M = myAwards(); if (!M.length) return `<div id="myAw"></div>`;
+ return `<div id="myAw" class="myaw"><h3>🎓 My certificates</h3>${M.map(({ a, w }) => `<div><span>${["🥇","🥈","🥉"][w.rank]} <b>${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert="${a.id}">🖨️ Print</button></div>`).join("")}</div>`; }
+function printMyAward(id){ const m = myAwards().find(x => x.a.id === id); if (m) certWin([{ name:m.w.name, rank:m.w.rank, why:m.w.why, date:fmtD(m.a.date) }], m.a.title); }
+async function checkNewAwards(){ await loadAwards(); const seen = store.get("awSeen", []), M = myAwards().filter(x => !seen.includes(x.a.id)); if (!M.length) return;
+ store.set("awSeen", seen.concat(M.map(x => x.a.id)));
+ modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Congratulations! 🎉</h2><p>Miss Basma has awarded you a certificate!</p></div></div>
+  ${M.map(({ a, w }) => `<div class="myaw"><div><span>${["🥇","🥈","🥉"][w.rank]} <b>${["First","Second","Third"][w.rank]} Place · ${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert2="${a.id}">🖨️ Print</button></div></div>`).join("")}
+  <p style="margin:8px 0 0">You can print it any time from the 🏆 button.</p>`);
+ try { confetti(80); } catch(e){} }
+document.addEventListener("click", e => { const c = e.target.closest("[data-mycert2]"); if (c) printMyAward(c.dataset.mycert2); });
+
 async function openTop(){
  modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Top Scientists 🏆</h2><p>Updated every time someone finishes a mission</p></div></div><div id="topBody"><p style="text-align:center">Loading… ⏳</p></div>`);
  let r; try { r = await api("top", {}); } catch(e){ r = null; }
@@ -1426,10 +1480,11 @@ async function openTop(){
    <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
    ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${TOPM === "week" ? "✅ " + L[i].week : "⭐ " + L[i].stars + " · 🪙 " + L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>`
     : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}
-   ${(() => { const i = L.findIndex(x => x.name.toLowerCase() === me); return i >= 0 ? `<div style="text-align:center;margin-top:10px"><p style="margin:0 0 6px;font-weight:900;color:#e2483d">🎉 You are in ${["1st","2nd","3rd"][i]} place!</p><button class="btn yel" id="myCert" data-r="${i}">🖨️ Print my certificate</button></div>` : ""; })()}
+   ${myAwardsHTML()}
    <p style="text-align:center;margin:10px 0 0;font-weight:700">Play missions, earn ⭐ stars and answer correctly to climb the board! 💪</p>`; };
  body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw(); return; }
-  const c = e.target.closest("#myCert"); if (c){ const L = TOPM === "week" ? r.week : r.all, x = L[+c.dataset.r]; certWin([{ name:x.name, rank:+c.dataset.r, why:whyTxt(x, TOPM) }], certTitle(TOPM)); } });
+  const c = e.target.closest("[data-mycert]"); if (c) printMyAward(c.dataset.mycert); });
+ loadAwards().then(() => { const box = $("#myAw"); if (box) box.outerHTML = myAwardsHTML(); });
  draw();
 }
 function coinsInfo(){
@@ -1885,7 +1940,7 @@ async function boot(){
   USER = u; ATT = store.get("att_" + u.name.toLowerCase(), []);
   enterHome(false);
   flushQueue().then(() => api("sync", { name: u.name, token: u.token })).then(r => {
-   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); adoptProf(r.profile); if ("goal" in r) setGoalLocal(r.goal); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
+   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); adoptProf(r.profile); if ("goal" in r) setGoalLocal(r.goal); setTimeout(checkNewAwards, 1500); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
    else if (r && /log in again/i.test(r.error || "")){ store.del("user"); USER = null; show("login"); }
   }).catch(() => {});
  }
