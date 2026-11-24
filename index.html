@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<script>(function(){var V="1795538712";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -110,6 +112,7 @@ label.f{display:block;font-size:14px;color:#5b4c9a;margin:10px 0 4px}
 .ov{position:fixed;inset:0;z-index:30;background:rgba(20,8,60,.55);display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
 .ov.on{display:flex}
 .modal{width:min(720px,100%);max-height:calc(100% - 20px);overflow:auto;background:#fff;border-radius:30px;padding:clamp(18px,2.4vw,32px);box-shadow:0 30px 60px rgba(0,0,0,.4);position:relative;animation:pop .28s cubic-bezier(.2,1.4,.5,1)}
+.t45{display:flex;align-items:center;gap:10px;background:#f6f3ff;border-radius:14px;padding:6px 12px;margin:6px 0;font-weight:800;color:#4a3a99}.t45 b{font-size:20px;color:#7e57c2;width:22px;text-align:center}.t45 img{width:38px;height:38px;object-fit:contain}.t45 .n{flex:1}.t45.me{background:#fff1c1;outline:3px solid #ffc93c}.topbtn{padding:8px 14px;font-size:15px}
 .modal .x{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;background:#f1edff;color:var(--p);font-size:22px}
 .whead{display:flex;gap:16px;align-items:center;margin-bottom:10px}
 .whead img{width:clamp(76px,8vw,110px)}
@@ -201,7 +204,9 @@ details.rev summary{cursor:pointer;color:var(--p);font-weight:800}
 #teacher.on{display:block}
 .thead{background:linear-gradient(90deg,var(--pd),var(--p));color:#fff;padding:calc(14px + var(--safe-t)) clamp(14px,3vw,40px) 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:3}
 .thead img{height:48px;background:#fff;border-radius:12px;padding:4px}
-.thead h2{font-size:clamp(22px,2.2vw,32px)}
+.thead h2{font-size:clamp(22px,2.2vw,32px);color:#fff}
+@media (max-width:700px){.thead{position:static;gap:6px;padding:calc(10px + var(--safe-t)) 10px 10px}.thead img{height:36px}.thead .btn{padding:7px 11px;font-size:14px}.thead .sp{display:none}}
+.topbtn{white-space:nowrap}
 .tbody{padding:clamp(14px,2.5vw,36px);max-width:1500px;margin:0 auto}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 .kpi{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(60,30,160,.08)}
@@ -332,7 +337,8 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .cinfo>div span{grid-row:span 2;font-size:30px}.cinfo>div b{color:#2a1d5c;font-size:16px}.cinfo .btn{grid-column:2;justify-self:start;margin-top:6px;padding:6px 14px}
 .lbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.lbtabs button{background:#f1edff;color:#5B3FD9;font-weight:800;border-radius:99px;padding:6px 14px}.lbtabs button.on{background:#5B3FD9;color:#fff}
 .lbtabs.dark{justify-content:center}.lbtabs.dark button{background:rgba(255,255,255,.15);color:#fff;font-size:clamp(14px,2.2vh,20px)}.lbtabs.dark button.on{background:#ffd23f;color:#2a1d5c}
-.pwrow{display:flex;gap:4px}.pwrow .inp{width:130px;padding:6px 10px}.pwrow .btn,[data-del]{padding:6px 12px;font-size:14px}
+.stulist{display:grid;gap:8px}.stucard{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:#f8f6ff;border:2px solid #e6defd;border-radius:14px;padding:8px 10px}.stucard .si{display:flex;flex-direction:column;min-width:160px}.stucard .si small{color:#7a6bb3;font-weight:700}.stucard .nm{cursor:pointer;color:var(--pd)}
+.pwrow{display:flex;gap:4px;flex-wrap:wrap}.pwrow .inp{width:130px;padding:6px 10px}.pwrow .btn,[data-del]{padding:6px 12px;font-size:14px}
 .tws{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));max-height:none}
 .awf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.awf label{display:flex;flex-direction:column;font-size:12px;font-weight:800;color:#6b5ca8;flex:1;min-width:120px}.awf .inp{padding:6px 10px}
 .awl{display:flex;align-items:center;gap:8px;border-top:1px solid #eee;padding:6px 0}.awl span{flex:1}.awl .btn{padding:6px 12px;font-size:14px}
@@ -548,7 +554,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <button class="round" id="bOut" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button>
  </div>
  <div id="mapScroll"><div class="goalchip hide" id="goalChip"></div><div class="brandchip" id="brandChip"><img src="img/logo.webp" alt="Andalus International Schools logo"><div>Nafes Science Quest<small>Teacher Basma Ahmed</small></div></div><div id="map"></div></div>
- <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="round" id="bTop" title="Top scientists" aria-label="Top scientists">🏆</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
+ <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="btn yel topbtn" id="bTop" title="Top 5 scientists" aria-label="Top 5 scientists">🏆 Top 5</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
 </section>
 
 <!-- QUIZ -->
@@ -585,7 +591,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
    <div class="score" id="rScore">8<small>/10</small></div>
    <div class="rstars" id="rStars"></div>
    <div id="rMsg" style="color:#6b5ca8"></div>
-   <span class="xp" id="rXp">+80 XP</span>
+   <span class="xp" id="rXp">+80 🪙</span>
    <div class="newb" id="rGame"></div>
    <div class="newb" id="rBadges"></div>
    <div class="racts" id="rActs"></div>
@@ -602,6 +608,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <span class="sp"></span>
   <a class="btn ghost" id="tSheet" target="_blank" rel="noopener" style="text-decoration:none">Open Google Sheet</a>
   <button class="btn yel" id="tStu" onclick="const p=document.getElementById('stuPanel');p&&p.scrollIntoView({behavior:'smooth'})">👩‍🎓 Students</button>
+  <button class="btn yel" id="tAw" onclick="const p=document.getElementById('awPanel');p&&p.scrollIntoView({behavior:'smooth'})">🏅 Certificates</button>
   <button class="btn teal" id="tRefresh">Refresh</button>
   <button class="btn ghost" id="tExit">Exit</button>
  </div>
@@ -716,7 +723,7 @@ function demoApi(action, d){
    delete db.students[key(d.name)]; db.attempts = db.attempts.filter(a => key(a.student) !== key(d.name)); save(); return { ok:true }; }
   case "top": { const since = Date.now() - 7 * 864e5; const S = Object.values(db.students).map(x => ({ name:x.name, avatar:x.avatar || 0, coins:x.coins || 0, stars:x.stars || 0,
     week: db.attempts.filter(a => key(a.student) === key(x.name) && new Date(a.ts).getTime() >= since).reduce((t, a) => t + (a.score || 0), 0) }));
-   return { ok:true, all: S.slice().sort((a, b) => b.stars - a.stars || b.coins - a.coins).slice(0, 3), week: S.filter(x => x.week > 0).sort((a, b) => b.week - a.week || b.stars - a.stars).slice(0, 3) }; }
+   return { ok:true, all: S.slice().sort((a, b) => b.stars - a.stars || b.coins - a.coins).slice(0, 5), week: S.filter(x => x.week > 0).sort((a, b) => b.week - a.week || b.stars - a.stars).slice(0, 3) }; }
   case "login": {
    const s = db.students[key(d.name)];
    if (!s) return { ok:false, error:'Name not found. Are you a new student? Tap "New student".' };
@@ -1071,7 +1078,7 @@ function choose(k){
  }
  const last = Q.i === Q.items.length - 1;
  $("#fb").className = ok ? "good" : "oops";
- $("#fb").innerHTML = `<span>${ok ? "✅ Correct!" : `❌ Correct answer: <b>${"ABCD"[correctK]}) ${esc(it.q.o[it.q.a])}</b>`}</span><span class="sp" style="flex:1"></span>
+ $("#fb").innerHTML = `<span>${ok ? "✅ Correct! <b style=\"color:#b8860b\">+10 🪙</b>" : `❌ Correct answer: <b>${"ABCD"[correctK]}) ${esc(it.q.o[it.q.a])}</b>`}</span><span class="sp" style="flex:1"></span>
   <button class="btn ${ok ? "teal" : ""}" id="bNext">${last ? "See my score 🏆" : "Next ➜"}</button>`;
  $("#bNext").focus({ preventScroll: true });
  $("#fb").scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -1131,7 +1138,7 @@ function renderResult(a, pct, newB){
  $("#rScore").innerHTML = `${a.score}<small>/${a.total}</small>`;
  $("#rMsg").innerHTML = passed ? `${Math.round(pct*100)}% — ${Q.custom ? "great practice!" : Q.exam ? "excellent exam practice!" : "the next mission is open!"}`
   : `${Math.round(pct*100)}% — you need 60% to unlock the next mission.<br>Look at your mistakes and try again. You've got this!`;
- $("#rXp").textContent = `+${a.score*10 + (a.score === a.total ? 20 : 0)} XP · ⏱ ${Math.floor(a.dur/60)}:${String(a.dur%60).padStart(2,"0")}`;
+ $("#rXp").textContent = `+${a.score*10 + (a.score === a.total ? 20 : 0)} 🪙 coins · ⏱ ${Math.floor(a.dur/60)}:${String(a.dur%60).padStart(2,"0")}`;
  $("#rStars").innerHTML = [0,1,2].map(k => `<img src="img/star.webp" alt="" class="${k < st ? "" : "off"}">`).join("");
  $("#rGame").innerHTML = Q.game ? gameResultExtras(a, pct) : "";
  if (Q.game) updateChips();
@@ -1251,32 +1258,26 @@ function studentsPanel(){
  const S = (TD.students || []).slice().sort((a, b) => a.name.localeCompare(b.name));
  return `<div class="panel" id="stuPanel"><h3 style="margin:0 0 6px">👩‍🎓 Manage students</h3>
   <form class="tform" id="addStu" style="flex-wrap:wrap"><input class="inp" id="asName" placeholder="Student's full name" style="flex:2;min-width:180px"><input class="inp" id="asPass" placeholder="Password (4+ letters)" style="flex:1;min-width:140px"><button class="btn" type="submit">➕ Add student</button></form><div id="asMsg" style="margin:4px 0 8px"></div>
-  <div class="scroll"><table class="grid"><thead><tr><th>Student</th><th>Joined</th><th>Last active</th><th>New password</th><th></th></tr></thead><tbody>
-  ${S.map(x => `<tr><td class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</td><td>${x.joined ? new Date(x.joined).toLocaleDateString("en-GB") : "–"}</td><td>${x.last ? new Date(x.last).toLocaleDateString("en-GB") : "–"}</td>
-   <td><span class="pwrow"><input class="inp" data-pw="${esc(x.name)}" placeholder="new password"><button class="btn teal" data-setpw="${esc(x.name)}">🔑 Change</button></span></td><td><button class="btn cor" data-del="${esc(x.name)}">🗑️ Delete</button></td></tr>`).join("") || `<tr><td colspan="5">No students yet.</td></tr>`}</tbody></table></div></div>`;
+  <div class="stulist">${S.map(x => `<div class="stucard"><div class="si"><b class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</b><small>Joined ${x.joined ? new Date(x.joined).toLocaleDateString("en-GB") : "–"} · Last active ${x.last ? new Date(x.last).toLocaleDateString("en-GB") : "–"}</small></div>
+   <div class="pwrow"><input class="inp" data-pw="${esc(x.name)}" placeholder="new password"><button class="btn teal" data-setpw="${esc(x.name)}">🔑 Change</button><button class="btn cor" data-del="${esc(x.name)}">🗑️ Delete</button></div></div>`).join("") || `<p>No students yet.</p>`}</div></div>`;
 }
-let AWF = { from: "", minQ: 20, minP: 70, title: "Top Scientist" };
+let AWF = { n: 3, title: "Top Scientist" };
+const MEDAL = r => ["🥇","🥈","🥉"][r] || `🏅${r + 1}`;
 function awardRows(){
- const from = AWF.from ? new Date(AWF.from + "T00:00:00").getTime() : 0, A = TD.attempts || [];
- return (TD.students || []).map(st => { const k = st.name.trim().toLowerCase(), mine = A.filter(a => String(a.student).trim().toLowerCase() === k && new Date(a.ts).getTime() >= from);
-  const q = mine.reduce((t, a) => t + (a.total || 0), 0), c = mine.reduce((t, a) => t + (a.score || 0), 0), acc = q ? Math.round(c / q * 100) : 0;
-  return { name:st.name, q, c, acc, ok: q >= AWF.minQ && acc >= AWF.minP }; }).filter(x => x.q > 0).sort((a, b) => b.ok - a.ok || b.c - a.c || b.acc - a.acc);
+ return (TD.students || []).map(st => ({ name:st.name, stars:+st.stars || 0, coins:+st.coins || 0 })).filter(x => x.stars || x.coins).sort((a, b) => b.stars - a.stars || b.coins - a.coins);
 }
 function awardPanel(){
- if (!AWF.from){ const last = (TD.awards || [])[0]; AWF.from = (last ? new Date(last.date) : new Date(Date.now() - 6 * 864e5)).toISOString().slice(0, 10); }
- const R = awardRows(), W = R.filter(x => x.ok).slice(0, 3), list = TD.awards || [];
+ const R = awardRows(), W = R.slice(0, AWF.n), list = TD.awards || [];
  return `<div class="panel" id="awPanel"><h3 style="margin:0 0 4px">🏅 Issue certificates</h3>
-  <p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">Choose the period and the conditions. Check the top 3, then approve — the winners will see a <b>Print</b> button on their account.</p>
-  <div class="awf"><label>From<input class="inp" type="date" id="awFrom" value="${AWF.from}"></label><label>To<input class="inp" value="Today" disabled></label>
-   <label>Min. questions<input class="inp" type="number" id="awQ" value="${AWF.minQ}" min="0"></label><label>Min. correct %<input class="inp" type="number" id="awP" value="${AWF.minP}" min="0" max="100"></label>
+  <p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">This is the class ranking <b>right now</b>: most <b>stars</b> ⭐, if equal → most <b>coins earned</b> 🪙. Whenever you want, choose how many winners and press <b>Approve</b> — the winners will see a <b>Print</b> button on their account.</p>
+  <div class="awf"><label>Winners<select class="inp" id="awN"><option value="3" ${AWF.n === 3 ? "selected" : ""}>Top 3</option><option value="5" ${AWF.n === 5 ? "selected" : ""}>Top 5</option><option value="1" ${AWF.n === 1 ? "selected" : ""}>Top 1</option></select></label>
    <label style="flex:2">Certificate title<input class="inp" id="awT" value="${esc(AWF.title)}" list="awTl"><datalist id="awTl"><option>Top Scientist</option><option>Scientist of the Week</option><option>Scientist of the Month</option><option>Top Scientist of the Term</option></datalist></label></div>
-  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>✅ Correct</th><th>Questions</th><th>%</th><th>Qualifies?</th></tr></thead><tbody>
-  ${R.map((x, i) => `<tr style="${x.ok && i < 3 ? "background:#fff7dd" : ""}"><td>${x.ok && i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td>${esc(x.name)}</td><td>${x.c}</td><td>${x.q}</td><td>${x.acc}%</td><td>${x.ok ? "✅" : `<span style="color:#b4002c">${x.q < AWF.minQ ? "few questions" : "low %"}</span>`}</td></tr>`).join("") || `<tr><td colspan="6">Nobody played in this period.</td></tr>`}</tbody></table></div>
+  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>⭐ Stars</th><th>🪙 Coins</th></tr></thead><tbody>
+  ${R.slice(0, 10).map((x, i) => `<tr style="${i < AWF.n ? "background:#fff7dd" : ""}"><td>${i < AWF.n ? MEDAL(i) : i + 1}</td><td>${esc(x.name)}</td><td>${x.stars}</td><td>${x.coins}</td></tr>`).join("") || `<tr><td colspan="4">Nobody has stars yet.</td></tr>`}</tbody></table></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn" id="awPub" ${W.length ? "" : "disabled"}>✅ Approve & publish ${W.length} certificate${W.length === 1 ? "" : "s"}</button>${W.length ? `<button class="btn ghost" id="awPrev">👁️ Preview</button>` : ""}</div>
-  ${list.length ? `<h3 style="margin:14px 0 6px">Published certificates</h3>${list.map(a => `<div class="awl"><span><b>${esc(a.title)}</b> · ${fmtD(a.date)}<br><small>${a.winners.map(w => ["🥇","🥈","🥉"][w.rank] + " " + esc(w.name)).join(" · ")}</small></span><button class="btn yel" data-awp="${a.id}">🖨️ Print</button><button class="btn cor" data-awd="${a.id}">Remove</button></div>`).join("")}` : ""}</div>`;
+  ${list.length ? `<h3 style="margin:14px 0 6px">Published certificates</h3>${list.map(a => `<div class="awl"><span><b>${esc(a.title)}</b> · ${fmtD(a.date)}<br><small>${a.winners.map(w => MEDAL(w.rank) + " " + esc(w.name)).join(" · ")}</small></span><button class="btn yel" data-awp="${a.id}">🖨️ Print</button><button class="btn cor" data-awd="${a.id}">Remove</button></div>`).join("")}` : ""}</div>`;
 }
-function awardWinners(){ const W = awardRows().filter(x => x.ok).slice(0, 3), f = fmtD(AWF.from + "T00:00:00");
- return W.map((x, i) => ({ name:x.name, rank:i, why:`${x.c} correct answers (${x.acc}%) since ${f}` })); }
+function awardWinners(){ return awardRows().slice(0, AWF.n).map((x, i) => ({ name:x.name, rank:i, why:`${x.stars} stars and ${x.coins} coins` })); }
 function goalPanel(){
  const g = TD.goal, pc = g && g.target ? Math.min(100, Math.round((g.progress || 0) / g.target * 100)) : 0;
  return `<div class="panel" id="goalPanel"><h3 style="margin:0 0 6px">🎯 Class goal</h3>
@@ -1297,7 +1298,7 @@ function showLeaderboard(){
 function certWin(list, title){
  const w = window.open("", "_blank"); if (!w) return toast("Please allow pop-ups to print.");
  const bg = new URL("img/cert_bg.webp", location.href).href;
- const word = ["First", "Second", "Third"], col = ["#c8961e", "#7d8794", "#b0693a"];
+ const word = ["First", "Second", "Third", "Fourth", "Fifth"], col = ["#c8961e", "#7d8794", "#b0693a", "#5b3fd9", "#14a37f"];
  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Certificate</title>
  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
  <style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{font-family:Poppins,Arial,sans-serif;color:#26235e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -1358,12 +1359,12 @@ function renderTeacher(){
    <div class="kpi"><b>${Math.round(avg*100)}%</b><span>average score</span></div>
   </div>
   ${studentsPanel()}
+  ${awardPanel()}
   <div class="panel"><h3>Class progress — best score per week</h3>
    <p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">Big number = best score · small = first-attempt score and missions done. Tap a name for details.</p>
    <div class="scroll"><table class="grid"><thead><tr><th>Student</th>${WEEKS.map(w => `<th>${esc(w.type === "study" ? "W" + w.n : w.title.replace("Grand ","").replace("Mock Exam ","Mock "))}</th>`).join("")}<th>Last active</th></tr></thead>
    <tbody>${rows.map(r => `<tr><td class="nm" data-stu="${esc(r.s.name)}">${esc(r.s.name)}</td>${WEEKS.map(w => weekCell(r.atts, w)).join("")}<td>${r.atts.length ? new Date(r.atts[r.atts.length-1].ts).toLocaleDateString("en-GB") : "–"}</td></tr>`).join("") || `<tr><td colspan="16">No students yet.</td></tr>`}</tbody></table></div>
   </div>
-  ${awardPanel()}
   <div class="panel" id="wsPanel"><h3 style="margin:0 0 4px">⭐ Week stars</h3><p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">For each week: <b>first try</b> of every mission, fewest mistakes (hint = ½ mistake), tie → faster. Only girls who finished <b>all</b> missions of the week. Lock a week to make its top 3 final — late finishers won't change it.</p><div class="wsg tws">${TD.stars ? weekStarsHTML(TD.stars, "", true) : "Loading… ⏳"}</div></div>
   ${goalPanel()}
   ${leaderPanel()}
@@ -1378,8 +1379,8 @@ function renderTeacher(){
    </div>
   </div>`;
 }
-$("#tBody").addEventListener("change", e => { const id = e.target.id; if (!["awFrom","awQ","awP","awT"].includes(id)) return;
- AWF.from = $("#awFrom").value; AWF.minQ = +$("#awQ").value || 0; AWF.minP = +$("#awP").value || 0; AWF.title = $("#awT").value.trim() || "Top Scientist"; $("#awPanel").outerHTML = awardPanel(); });
+$("#tBody").addEventListener("change", e => { const id = e.target.id; if (!["awN","awT"].includes(id)) return;
+ AWF.n = +$("#awN").value || 3; AWF.title = $("#awT").value.trim() || "Top Scientist"; $("#awPanel").outerHTML = awardPanel(); });
 $("#tBody").addEventListener("submit", async e => {
  if (e.target.id !== "addStu") return; e.preventDefault();
  const name = $("#asName").value.trim(), pass = $("#asPass").value.trim();
@@ -1400,9 +1401,9 @@ $("#tBody").addEventListener("click", async e => {
   TD.stars = r.stars; $("#wsPanel .wsg").innerHTML = weekStarsHTML(TD.stars, "", true); toast(lw.dataset.unlock ? "Week is live again" : "🔒 Week stars locked"); } catch(err){ toast(err.message); } return; }
  if (e.target.id === "awPrev") return certWin(awardWinners().map(x => Object.assign(x, { date:fmtD(new Date()) })), AWF.title);
  if (e.target.id === "awPub"){ const W = awardWinners(); if (!W.length) return;
-  if (!confirm(`Publish "${AWF.title}" certificates for:\n${W.map(w => ["1st","2nd","3rd"][w.rank] + " – " + w.name).join("\n")}\n\nThey will be able to print them.`)) return;
-  try { const r = await api("publishAward", { teacherPass: TP, award:{ title:AWF.title, from:AWF.from, to:new Date().toISOString().slice(0, 10), winners:W } }); if (!r.ok) throw new Error(r.error);
-   TD.awards = r.awards; AWF.from = ""; $("#awPanel").outerHTML = awardPanel(); toast("🏅 Certificates published!"); } catch(err){ toast(err.message); } return; }
+  if (!confirm(`Publish "${AWF.title}" certificates for:\n${W.map(w => ["1st","2nd","3rd","4th","5th"][w.rank] + " – " + w.name).join("\n")}\n\nThey will be able to print them.`)) return;
+  try { const r = await api("publishAward", { teacherPass: TP, award:{ title:AWF.title, from:"", to:new Date().toISOString().slice(0, 10), winners:W } }); if (!r.ok) throw new Error(r.error);
+   TD.awards = r.awards; $("#awPanel").outerHTML = awardPanel(); toast("🏅 Certificates published!"); } catch(err){ toast(err.message); } return; }
  const ap = e.target.closest("[data-awp]"); if (ap){ const a = (TD.awards || []).find(x => x.id === ap.dataset.awp); if (a) certWin(a.winners.map(w => Object.assign({}, w, { date:fmtD(a.date) })), a.title); return; }
  const ad = e.target.closest("[data-awd]"); if (ad){ if (!confirm("Remove this certificate? The students will no longer be able to print it.")) return;
   try { const r = await api("deleteAward", { teacherPass: TP, id: ad.dataset.awd }); if (!r.ok) throw new Error(r.error); TD.awards = r.awards; $("#awPanel").outerHTML = awardPanel(); } catch(err){ toast(err.message); } return; }
@@ -1468,16 +1469,16 @@ let MODE = store.get("mode", "");
 const isGame = () => MODE === "game";
 function profKey(){ return "prof_" + (USER ? USER.name.toLowerCase() : "x"); }
 function prof(){ return Object.assign({ avatar:0, bonus:0, spent:0, owned:[], equip:{}, stickers:[], hints:0, lastSpin:"" }, store.get(profKey(), {})); }
-let TOPM = "week", AWARDS = store.get("awards", []);
+let TOPM = "all", AWARDS = store.get("awards", []);
 async function loadAwards(){ try { const r = await api("awards", {}); if (r && r.ok){ AWARDS = r.awards || []; store.set("awards", AWARDS); } } catch(e){} return AWARDS; }
 function myAwards(){ const me = USER ? USER.name.trim().toLowerCase() : ""; const out = []; AWARDS.forEach(a => (a.winners || []).forEach(w => { if (String(w.name).trim().toLowerCase() === me) out.push({ a, w }); })); return out; }
 function myAwardsHTML(){ const M = myAwards(); if (!M.length) return `<div id="myAw"></div>`;
- return `<div id="myAw" class="myaw"><h3>🎓 My certificates</h3>${M.map(({ a, w }) => `<div><span>${["🥇","🥈","🥉"][w.rank]} <b>${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert="${a.id}">🖨️ Print</button></div>`).join("")}</div>`; }
+ return `<div id="myAw" class="myaw"><h3>🎓 My certificates</h3>${M.map(({ a, w }) => `<div><span>${MEDAL(w.rank)} <b>${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert="${a.id}">🖨️ Print</button></div>`).join("")}</div>`; }
 function printMyAward(id){ const m = myAwards().find(x => x.a.id === id); if (m) certWin([{ name:m.w.name, rank:m.w.rank, why:m.w.why, date:fmtD(m.a.date) }], m.a.title); }
 async function checkNewAwards(){ await loadAwards(); const seen = store.get("awSeen", []), M = myAwards().filter(x => !seen.includes(x.a.id)); if (!M.length) return;
  store.set("awSeen", seen.concat(M.map(x => x.a.id)));
  modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Congratulations! 🎉</h2><p>Miss Basma has awarded you a certificate!</p></div></div>
-  ${M.map(({ a, w }) => `<div class="myaw"><div><span>${["🥇","🥈","🥉"][w.rank]} <b>${["First","Second","Third"][w.rank]} Place · ${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert2="${a.id}">🖨️ Print</button></div></div>`).join("")}
+  ${M.map(({ a, w }) => `<div class="myaw"><div><span>${MEDAL(w.rank)} <b>${["First","Second","Third","Fourth","Fifth"][w.rank]} Place · ${esc(a.title)}</b><small>${fmtD(a.date)}</small></span><button class="btn yel" data-mycert2="${a.id}">🖨️ Print</button></div></div>`).join("")}
   <p style="margin:8px 0 0">You can print it any time from the 🏆 button.</p>`);
  try { confetti(80); } catch(e){} }
 document.addEventListener("click", e => { const c = e.target.closest("[data-mycert2]"); if (c) printMyAward(c.dataset.mycert2); });
@@ -1514,15 +1515,15 @@ function weekStarsHTML(S, me, teacher){
 }
 let WSTARS = null;
 async function openTop(){
- modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Top Scientists 🏆</h2><p>Updated every time someone finishes a mission</p></div></div><div id="topBody"><p style="text-align:center">Loading… ⏳</p></div>`);
+ modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Top 5 Scientists 🏆</h2><p>Who is number 1 right now?</p></div></div><div id="topBody"><p style="text-align:center">Loading… ⏳</p></div>`);
  let r; try { r = await api("top", {}); } catch(e){ r = null; }
  const body = $("#topBody"); if (!body) return;
  if (!r || !r.ok){ body.innerHTML = `<p style="text-align:center">Couldn't load the board right now. Try again later 🙏</p>`; return; }
- const draw = () => { const L = (TOPM === "week" ? r.week : r.all) || [], me = USER ? USER.name.toLowerCase() : "";
-  body.innerHTML = `<div class="lbtabs" style="justify-content:center"><button data-topm="week" class="${TOPM === "week" ? "on" : ""}">⚡ Live now</button><button data-topm="stars" class="${TOPM === "stars" ? "on" : ""}">⭐ Week stars</button><button data-topm="all" class="${TOPM === "all" ? "on" : ""}">🏆 All time</button></div>
+ const draw = () => { const L = (r.all || []).slice(0, 5), me = USER ? USER.name.toLowerCase() : "";
+  body.innerHTML = `<div class="lbtabs" style="justify-content:center"><button data-topm="all" class="${TOPM === "all" ? "on" : ""}">🏆 Top 5 now</button><button data-topm="stars" class="${TOPM === "stars" ? "on" : ""}">⭐ Week stars</button></div>
    ${TOPM === "stars" ? `<p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">The top 3 of each week: <b>first try</b> of every mission, <b>fewest mistakes</b> (a hint = ½ mistake). Tie → <b>faster</b> wins. Labs don't count.</p><div class="wsg">${WSTARS ? weekStarsHTML(WSTARS, me) : "<p style='text-align:center'>Loading… ⏳</p>"}</div>` : `
-   <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3;${TOPM === "stars" ? "display:none" : ""}">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days, up to this moment" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
-   ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${TOPM === "week" ? "✅ " + L[i].week : "⭐ " + L[i].stars + " · 🪙 " + L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>`
+   <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3;${TOPM === "stars" ? "display:none" : ""}">Ranked by <b>stars</b> ⭐ — if equal, by <b>coins earned</b> 🪙. Updated live! (Spending coins never lowers your rank.)</p>
+   ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>⭐ ${L[i].stars} · 🪙 ${L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>${L.slice(3).map((x, j) => `<div class="t45 ${x.name.toLowerCase() === me ? "me" : ""}"><b>${j + 4}</b><img src="${heroImg(x.avatar)}" alt=""><span class="n">${esc(x.name)}</span><span>⭐ ${x.stars} · 🪙 ${x.coins}</span></div>`).join("")}`
     : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}`}
    ${myAwardsHTML()}
    <p style="text-align:center;margin:10px 0 0;font-weight:700">Play missions, earn ⭐ stars and answer correctly to climb the board! 💪</p>`; };
@@ -1598,7 +1599,7 @@ function goHome(){ show("home"); applyMode(); renderMap(); updateChips(); }
 function applyMode(){
  const g = isGame();
  document.querySelectorAll(".gonly").forEach(el => el.classList.toggle("hide", !g));
- $("#coinChip").classList.toggle("hide", !g); $("#xpChip").classList.toggle("hide", g);
+ $("#coinChip").classList.remove("hide"); $("#xpChip").classList.add("hide");
  $("#bMode").textContent = g ? "🎮" : "📝";
  if (g){ const p = prof(); $("#bSpin").classList.toggle("glow", p.lastSpin !== today()); $("#bPet").textContent = ["🥚","🐣","🐲"][Math.min(2, weeksPassed())]; }
 }
@@ -2231,7 +2232,10 @@ function grade(k){
  let val = 0;
  if (ok){ const m = comboMult(); val = 10 * m * (gold ? 2 : 1) + (Q.custom && !Q.board ? 5 : 0); G.extra += val - 10; G.coins += val; if (Q.custom && !Q.board) setTimeout(() => { try { banner("🔧 Fix-it bonus +5!"); } catch(e){} }, 700); sfx.ok(); if (gold || Q.streak === 5) confetti(40);
   if (m > 1){ const cb = $("#aCombo"); cb.classList.remove("bump"); void cb.offsetWidth; cb.classList.add("bump"); } }
- else sfx.bad();
+ else { sfx.bad();
+  if (G && !G.noMissHeart && G.hearts > 0){ G.misses = (G.misses || 0) + 1;
+   if (G.misses % 2 === 0){ G.hearts--; setTimeout(() => { try { banner("💔 2 mistakes = −1 heart"); } catch(e){} }, 350); if (G.hearts <= 0) setTimeout(() => { if (!G.hold) outOfHearts(() => {}); }, 1100); }
+   else setTimeout(() => { try { banner("⚠️ Careful! 2 mistakes = −1 heart"); } catch(e){} }, 350); } }
  hud();
  return { ok, ck, it, val, gold };
 }
@@ -2617,6 +2621,7 @@ function makeSlice(){
   const fb = panel.querySelector(".afb");
   if (r.ok){
    s.state = "bonus"; fb.innerHTML = `<b class="good">${pick(GPH.ok)} +${r.val} 🪙</b>`;
+   if (obj) try { const R = sec.getBoundingClientRect(); fl("+" + r.val + " 🪙", obj.x + R.left, obj.y + R.top); } catch(e){}
    banner(Q.streak >= 3 ? `COMBO x${comboMult()}! 🔥` : pick(["SLICED! ⚔️", "PERFECT CUT!", "YES! 🍉"]));
    later(() => { banner("🍓 Bonus slice!"); toss(true); }, 500);
    later(() => { Q.i++; showQ(); }, 2600);
@@ -3897,6 +3902,7 @@ g3css.textContent = [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15
  "@media (orientation:landscape){#arc[data-kind=density] .spanel{left:8px;transform:none;width:36vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}#arc[data-kind=density] .spanel .aopts{grid-template-columns:1fr}}@media (orientation:portrait){#arc[data-kind=density] .spanel{max-height:40%;overflow:auto}}";
 document.head.appendChild(g3css);
 function makeDensity(){
+ G.noMissHeart = true;
  const av = prof().avatar || 1;
  const HS = { stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
  const OBJ = [{ n:"dn_duck", f:1, name:"Rubber duck" }, { n:"dn_wood", f:1, name:"Wood block" }, { n:"dn_cork", f:1, name:"Cork" }, { n:"dn_ball", f:1, name:"Beach ball" },
