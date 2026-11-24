@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795538712";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795557016";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -6774,6 +6774,333 @@ W5.notes = [
  ["🍏 Newton's laws", ["1st: an object at rest stays at rest unless a force acts on it (tablecloth trick).", "2nd: F = m × a. Acceleration is proportional to the force; more mass + same force → less acceleration.", "3rd: every action has an equal and opposite reaction (rocket launch, jumping off a boat)."], "#7e57c2"]
 ];
 LAB[5] = W5;
+
+/* =====================================================================
+   WEEK 6 — Gravity, Friction, Magnetism · Energy, Work & Simple Machines (P176–P231)
+   uses Week 5 helpers: arr5, kid5, car5, tasks5, loop5, seg5, puzzle5, quiz5
+   ===================================================================== */
+const W6 = { w:6, emoji:"⚙️", label:"Week 6 · Forces, Energy & Machines", stations:[] };
+const st6 = document.createElement("style");
+st6.textContent = `.f6bar{height:18px;border-radius:9px;background:#eee;overflow:hidden;margin:3px 0}.f6bar i{display:block;height:100%;border-radius:9px;transition:width .08s}
+.f6lbl{display:flex;justify-content:space-between;font-weight:800;font-size:clamp(12px,1.9vmin,16px);color:#4a3a99}`;
+document.head.appendChild(st6);
+const bar6 = (lbl, pc, col) => `<div class="f6lbl"><span>${lbl}</span><span>${Math.round(pc)}%</span></div><div class="f6bar"><i style="width:${clampL(pc, 0, 100)}%;background:${col}"></i></div>`;
+
+/* 1 — MASS, WEIGHT & GRAVITY */
+const PL6 = { earth:{ n:"🌍 Earth", g:10, c:"#7cb342" }, moon:{ n:"🌙 Moon", g:1.6, c:"#bdbdbd" }, jup:{ n:"🪐 Jupiter", g:25, c:"#e0a96d" } };
+W6.stations.push({ id:"weight", icon:"⚖️", short:"Mass & Weight", title:"Mass, Weight & Gravity", covers:["P176","P177","P178","P179","P180","P202","P204"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>⚖️ The Space Scale</h2><p style="margin-top:0">Choose a place and change the <b>mass</b>. Watch the <b>weight</b>!</p>
+   <div class="seg" id="wtP"><button data-v="earth" class="on">🌍 Earth</button><button data-v="moon">🌙 Moon</button><button data-v="jup">🪐 Jupiter</button></div>
+   <svg class="f5sc" viewBox="0 0 400 220" id="wtS" style="margin-top:6px"></svg>
+   <div class="lrow" style="justify-content:center;align-items:center;margin-top:6px"><button class="lbtn y" id="wtH">½ Halve mass</button><button class="lbtn t" id="wtD">×2 Double mass</button></div>
+   <div class="f5read" id="wtR"></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="wtK"></div></div>
+    <div class="lcard"><h3>🌍🌙 Gravity pull</h3><svg class="f5sc" viewBox="0 0 400 170" id="wtG" style="background:radial-gradient(circle at 30% 30%,#2a2f6a,#05061a)"></svg>
+     <div class="ctl"><div class="seg" id="wtM"><button data-v="1" class="on">Small mass</button><button data-v="3">Big mass</button></div><div class="seg" id="wtDi"><button data-v="1" class="on">Close</button><button data-v="2">Far</button></div></div><div class="f5big" id="wtGt"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Weight</span> = the force of <b>gravity</b> acting on an object (W = m × g). <b>Gravity</b> makes objects fall toward Earth.</p><p>Weight depends on the <b>mass</b>: double the mass → <b>double the weight</b>. On the Moon your weight is <b>less</b> — your mass stays the same!</p><p>The gravity between two objects depends on their <b>mass</b> and the <b>distance</b> between them: more mass → stronger, farther → weaker.</p></div></div></div><div id="wtQ"></div>`;
+  let P = "earth", m = 40, M = 1, D = 1;
+  const mark = tasks5($("#wtK"), [["moon", "Weigh yourself on the Moon"], ["dbl", "Double the mass"], ["big", "Make the gravity pull stronger"], ["far", "Make the gravity pull weaker"]], () => quiz5(el, api, "#wtQ", ["P176","P177","P178","P179","P180","P202","P204"]));
+  const draw = () => { const p = PL6[P], w = m * p.g, sq = Math.min(1, w / 2000);
+   let s = `<rect x="0" y="0" width="400" height="220" fill="${P === "earth" ? "#d9f1ff" : P === "moon" ? "#1b1f45" : "#3b2a4a"}"/><rect x="0" y="190" width="400" height="30" fill="${p.c}"/>`;
+   if (P !== "earth") for (let i = 0; i < 25; i++) s += `<circle cx="${(i * 89) % 400}" cy="${(i * 37) % 170}" r="1.3" fill="#fff" opacity=".8"/>`;
+   s += `<rect x="130" y="${168 + sq * 6}" width="140" height="22" rx="8" fill="#ec407a"/><rect x="170" y="${172 + sq * 6}" width="60" height="12" rx="3" fill="#1f2838"/><text x="200" y="${182 + sq * 6}" font-size="11" font-weight="900" fill="#7CFC9A" text-anchor="middle">${Math.round(w)} N</text>`;
+   const sc = .75 + Math.min(.6, m / 160); s += kid5(200, 140 + sq * 6, "#7e57c2", 0, sc);
+   s += arr5(290, 70, 290, 70 + Math.min(110, w / 9 + 10), "#e53935", 6) + `<text x="298" y="80" font-size="12" font-weight="900" fill="#e53935">weight (gravity)</text>`;
+   s += `<text x="20" y="24" font-size="14" font-weight="900" fill="${P === "earth" ? "#5B3FD9" : "#ffe9b0"}">${p.n} · g = ${p.g} N/kg</text>`;
+   $("#wtS").innerHTML = s; $("#wtR").innerHTML = `<span>Mass: ${m} kg (same everywhere)</span><span>Weight = ${m} × ${p.g} = ${Math.round(w)} N</span>`; };
+  const gdraw = () => { const F = M / (D * D), x2 = D === 1 ? 250 : 340, r1 = 26 + M * 10;
+   let s = `<circle cx="90" cy="85" r="${r1}" fill="#43a5f5"/><circle cx="${90 - r1 * .3}" cy="${85 - r1 * .3}" r="${r1 * .35}" fill="#7cb342" opacity=".8"/><circle cx="${x2}" cy="85" r="18" fill="#bdbdbd"/>`;
+   const L = 20 + F * 40; s += arr5(x2 - 24, 70, x2 - 24 - L, 70, "#ffd23f", 6) + arr5(90 + r1 + 4, 100, 90 + r1 + 4 + L, 100, "#ffd23f", 6);
+   s += `<text x="200" y="160" font-size="13" font-weight="900" fill="#ffe9b0" text-anchor="middle">Pull strength: ${"💪".repeat(Math.max(1, Math.round(F * 2)))}</text>`; $("#wtG").innerHTML = s;
+   $("#wtGt").innerHTML = F > 1 ? "Bigger mass → <b>stronger</b> gravity!" : F < 1 ? "Farther apart → <b>weaker</b> gravity!" : "Mass + distance decide the pull."; };
+  seg5(el, "#wtP", k => { P = k; draw(); if (k === "moon"){ mark("moon"); api.hoot("On the Moon gravity is weaker → your <b>weight is less</b> — but your <b>mass</b> didn't change! 🌙", "m_wow"); } if (k === "jup") api.hoot("Jupiter has a HUGE mass → strong gravity → you'd weigh much more! 🪐", "m_idea"); });
+  $("#wtD").onclick = () => { if (m >= 160) return api.hoot("That's heavy enough! Try halving 😄", "m_point"); m *= 2; sfx.tap(); draw(); mark("dbl"); api.hoot("Mass doubled → weight <b>doubled</b> too! Weight depends on mass. ⚖️", "m_wow"); };
+  $("#wtH").onclick = () => { if (m <= 10) return; m /= 2; sfx.tap(); draw(); };
+  seg5(el, "#wtM", k => { M = +k; gdraw(); if (M > 1 && D === 1){ mark("big"); api.hoot("More mass → <b>stronger gravity</b>! 💪", "m_wow"); } });
+  seg5(el, "#wtDi", k => { D = +k; gdraw(); if (D > 1){ mark("far"); api.hoot("Farther apart → <b>weaker gravity</b>. Gravity depends on <b>mass AND distance</b>.", "m_idea"); } });
+  draw(); gdraw(); api.hoot("Is your weight the same everywhere? Let's find out! ⚖️", "m_point");
+ }});
+
+/* 2 — FRICTION UP CLOSE */
+const SF6 = { brick:{ n:"🧱 Rough brick", mu:.8, c:"#b5523b", a:9 }, wood:{ n:"🪵 Wood", mu:.45, c:"#c58b52", a:5 }, metal:{ n:"🔩 Smooth metal", mu:.2, c:"#b0bec5", a:2 } };
+W6.stations.push({ id:"friction6", icon:"🧱", short:"Friction", title:"Friction Up Close", covers:["P181","P182","P183","P184","P185","P200"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🧱 Why is there friction?</h2>
+   <div class="seg" id="fcS">${Object.entries(SF6).map(([k, s], i) => `<button data-v="${k}" class="${i ? "" : "on"}">${s.n}</button>`).join("")}</div>
+   <div class="lrow" style="justify-content:center;margin-top:6px"><button class="lbtn c" id="fcO">🛢️ Add oil</button><button class="lbtn y" id="fcL">📦 Add a box on top</button><button class="lbtn" id="fcR">↺</button></div>
+   <svg class="f5sc" viewBox="0 0 400 230" id="fcV" style="margin-top:6px"></svg><div class="f5read" id="fcRd"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="fcP">🫸 Push the box</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="fcK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Friction</span> resists the sliding of two surfaces. It is caused by the <b>unevenness</b> (tiny bumps) of the surfaces in contact.</p><p>A <b>rough</b> surface increases friction. <b>Lubrication</b> (oil) reduces friction.</p><p>Friction depends on the <b>type of material</b> and how hard the surfaces press together (the <b>normal force</b> — a heavier load).</p><p><span class="kw3">Static friction</span>: not moving yet. <span class="kw2">Kinetic (sliding) friction</span>: while it slides.</p></div></div></div><div id="fcQ"></div>`;
+  let S = "brick", oil = 0, load = 1, x = 0, v = 0, st = "", t = 0;
+  const mark = tasks5($("#fcK"), [["rough", "Push on the rough brick"], ["oil", "Reduce friction with oil"], ["load", "Press harder: add a box"], ["kin", "See kinetic (sliding) friction"]], () => quiz5(el, api, "#fcQ", ["P181","P182","P183","P184","P185","P200"]));
+  const mu = () => SF6[S].mu * (oil ? .35 : 1), Ff = () => Math.round(mu() * load * 100);
+  const draw = (now = 0) => { const s = SF6[S], A = s.a * (oil ? .45 : 1);
+   let h = `<rect x="0" y="0" width="400" height="120" fill="#eef7ff"/><rect x="0" y="100" width="400" height="20" fill="${s.c}"/>`;
+   const bx = 60 + x * 30; for (let i = 0; i < load; i++) h += `<rect x="${bx}" y="${66 - i * 34}" width="60" height="34" rx="4" fill="#ffb74d" stroke="#e08a1e" stroke-width="3"/><text x="${bx + 30}" y="${89 - i * 34}" text-anchor="middle" font-size="16">📦</text>`;
+   if (st) h += arr5(bx - 4, 55, bx - 4 - Math.min(70, Ff() / 2 + 10), 55, "#e53935", 6) + `<text x="${bx - 8}" y="44" font-size="12" font-weight="900" text-anchor="end" fill="#e53935">${st === "static" ? "static friction" : "kinetic (sliding) friction"}</text>`;
+   if (oil) h += `<rect x="0" y="97" width="400" height="5" fill="#f9a825" opacity=".7"/>`;
+   // zoom window
+   h += `<rect x="20" y="132" width="360" height="92" rx="14" fill="#fff" stroke="#e6defd" stroke-width="3"/><text x="32" y="150" font-size="12" font-weight="900" fill="#5B3FD9">🔍 Zoom ×1000</text>`;
+   let top = "M40 182", bot = "M40 186";
+   for (let i = 0; i <= 34; i++){ const xx = 40 + i * 9.4, j = Math.sin(i * 2.3 + x * 3) * A, k = Math.cos(i * 1.7) * A; top += ` L${xx} ${176 + j}`; bot += ` L${xx} ${190 + k}`; }
+   h += `<path d="${top} L360 160 L40 160Z" fill="#ffcc80"/><path d="${bot} L360 218 L40 218Z" fill="${s.c}"/>`;
+   if (oil) h += `<rect x="40" y="178" width="320" height="10" fill="#f9a825" opacity=".55"/><text x="200" y="210" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">oil fills the bumps → surfaces slide easily</text>`;
+   else h += `<text x="200" y="212" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">tiny bumps catch on each other → friction</text>`;
+   $("#fcV").innerHTML = h; $("#fcRd").innerHTML = `<span>${s.n}${oil ? " + oil" : ""}</span><span>Load: ${load} box${load > 1 ? "es" : ""}</span><span>Friction force: ${Ff()} N</span>`; };
+  const reset = () => { x = 0; v = 0; st = ""; t = 0; draw(); };
+  seg5(el, "#fcS", k => { S = k; reset(); });
+  $("#fcO").onclick = () => { oil = 1 - oil; sfx.tap(); reset(); if (oil){ mark("oil"); api.hoot("Oil is a <b>lubricant</b>: it fills the bumps so the surfaces slide easily → <b>less friction</b>! 🛢️", "m_wow"); } };
+  $("#fcL").onclick = () => { load = load === 1 ? 2 : 1; sfx.tap(); reset(); if (load === 2){ mark("load"); api.hoot("Two boxes press down harder (bigger <b>normal force</b>) → <b>more friction</b>! 📦📦", "m_idea"); } };
+  $("#fcR").onclick = () => { oil = 0; load = 1; reset(); };
+  $("#fcP").onclick = () => { if (st === "static" || v > 0) return; x = 0; st = "static"; t = 0; v = 0; sfx.tap(); };
+  loop5((dt, now) => { if (!st) return; t += dt;
+   if (st === "static" && t > .8){ st = "kinetic"; v = 4.2; api.hoot("It's sliding now → <b>kinetic (sliding) friction</b> slows it down. 🧱", "m_think"); }
+   if (st === "kinetic"){ v = Math.max(0, v - mu() * load * 4 * dt); x += v * dt; if (x > 9){ x = 9; v = 0; } if (v <= 0){ st = ""; mark("kin"); if (S === "brick" && !oil){ mark("rough"); api.hoot(`Rough brick → <b>lots of friction</b> → it stopped after ${x.toFixed(1)} m. A rough surface <b>increases</b> friction!`, "m_wow"); } else api.hoot(`It slid ${x.toFixed(1)} m. Less friction → slides farther!`, "m_idea"); } }
+   draw(now); });
+  draw(); api.hoot("Zoom in! Friction comes from tiny bumps on the surfaces 🔍", "m_point");
+ }});
+
+/* 3 — AIR RESISTANCE DROP */
+const SH6 = { ball:{ n:"⚪ Crumpled ball", k:.015, d:"ball" }, sheet:{ n:"📄 Flat sheet", k:.25, d:"sheet" }, chute:{ n:"🪂 Parachute", k:.6, d:"chute" } };
+W6.stations.push({ id:"air", icon:"🪂", short:"Air Resistance", title:"Air Resistance Drop Tower", covers:["P186","P187","P188","P189","P201"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🪂 Drop tower</h2><p style="margin-top:0">Pick a <b>shape</b> and drop it. Watch the <b>air resistance</b> arrow grow as it speeds up!</p>
+   <div class="seg" id="arS">${Object.entries(SH6).map(([k, s], i) => `<button data-v="${k}" class="${i ? "" : "on"}">${s.n}</button>`).join("")}</div>
+   <svg class="f5sc" viewBox="0 0 400 300" id="arV" style="margin-top:6px"></svg><div class="f5read" id="arR"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="arD">⬇️ Drop!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="arK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Air resistance</span> is a type of <b>friction</b>. It acts <b>opposite</b> to the direction of motion.</p><p>It depends on the <b>shape</b> (surface area) of the object.</p><p>As speed <b>increases</b>, air resistance <b>increases</b>.</p><p>A <b>parachute</b> has a big surface area → more air resistance → a slower, safer fall.</p></div></div></div><div id="arQ"></div>`;
+  let S = "ball", y = 0, v = 0, run = 0; const times = {};
+  const mark = tasks5($("#arK"), [["ball", "Drop the crumpled ball"], ["sheet", "Drop the flat sheet"], ["chute", "Drop the parachute"], ["grow", "See air resistance grow with speed"]], () => quiz5(el, api, "#arQ", ["P186","P187","P188","P189","P201"]));
+  let t = 0;
+  const draw = () => { const sh = SH6[S], yy = 30 + y * 22, R = sh.k * v * v;
+   let s = `<rect x="0" y="0" width="400" height="300" fill="#e3f2fd"/><rect x="0" y="278" width="400" height="22" fill="#7cb342"/>`;
+   for (let m = 0; m <= 10; m += 2) s += `<text x="14" y="${34 + m * 22}" font-size="10" font-weight="800" fill="#5B3FD9">${10 - m} m</text>`;
+   if (sh.d === "ball") s += `<circle cx="200" cy="${yy}" r="12" fill="#fafafa" stroke="#90a4ae" stroke-width="2"/><path d="M192 ${yy - 4} l8 6 l6 -8" stroke="#b0bec5" fill="none"/>`;
+   if (sh.d === "sheet") s += `<rect x="168" y="${yy - 3}" width="64" height="6" fill="#fff" stroke="#90a4ae" transform="rotate(${Math.sin(y * 2) * 8} 200 ${yy})"/>`;
+   if (sh.d === "chute") s += `<path d="M156 ${yy - 36} q44 -44 88 0z" fill="#ff7043"/><line x1="158" y1="${yy - 36}" x2="196" y2="${yy - 4}" stroke="#555"/><line x1="242" y1="${yy - 36}" x2="204" y2="${yy - 4}" stroke="#555"/><rect x="192" y="${yy - 6}" width="16" height="14" fill="#8d6e63"/>`;
+   if (run || y > 0){ s += arr5(260, yy, 260, yy + 46, "#e53935", 6) + `<text x="268" y="${yy + 40}" font-size="12" font-weight="900" fill="#e53935">gravity</text>`;
+    if (R > .3) s += arr5(140, yy, 140, yy - Math.min(90, R * 4.5), "#1e88e5", 6) + `<text x="132" y="${yy - 10}" font-size="12" font-weight="900" fill="#1e88e5" text-anchor="end">air resistance</text>`; }
+   $("#arV").innerHTML = s; $("#arR").innerHTML = `<span>Speed: ${v.toFixed(1)} m/s</span><span>Air resistance: ${R.toFixed(1)}</span>${Object.entries(times).map(([k, tt]) => `<span>${SH6[k].n.split(" ")[0]} ${tt.toFixed(1)} s</span>`).join("")}`; };
+  seg5(el, "#arS", k => { S = k; y = 0; v = 0; run = 0; draw(); });
+  $("#arD").onclick = () => { if (run) return; y = 0; v = 0; t = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; t += dt; const a = 9.8 - SH6[S].k * v * v; v += a * dt; y += v * dt * .55;
+   if (SH6[S].k * v * v > 4 && S !== "chute") mark("grow");
+   if (y >= 11.3){ y = 11.3; run = 0; times[S] = t; mark(S);
+    api.hoot({ ball:`The small crumpled ball has little surface area → little air resistance → it fell fast (${t.toFixed(1)} s)!`, sheet:`Same paper, flat shape → more air resistance → slower (${t.toFixed(1)} s)! Air resistance depends on <b>shape</b>.`, chute:`The parachute's huge surface area → <b>lots of air resistance</b> → a slow, safe landing (${t.toFixed(1)} s)! 🪂` }[S], "m_wow"); }
+   draw(); });
+  draw(); api.hoot("Same gravity, different shapes… which falls slowest? 🪂", "m_point");
+ }});
+
+/* 4 — MAGNETIC FIELD EXPLORER */
+W6.stations.push({ id:"field", icon:"🧭", short:"Magnetic Field", title:"Magnetic Field Explorer", covers:["P190","P191","P192","P193","P194","P195","P196","P197","P198","P199","P203"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🧲 Map the magnetic field</h2><p style="margin-top:0"><b>Tap anywhere</b> around the magnet to drop a compass. The needles show the invisible field!</p>
+   <svg class="f5sc" viewBox="0 0 400 240" id="fdV"></svg>
+   <div class="lrow" style="justify-content:center;margin-top:6px"><button class="lbtn y" id="fdL">✨ Show field lines</button><button class="lbtn" id="fdC">🧹 Clear</button></div>
+   <div class="lcard" style="margin-top:8px;box-shadow:none;border:3px dashed #e6defd"><h3>🔩 Make a magnet!</h3><svg viewBox="0 0 300 130" style="width:100%" id="fdN"></svg><button class="lbtn t" id="fdRub">🧲 Rub the nail (<span id="fdRc">0</span>/6)</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="fdK"></div></div>
+    <div class="lcard"><h3>🌍 Earth: a giant magnet</h3><svg viewBox="0 0 300 180" style="width:100%;background:radial-gradient(circle,#2a2f6a,#05061a);border-radius:16px" id="fdE"></svg><button class="lbtn t" id="fdEb">🧭 Hold a compass near Earth</button></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>A magnet has <b>two poles</b>: <b>North</b> and <b>South</b>. Opposite poles <span class="kw3">attract</span>; like poles <span class="kw2">repel</span> (magnetic repulsion).</p><p>Magnetic forces act <b>over a distance</b>, between objects with magnetic properties (like <b>iron</b>).</p><p>A magnetic material in a magnetic field <b>becomes magnetized</b>.</p><p>The <b>Earth's magnetic field</b> acts like a giant magnet — a compass needle points north because it is attracted by it.</p></div></div></div><div id="fdQ"></div>`;
+  const N = [235, 120], Sp = [165, 120]; let comps = [], lines = 0, rub = 0;
+  const mark = tasks5($("#fdK"), [["c3", "Drop 3 compasses around the magnet"], ["lines", "Reveal the field lines"], ["nail", "Magnetize a nail"], ["earth", "Discover why compasses point north"]], () => quiz5(el, api, "#fdQ", ["P190","P191","P192","P193","P194","P195","P196","P197","P198","P199","P203"]));
+  const B = (x, y) => { const f = (p, q) => { const dx = x - p[0], dy = y - p[1], r = Math.max(8, Math.hypot(dx, dy)); return [q * dx / r ** 3, q * dy / r ** 3]; }; const a = f(N, 1), b = f(Sp, -1); return Math.atan2(a[1] + b[1], a[0] + b[0]); };
+  const needle = (x, y, ang, s = 1) => `<g transform="translate(${x},${y}) rotate(${ang * 180 / Math.PI})"><circle r="${14 * s}" fill="#fff8e1" stroke="#c99a00" stroke-width="2"/><polygon points="${12 * s},0 0,${-3.5 * s} 0,${3.5 * s}" fill="#e53935"/><polygon points="${-12 * s},0 0,${-3.5 * s} 0,${3.5 * s}" fill="#90a4ae"/></g>`;
+  const draw = () => { let s = "";
+   if (lines){ for (let k = 0; k < 6; k++){ const h = 22 + k * 17, w = 30 + k * 26; [-1, 1].forEach(sg => s += `<path d="M260 120 C ${260 + w} ${120 + sg * h * 1.25}, ${140 - w} ${120 + sg * h * 1.25}, 140 120" fill="none" stroke="#7e57c2" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>`); } }
+   s += `<rect x="140" y="104" width="60" height="32" rx="5" fill="#1e88e5"/><rect x="200" y="104" width="60" height="32" rx="5" fill="#e53935"/><text x="170" y="127" font-size="20" font-weight="900" fill="#fff" text-anchor="middle">S</text><text x="230" y="127" font-size="20" font-weight="900" fill="#fff" text-anchor="middle">N</text>`;
+   comps.forEach(c => s += needle(c[0], c[1], B(c[0], c[1])));
+   $("#fdV").innerHTML = s; };
+  $("#fdV").onclick = e => { const r = $("#fdV").getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 400, y = (e.clientY - r.top) / r.height * 240;
+   if (x > 135 && x < 265 && y > 98 && y < 142) return; comps.push([x, y]); if (comps.length > 14) comps.shift(); sfx.tap(); draw();
+   if (comps.length === 3){ mark("c3"); api.hoot("Each needle lines up with the <b>magnetic field</b> — it points away from <b>N</b> and toward <b>S</b>. The force acts <b>at a distance</b>! 🧭", "m_wow"); } };
+  $("#fdL").onclick = () => { lines = 1; sfx.tap(); draw(); mark("lines"); api.hoot("These are <b>field lines</b>: they leave the <b>North pole</b> and curve into the <b>South pole</b>.", "m_idea"); };
+  $("#fdC").onclick = () => { comps = []; lines = 0; draw(); };
+  const ndraw = () => { let s = `<rect x="40" y="56" width="170" height="14" rx="4" fill="#90a4ae"/><polygon points="210,56 240,63 210,70" fill="#90a4ae"/><rect x="30" y="50" width="14" height="26" rx="3" fill="#78909c"/>`;
+   if (rub >= 6) s += `<rect x="38" y="52" width="205" height="22" rx="8" fill="none" stroke="#ffd23f" stroke-width="3" opacity=".8"/>` + [0, 1, 2].map(i => `<path d="M${226 + i * 14} 78 q6 10 0 20 q-6 10 0 20" stroke="#b0bec5" stroke-width="3" fill="none"/>`).join("") + `<text x="40" y="116" font-size="13" font-weight="900" fill="#5B3FD9">✨ Magnetized! It picks up paper clips</text>`;
+   else s += `<g transform="translate(${60 + (rub % 2) * 120},20)"><rect width="34" height="22" rx="4" fill="#e53935"/><rect x="34" width="34" height="22" rx="4" fill="#1e88e5"/></g>` + [0, 1, 2].map(i => `<path d="M${230 + i * 16} 108 q6 6 0 12 q-6 6 0 12" stroke="#b0bec5" stroke-width="3" fill="none"/>`).join("");
+   $("#fdN").innerHTML = s; $("#fdRc").textContent = Math.min(6, rub); };
+  $("#fdRub").onclick = () => { if (rub >= 6) return; rub++; tone([500 + rub * 80], .05, "triangle", .05); ndraw(); if (rub === 6){ mark("nail"); api.hoot("The iron nail was in the magnet's field → it <b>became magnetized</b>! Now it attracts paper clips. 🔩✨", "m_star"); } };
+  let ea = 1.2;
+  const edraw = (hold) => { let s = ""; for (let k = 0; k < 4; k++){ const w = 70 + k * 22; s += `<ellipse cx="150" cy="90" rx="${w * .55}" ry="${w * .85}" fill="none" stroke="#4fc3f7" stroke-width="2" opacity=".6"/>`; }
+   s += `<circle cx="150" cy="90" r="40" fill="#1e88e5"/><path d="M128 72 q14 -10 26 4 q6 14 -8 18 q-12 2 -18 -22z M158 96 q12 2 16 14 q-10 12 -18 0z" fill="#7cb342"/><text x="150" y="20" font-size="13" font-weight="900" fill="#ffe9b0" text-anchor="middle">North ⬆️</text>`;
+   if (hold) s += needle(250, 90, ea, 1.3); $("#fdE").innerHTML = s; };
+  $("#fdEb").onclick = () => { sfx.tap(); let i = 0; const go = () => { ea += (-Math.PI / 2 - ea) * .2 + (i < 10 ? Math.sin(i) * .4 : 0); edraw(1); if (++i < 26) lt(go, 50); else { mark("earth"); api.hoot("The Earth's magnetic field acts like a <b>giant magnet</b> with north and south poles — the needle is <b>attracted</b> by it and points <b>north</b>! 🌍", "m_wow"); } }; go(); };
+  draw(); ndraw(); edraw(0); api.hoot("Magnetic fields are invisible… but compasses can show them! 🧭", "m_point");
+ }});
+
+/* 5 — WORK & ENERGY */
+W6.stations.push({ id:"work", icon:"💪", short:"Work", title:"Is It Work?", covers:["P205","P206","P207"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>💪 Work = Force × Distance</h2><p style="margin-top:0">Try each action. Did the object <b>move</b>? Then <b>work</b> was done!</p>
+   <div class="seg" id="wkA"><button data-v="push" class="on">📦 Push a box</button><button data-v="lift">⬆️ Lift a box</button><button data-v="wall">🧱 Push a wall</button></div>
+   <svg class="f5sc" viewBox="0 0 400 200" id="wkV" style="margin-top:6px"></svg><div class="f5big" id="wkT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="wkGo">▶️ Do it!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="wkK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Energy</span> = the ability to cause movement (or change).</p><p><span class="kw3">Work</span> = using energy to <b>move an object</b>: Work = Force × Distance.</p><p>A person <b>lifting a box</b> does work. Pushing a wall that doesn't move = <b>no work</b>!</p></div></div></div><div id="wkQ"></div>`;
+  let A = "push", p = 0, run = 0, en = 100;
+  const mark = tasks5($("#wkK"), [["push", "Push a box across the floor"], ["lift", "Lift a box up"], ["wall", "Push a wall (does it count?)"]], () => quiz5(el, api, "#wkQ", ["P205","P206","P207"]));
+  const draw = () => { let s = `<rect x="0" y="170" width="400" height="30" fill="#cfd8dc"/>`;
+   if (A === "push"){ const bx = 120 + p * 200; s += `<rect x="${bx}" y="120" width="56" height="50" rx="4" fill="#ffb74d" stroke="#e08a1e" stroke-width="3"/>${kid5(bx - 24, 148, "#7e57c2", 22)}` + (p > 0 ? arr5(120, 186, 120 + p * 200, 186, "#ffd23f", 5) + `<text x="${120 + p * 100}" y="198" font-size="11" font-weight="900" text-anchor="middle" fill="#5B3FD9">distance ${Math.round(p * 5)} m</text>` : ""); }
+   if (A === "lift"){ const by = 120 - p * 70; s += kid5(200, 148, "#ec407a", 0, 1.1) + `<rect x="176" y="${by}" width="48" height="40" rx="4" fill="#ffb74d" stroke="#e08a1e" stroke-width="3"/>` + (p > 0 ? arr5(250, 160, 250, 160 - p * 70, "#ffd23f", 5) : ""); }
+   if (A === "wall"){ s += `<rect x="230" y="20" width="80" height="150" fill="#b5523b"/>` + [0, 1, 2, 3, 4].map(i => `<line x1="230" x2="310" y1="${50 + i * 26}" y2="${50 + i * 26}" stroke="#8d3b2a" stroke-width="2"/>`).join("") + kid5(205 + Math.sin(p * 40) * 2, 148, "#7e57c2", 24); }
+   s += `<rect x="12" y="12" width="120" height="14" rx="7" fill="#eee"/><rect x="12" y="12" width="${en * 1.2}" height="14" rx="7" fill="#43a047"/><text x="14" y="42" font-size="11" font-weight="900" fill="#2e7d32">⚡ her energy</text>`; $("#wkV").innerHTML = s; };
+  seg5(el, "#wkA", k => { A = k; p = 0; run = 0; en = 100; draw(); $("#wkT").innerHTML = ""; });
+  $("#wkGo").onclick = () => { if (run) return; p = 0; en = 100; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; p = Math.min(1, p + dt / 1.6); en = Math.max(40, 100 - p * 60); draw();
+   if (p >= 1){ run = 0; mark(A);
+    if (A === "push"){ $("#wkT").innerHTML = "✅ WORK done: force + the box moved 5 m!"; api.hoot("She used <b>energy</b> to push the box and it <b>moved</b> → that's <b>work</b>! 💪", "m_wow"); }
+    if (A === "lift"){ $("#wkT").innerHTML = "✅ WORK done: lifting moves the box up!"; api.hoot("<b>Lifting a box</b> is work: a force moves it a distance upward. ⬆️", "m_star"); }
+    if (A === "wall"){ $("#wkT").innerHTML = "❌ NO work: the wall didn't move (distance = 0)"; api.hoot("She got tired, but the wall didn't move → distance = 0 → <b>no work</b>! Work needs <b>movement</b>. 🧱", "m_idea"); } } });
+  draw(); api.hoot("In science, 'work' means something special… let's test! 💪", "m_point");
+ }});
+
+/* 6 — ROLLER COASTER ENERGY */
+W6.stations.push({ id:"coaster", icon:"🎢", short:"PE & KE", title:"Roller Coaster Energy", covers:["P208","P209","P210","P211","P212","P224","P227","P228"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🎢 Energy Coaster</h2><p style="margin-top:0">Pick a starting height, then <b>release</b> the car. Watch the energy bars!</p>
+   <div class="seg" id="rcH"><button data-v=".4">🔽 Low</button><button data-v=".7">Middle</button><button data-v="1" class="on">🔝 Top</button></div>
+   <svg class="f5sc" viewBox="0 0 400 220" id="rcV" style="margin-top:6px"></svg>
+   <div id="rcB" style="margin:6px 0"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="rcGo">🚀 Release!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="rcK"></div></div><div id="rcSort"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Potential energy</span> (PE) = energy <b>stored</b> because of <b>position</b> (a rock on a cliff, a car at the top of a hill).</p><p><span class="kw3">Kinetic energy</span> (KE) = energy of <b>motion</b>. The <b>faster</b> an object moves, the <b>more</b> KE it has (a plane flying, a car on the highway).</p><p>Higher start → more PE → more speed at the bottom!</p></div></div></div><div id="rcQ"></div>`;
+  let H = 1, s = 0, v = 0, run = 0, best = {}, sorted = 0;
+  const mark = tasks5($("#rcK"), [["top", "Release from the top"], ["low", "Release from low — compare!"], ["bottom", "Find where KE is the biggest"], ["sort", "Sort PE and KE examples"]], () => quiz5(el, api, "#rcQ", ["P208","P209","P210","P211","P212","P224","P227","P228"]));
+  const hy = x => 190 - 150 * (.5 + .5 * Math.cos(x / 400 * Math.PI * 2)) * (x < 200 ? 1 : .75);
+  const pos = () => { // s: 0..1 along x from start
+   const x0 = 200 * Math.acos(2 * H - 1) / Math.PI, xe = 200 + (200 - 200 * Math.acos(2 * Math.min(1, H / .75) - 1) / Math.PI); return x0 + s * (xe - x0); };
+  const draw = () => { let d = "M0 " + hy(0); for (let x = 4; x <= 400; x += 4) d += ` L${x} ${hy(x)}`;
+   let g = `<path d="${d} L400 220 L0 220Z" fill="#c8e6c9"/><path d="${d}" fill="none" stroke="#e53935" stroke-width="7"/>`;
+   for (let x = 10; x < 400; x += 26) g += `<line x1="${x}" y1="${hy(x)}" x2="${x}" y2="220" stroke="#7e57c2" stroke-width="3" opacity=".5"/>`;
+   const x = pos(), y = hy(x), ang = Math.atan2(hy(x + 2) - hy(x - 2), 4) * 180 / Math.PI;
+   g += `<g transform="translate(${x},${y - 10}) rotate(${ang})"><rect x="-18" y="-12" width="36" height="16" rx="6" fill="#ffd23f" stroke="#c99a00" stroke-width="2"/><circle cx="-10" cy="6" r="5" fill="#333"/><circle cx="10" cy="6" r="5" fill="#333"/><circle cx="0" cy="-18" r="7" fill="#f5c9a0"/></g>`;
+   $("#rcV").innerHTML = g;
+   const top = 190 - 150 * H * 1, PE = Math.max(0, (190 - y) / 150 * 100), TOT = H * 100, KE = Math.max(0, TOT - PE);
+   $("#rcB").innerHTML = bar6("🔋 Potential energy (height)", PE, "#7e57c2") + bar6("⚡ Kinetic energy (motion)", KE, "#ff7043") + `<div class="f5read"><span>Speed: ${Math.sqrt(Math.max(0, KE)).toFixed(1)} m/s</span></div>`;
+   return { PE, KE }; };
+  seg5(el, "#rcH", k => { H = +k; s = 0; run = 0; draw(); });
+  $("#rcGo").onclick = () => { if (run) return; s = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; const e = draw(); s = Math.min(1, s + dt * (.08 + Math.sqrt(e.KE) * .04));
+   const x = pos(); if (x > 196 && x < 210){ if (H === 1) mark("bottom"); }
+   if (s >= 1){ run = 0; best[H] = 1; if (H === 1){ mark("top"); api.hoot("From the top: lots of <b>potential energy</b> → it turned into <b>kinetic energy</b> — fastest at the bottom! 🎢", "m_wow"); }
+    else if (H === .4){ mark("low"); api.hoot("A low start = <b>less PE</b> → less KE → slower ride. The car at the top of the hill had the <b>most PE</b>!", "m_idea"); }
+    else api.hoot("Middle height → medium energy. Try Top and Low too!", "m_point"); } });
+  sortGame($("#rcSort"), { title:"🔋 or ⚡? Sort the energy!", min:130, items:[["", "🪨 Rock on top of a cliff", "p"], ["", "📚 Book on a shelf", "p"], ["", "🎢 Car at the top of a hill", "p"], ["", "✈️ Plane flying", "k"], ["", "🚗 Car on the highway", "k"], ["", "⚽ Ball rolling downhill", "k"]],
+   bins:[["p", "🔋 Potential (position)"], ["k", "⚡ Kinetic (motion)"]], wrong:(n, k) => k === "p" ? "Is it MOVING? Then it's kinetic! 🤔" : "Is it still, but high up? That's stored (potential)! 🤔", onDone:() => { mark("sort"); api.hoot("Perfect! Still + high = <b>potential</b>. Moving = <b>kinetic</b>. ✅", "m_star"); } });
+  draw(); api.hoot("Where does a roller coaster get its speed? Let's ride! 🎢", "m_point");
+ }});
+
+/* 7 — LEVER & PULLEY */
+W6.stations.push({ id:"lever", icon:"🪝", short:"Lever & Pulley", title:"Lever & Pulley Workshop", covers:["P213","P214","P215","P220","P221","P225","P231"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>⚖️ Lever (seesaw)</h2><p style="margin-top:0">Move the <b>fulcrum</b> (the triangle). How much force does she need to lift the rock?</p>
+   <svg class="f5sc" viewBox="0 0 400 200" id="lvV"></svg>
+   <div class="lrow" style="justify-content:center;margin-top:6px"><button class="lbtn y" id="lvL">◀ Fulcrum</button><button class="lbtn y" id="lvR">Fulcrum ▶</button><button class="lbtn t" id="lvP">🫳 Push down!</button></div><div class="f5read" id="lvRd"></div>
+   <div class="lcard" style="margin-top:8px;box-shadow:none;border:3px dashed #e6defd"><h3>🪝 Pulley</h3><div class="seg" id="puN"><button data-v="1" class="on">1 pulley</button><button data-v="2">2 pulleys</button></div><svg class="f5sc" viewBox="0 0 400 220" id="puV" style="margin-top:6px"></svg><div class="f5read" id="puRd"></div><button class="lbtn t" id="puP">⬇️ Pull the rope DOWN</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="lvK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>A <span class="kw">lever</span> (like a <b>seesaw</b>) helps lift objects with <b>less force</b>. Fulcrum closer to the load → less effort.</p><p>A <span class="kw3">pulley</span> uses a <b>rope and wheel</b> to lift a load. It <b>changes the direction</b> of the force: pull DOWN → load goes UP.</p><p>Pulleys (cranes) lift heavy loads <b>vertically</b> — like at a <b>construction site</b>.</p></div></div></div><div id="lvQ"></div>`;
+  let f = 200, lift = 0, run = 0, n = 1, py = 0, prun = 0; const LOAD = 600;
+  const mark = tasks5($("#lvK"), [["easy", "Lift the rock with LESS force than its weight"], ["pul", "Lift with a pulley"], ["two", "Try 2 pulleys"]], () => quiz5(el, api, "#lvQ", ["P213","P214","P215","P220","P221","P225","P231"]));
+  const effort = () => Math.round(LOAD * (f - 40) / (360 - f));
+  const draw = () => { const a = -.12 + lift * .34, L = 360 - 40; let s = `<rect x="0" y="170" width="400" height="30" fill="#a5d6a7"/>`;
+   s += `<polygon points="${f},170 ${f - 22},200 ${f + 22},200" fill="#7e57c2" transform="translate(0,-30)"/>`;
+   s += `<g transform="rotate(${a * 180 / Math.PI} ${f} 140)"><rect x="30" y="134" width="340" height="10" rx="4" fill="#a1683a"/><ellipse cx="55" cy="118" rx="24" ry="18" fill="#9e9e9e"/><text x="55" y="122" font-size="10" font-weight="900" text-anchor="middle" fill="#fff">600 N</text>${kid5(350, 110, "#ec407a", 0, .8)}</g>`;
+   s += run || lift ? arr5(350, 40, 350, 80, "#1e88e5", 6) + `<text x="300" y="34" font-size="12" font-weight="900" fill="#1e88e5">effort ${effort()} N</text>` : "";
+   $("#lvV").innerHTML = s; $("#lvRd").innerHTML = `<span>Rock: 600 N</span><span>Effort needed: ${effort()} N</span>`; };
+  $("#lvL").onclick = () => { if (run) return; f = Math.max(80, f - 30); lift = 0; draw(); sfx.tap(); };
+  $("#lvR").onclick = () => { if (run) return; f = Math.min(300, f + 30); lift = 0; draw(); sfx.tap(); };
+  $("#lvP").onclick = () => { if (run) return; lift = 0; run = 1; sfx.tap(); };
+  const pdraw = () => { let s = `<rect x="0" y="200" width="400" height="20" fill="#a5d6a7"/><rect x="80" y="10" width="240" height="12" fill="#8d6e63"/>`;
+   const by = 168 - py * 110, hy = 120 + py * 60;
+   if (n === 1){ s += `<circle cx="200" cy="40" r="18" fill="#90a4ae" stroke="#455a64" stroke-width="4"/><line x1="200" y1="22" x2="200" y2="10" stroke="#455a64" stroke-width="4"/><line x1="182" y1="40" x2="182" y2="${by}" stroke="#a1887f" stroke-width="3"/><line x1="218" y1="40" x2="218" y2="${hy}" stroke="#a1887f" stroke-width="3"/>`;
+    s += `<rect x="162" y="${by}" width="40" height="32" rx="4" fill="#9e9e9e"/>` + kid5(240, hy + 50, "#7e57c2", 0, .9) + arr5(262, hy - 10, 262, hy + 30, "#1e88e5", 5) + arr5(140, by + 30, 140, by - 10, "#43a047", 5); }
+   else { const my = by - 20; s += `<circle cx="230" cy="40" r="16" fill="#90a4ae" stroke="#455a64" stroke-width="4"/><circle cx="180" cy="${my}" r="16" fill="#90a4ae" stroke="#455a64" stroke-width="4"/><line x1="150" y1="22" x2="164" y2="${my}" stroke="#a1887f" stroke-width="3"/><line x1="196" y1="${my}" x2="214" y2="40" stroke="#a1887f" stroke-width="3"/><line x1="246" y1="40" x2="246" y2="${hy}" stroke="#a1887f" stroke-width="3"/><line x1="180" y1="${my + 16}" x2="180" y2="${by}" stroke="#455a64" stroke-width="3"/>`;
+    s += `<rect x="160" y="${by}" width="40" height="32" rx="4" fill="#9e9e9e"/>` + kid5(268, hy + 50, "#7e57c2", 0, .9) + arr5(290, hy - 10, 290, hy + 30, "#1e88e5", 5) + arr5(130, by + 30, 130, by - 10, "#43a047", 5); }
+   $("#puV").innerHTML = s; $("#puRd").innerHTML = `<span>Load: 400 N ⬆️ up</span><span>Her pull: ${n === 1 ? 400 : 200} N ⬇️ down</span>`; };
+  seg5(el, "#puN", k => { n = +k; py = 0; pdraw(); });
+  $("#puP").onclick = () => { if (prun) return; py = 0; prun = 1; sfx.tap(); };
+  loop5(dt => {
+   if (run){ lift = Math.min(1, lift + dt * 1.4); draw(); if (lift >= 1){ run = 0; const e = effort();
+     if (e < LOAD){ mark("easy"); api.hoot(`Only <b>${e} N</b> to lift a 600 N rock! The <b>lever</b> lifts loads with <b>less force</b>. ⚖️`, "m_star"); } else api.hoot(`${e} N — that's MORE than the rock! Move the fulcrum <b>closer to the rock</b>. ◀`, "m_think"); } }
+   if (prun){ py = Math.min(1, py + dt * .8); pdraw(); if (py >= 1){ prun = 0; if (n === 1){ mark("pul"); api.hoot("She pulled <b>down</b> and the load went <b>up</b> — a pulley <b>changes the direction</b> of the force! 🪝", "m_wow"); } else { mark("two"); api.hoot("With 2 pulleys she needs only <b>half the force</b> (200 N)! That's how cranes lift heavy loads at construction sites. 🏗️", "m_star"); } } } });
+  draw(); pdraw(); api.hoot("Simple machines make work easier. Let's lift a heavy rock! 🪨", "m_point");
+ }});
+
+/* 8 — INCLINED PLANE, SCREW, WEDGE */
+W6.stations.push({ id:"ramp", icon:"📐", short:"Inclined Plane", title:"Ramps, Screws & Wedges", covers:["P216","P218","P222","P226","P229"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>📐 Push it up the ramp</h2><p style="margin-top:0">Lift a 500 N box onto the truck. Choose the ramp — compare the <b>force</b> and the <b>distance</b>!</p>
+   <div class="ctl"><div class="seg" id="rpL"><button data-v="0">⬆️ Lift straight up</button><button data-v="1" class="on">📐 Short steep ramp</button><button data-v="2">📏 Long gentle ramp</button></div><div class="seg" id="rpS"><button data-v="r" class="on">🧱 Rough</button><button data-v="s">✨ Smooth</button></div></div>
+   <svg class="f5sc" viewBox="0 0 400 200" id="rpV" style="margin-top:6px"></svg><div class="f5read" id="rpRd"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="rpGo">▶️ Move the box</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="rpK"></div></div>
+    <div class="lcard"><h3>🔩 A screw is a ramp!</h3><svg viewBox="0 0 300 140" style="width:100%" id="rpW"></svg><button class="lbtn t" id="rpWb">🌀 Wrap the ramp</button></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>An <span class="kw">inclined plane</span> is a <b>ramp</b> — a flat, sloped surface that lifts objects with <b>less force</b>.</p><p>It makes work easier by <b>spreading the force over a longer distance</b>.</p><p>A <b>smoother</b> ramp needs even less force (less friction).</p><p>A <b>screw</b> is an inclined plane wrapped around a rod.</p></div></div></div><div id="rpQ"></div>`;
+  let R = 1, S = "r", p = 0, run = 0, wrap = 0; const seen = {};
+  const mark = tasks5($("#rpK"), [["up", "Lift it straight up"], ["long", "Use the long gentle ramp"], ["smooth", "Use a smooth ramp"], ["screw", "Turn a ramp into a screw"]], () => quiz5(el, api, "#rpQ", ["P216","P218","P222","P226","P229"]));
+  const Dd = () => [1, 2, 4][R], Fz = () => Math.round(500 / Dd() * (R ? (S === "r" ? 1.25 : 1.02) : 1));
+  const draw = () => { const len = [0, 120, 260][R], tx = 320, ty = 80; let s = `<rect x="0" y="170" width="400" height="30" fill="#a5d6a7"/><rect x="300" y="80" width="100" height="90" fill="#1e88e5"/><rect x="300" y="60" width="60" height="22" fill="#90caf9"/><circle cx="320" cy="172" r="12" fill="#333"/><circle cx="380" cy="172" r="12" fill="#333"/>`;
+   const sx = tx - 20 - len, sy = 170; if (R) s += `<polygon points="${sx},170 ${tx - 20},${ty} ${tx - 20},170" fill="${S === "r" ? "#a1683a" : "#d7ccc8"}"/><line x1="${sx}" y1="170" x2="${tx - 20}" y2="${ty}" stroke="${S === "r" ? "#5d4037" : "#fff"}" stroke-width="4" ${S === "r" ? 'stroke-dasharray="3 3"' : ""}/>`;
+   let bx, by; if (!R){ bx = 260; by = 170 - p * 90; } else { bx = sx + p * (tx - 20 - sx); by = 170 - p * (170 - ty); }
+   const ang = R ? Math.atan2(ty - 170, (tx - 20) - sx) * 180 / Math.PI : 0;
+   s += `<g transform="translate(${bx},${by}) rotate(${ang})"><rect x="-18" y="-34" width="36" height="34" rx="3" fill="#ffb74d" stroke="#e08a1e" stroke-width="3"/></g>` + (R ? kid5(bx - 30, by + 8, "#7e57c2", 20 + ang, .8) : kid5(bx - 34, 148, "#7e57c2", 0, .9));
+   $("#rpV").innerHTML = s; $("#rpRd").innerHTML = `<span>Force: ${Fz()} N ${"💪".repeat(Math.max(1, Math.round(Fz() / 130)))}</span><span>Distance: ${Dd()} m</span>`; };
+  seg5(el, "#rpL", k => { R = +k; p = 0; run = 0; draw(); }); seg5(el, "#rpS", k => { S = k; p = 0; draw(); });
+  $("#rpGo").onclick = () => { if (run) return; p = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; p = Math.min(1, p + dt / (.6 + Dd() * .35)); draw();
+   if (p >= 1){ run = 0; if (!R){ mark("up"); api.hoot(`Straight up = <b>${Fz()} N</b> — the full weight. Hard work! Try a ramp. 😓`, "m_think"); }
+    else if (R === 2){ mark("long"); api.hoot(`Long gentle ramp: only <b>${Fz()} N</b>, but a longer distance (${Dd()} m). The ramp <b>spreads the force over a longer distance</b>! 📏`, "m_wow"); }
+    else api.hoot(`Steep ramp: ${Fz()} N over ${Dd()} m. Try the long one!`, "m_point");
+    if (R && S === "s"){ mark("smooth"); lt(() => api.hoot("A <b>smoother</b> ramp has less friction → you need <b>even less force</b>! ✨", "m_idea"), 1600); } } });
+  const wdraw = () => { let s = ""; if (!wrap) s += `<polygon points="40,110 260,110 260,30" fill="#ffcc80" stroke="#e08a1e" stroke-width="3"/><text x="150" y="130" font-size="12" font-weight="900" text-anchor="middle" fill="#5B3FD9">a paper ramp (inclined plane)</text>`;
+   else { s += `<rect x="136" y="20" width="28" height="100" rx="6" fill="#b0bec5"/>`; for (let i = 0; i < 6; i++) s += `<path d="M134 ${30 + i * 16} L166 ${38 + i * 16}" stroke="#e08a1e" stroke-width="5"/>`; s += `<polygon points="136,120 164,120 150,136" fill="#b0bec5"/><text x="210" y="70" font-size="12" font-weight="900" fill="#5B3FD9">= a screw! 🔩</text>`; }
+   $("#rpW").innerHTML = s; };
+  $("#rpWb").onclick = () => { wrap = 1 - wrap; sfx.tap(); wdraw(); if (wrap){ mark("screw"); api.hoot("Wrap a ramp around a rod → the edge becomes the <b>thread</b>. A <b>screw is an inclined plane</b>! 🔩", "m_wow"); } };
+  draw(); wdraw(); api.hoot("Which way needs the least force? Let's test! 📐", "m_point");
+ }});
+
+/* 9 — MACHINE MATCH */
+W6.stations.push({ id:"machines", icon:"🛠️", short:"Machine Match", title:"Simple Machine Match", covers:["P217","P219","P223","P230"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div id="mmSort"></div>
+   <div><div class="lcard"><h3>🪓 The wedge</h3><svg class="f5sc" viewBox="0 0 300 170" id="mmW"></svg><button class="lbtn t" id="mmCh">🪓 Chop!</button></div>
+   <div class="lcard"><h3>🧠 Remember</h3><p>All <b>simple machines</b> make <b>work easier</b>.</p><p>🪓 A <span class="kw">wedge</span> is used to <b>split or separate</b> (cut) materials — an axe, a knife.</p><p>⚖️ Lever · 🪝 Pulley · 📐 Inclined plane (a <b>screw</b> is one too!) · 🛞 Wheel & axle.</p></div></div></div><div id="mmQ"></div>`;
+  let cut = 0, sorted = 0, chopped = 0;
+  const done = () => { if (sorted && chopped) quiz5(el, api, "#mmQ", ["P217","P219","P223","P230"]); };
+  const wd = () => { const g = cut * 26; $("#mmW").innerHTML = `<rect x="0" y="140" width="300" height="30" fill="#a5d6a7"/><path d="M${110 - g} 70 h40 v70 h-40z" fill="#c58b52" stroke="#8d5a2b" stroke-width="3"/><path d="M${150 + g} 70 h40 v70 h-40z" fill="#c58b52" stroke="#8d5a2b" stroke-width="3"/><ellipse cx="${130 - g}" cy="70" rx="20" ry="6" fill="#e6c28f"/><ellipse cx="${170 + g}" cy="70" rx="20" ry="6" fill="#e6c28f"/>
+   <g transform="translate(150,${20 + cut * 50})"><polygon points="-14,0 14,0 0,30" fill="#b0bec5" stroke="#546e7a" stroke-width="2"/><rect x="8" y="-6" width="70" height="10" rx="4" fill="#a1683a"/></g>` + (cut ? arr5(150, 110, 150 - 60, 110, "#e53935", 4) + arr5(150, 110, 210, 110, "#e53935", 4) : ""); };
+  $("#mmCh").onclick = () => { if (chopped) return; sfx.tap(); let i = 0; const go = () => { cut = Math.min(1, cut + .2); wd(); if (++i < 5) lt(go, 60); else { chopped = 1; tone([160], .12, "square", .08); api.hoot("The <b>wedge</b> pushes the wood apart sideways → it <b>splits</b> the log! 🪓", "m_wow"); done(); } }; go(); };
+  sortGame($("#mmSort"), { title:"🛠️ Which simple machine is it?", sub:"Drag each tool into its machine.", min:120,
+   items:[["", "🎠 Seesaw", "lv"], ["", "🔨 Claw hammer pulling a nail", "lv"], ["", "🏗️ Crane at a construction site", "pu"], ["", "🚩 Flagpole rope", "pu"], ["", "♿ Wheelchair ramp", "ip"], ["", "🔩 Screw", "ip"], ["", "🪓 Axe", "wd"], ["", "🔪 Knife", "wd"]],
+   bins:[["lv", "⚖️ Lever"], ["pu", "🪝 Pulley"], ["ip", "📐 Inclined plane"], ["wd", "🪓 Wedge"]], wrong:() => "Think: does it lift, pull a rope, slope, or split? 🤔",
+   onDone:() => { sorted = 1; api.hoot("Machine master! 🛠️ Simple machines make <b>work easier</b>.", "m_star"); done(); } });
+  wd(); api.hoot("Every tool hides a simple machine. Can you spot them? 🛠️", "m_point");
+ }});
+
+/* 10–12 */
+W6.stations.push(bigStation([
+ { r:[1,16,24,31], lb:[1.2,48.3,23.1,6.7], t:"Mass & weight", s:0, f:["<b>Weight</b> = the force of gravity on an object; it depends on the <b>mass</b>.","Double the mass → double the weight.","On the Moon your weight is <b>less</b>; your mass is the same."] },
+ { r:[25.8,16,24,31], lb:[26.5,48.3,22.4,6.7], t:"Gravity", s:0, f:["Gravity makes objects fall toward Earth.","The pull between two objects depends on their <b>mass</b> and the <b>distance</b> between them."] },
+ { r:[50.5,16,24,31], lb:[51.1,48.4,22.4,6.6], t:"Friction", s:1, f:["Friction resists sliding; it's caused by uneven surfaces.","Rough surfaces increase it; <b>lubrication</b> (oil) reduces it.","Air resistance is a type of friction — it grows with speed and depends on shape."] },
+ { r:[75.2,16,24,31], lb:[75.8,48.4,23.1,6.6], t:"Earth's magnetism", s:3, f:["Magnets have N and S poles: like poles repel, opposite poles attract.","Magnetic forces act over a distance.","Earth acts like a giant magnet → compasses point north."] },
+ { r:[1,58,24,32], lb:[1.2,91.6,23.1,6.8], t:"Work", s:4, f:["Energy = the ability to cause movement.","<b>Work</b> = using energy to move an object (Force × Distance).","Lifting a box is work; pushing a wall that doesn't move is not."] },
+ { r:[25.8,58,24,32], lb:[26.5,91.6,22.4,6.8], t:"Potential & kinetic", s:5, f:["<b>PE</b>: stored energy due to position (a car at the top of a hill).","<b>KE</b>: energy of motion — faster → more KE (a plane flying)."] },
+ { r:[50.5,58,24,32], lb:[51.1,91.6,22.3,6.7], t:"Lever & pulley", s:6, f:["A <b>lever</b> (seesaw) lifts objects with less force.","A <b>pulley</b> (rope + wheel) changes the direction of the force — great for lifting heavy loads vertically."] },
+ { r:[75.2,58,24,32], lb:[75.8,91.7,23.1,6.6], t:"Ramp, wedge, screw, wheel", s:7, f:["<b>Inclined plane</b>: a ramp — spreads the force over a longer distance.","A <b>screw</b> is an inclined plane; a <b>wedge</b> splits materials.","Simple machines make work easier."] }
+], IMG(6, "infographic"), [[16.4,2.4,67.1,11.1], "Week 6: Forces, Energy & Machines"], true));
+W6.stations.push(cardsStation(W6, [["⚖️","Weight","Force of gravity on an object (depends on mass)"],["🌙","Weight on the Moon","Less than on Earth — mass stays the same"],["🌍","Gravity depends on","Mass and distance between objects"],["🧱","Friction is caused by","Uneven surfaces in contact"],["🛢️","Lubrication","Reduces friction"],["📦","Kinetic friction","Sliding friction while moving"],["🪂","Air resistance","Opposite to motion; grows with speed; depends on shape"],["🧲","Like poles","Repel each other"],["🧭","Compass","Points north: attracted by Earth's magnetic field"],["🔩","Magnetized","A magnetic material in a magnetic field"],["⚡","Energy","The ability to cause movement"],["💪","Work","Using energy to move an object"],["🔋","Potential energy","Stored because of position"],["🚀","Kinetic energy","Energy of motion — faster = more"],["🎠","Lever","Lifts objects with less force (seesaw)"],["🪝","Pulley","Rope + wheel; changes the direction of force"],["📐","Inclined plane","A ramp; spreads force over a longer distance"],["🌀","Screw","An inclined plane wrapped around a rod"],["🪓","Wedge","Splits or separates materials"],["🛠️","Simple machines","Make work easier"]]));
+W6.stations.push(challengeStation(6));
+W6.notes = [
+ ["⚖️ Mass, weight & gravity", ["Weight = the force of gravity acting on an object. It depends on the mass: double the mass → double the weight.", "On the Moon, weight is less than on Earth (mass stays the same).", "Gravity (the force that makes objects fall) depends on the mass of the objects and the distance between them."], "#5B3FD9"],
+ ["🧱 Friction & air resistance", ["Friction resists the sliding of two surfaces. It is caused by the unevenness of the surfaces.", "Rough surfaces increase friction; lubrication (oil) reduces it. It depends on the material and the normal force.", "Kinetic (sliding) friction acts while moving. Air resistance is a type of friction: opposite to motion, increases with speed, depends on shape. A parachute increases surface area → more air resistance."], "#f59e0b"],
+ ["🧲 Magnetism", ["A magnet has North and South poles. Like poles repel; opposite poles attract — over a distance, without contact.", "Magnetic forces act between objects with magnetic properties (iron). A magnetic material in a magnetic field becomes magnetized.", "Earth's magnetic field acts like a giant magnet → a compass needle points north."], "#0ea5e9"],
+ ["⚡ Energy & work", ["Energy = the ability to cause movement. Work = using energy to move an object (lifting a box).", "Potential energy: stored because of position (a rock on a cliff, a car at the top of a hill).", "Kinetic energy: energy of motion (a plane flying, a car on the highway). Faster → more kinetic energy."], "#ec4899"],
+ ["🛠️ Simple machines", ["Simple machines make work easier. Lever (seesaw): lifts with less force.", "Pulley (rope + wheel): changes the direction of the force; lifts heavy loads vertically (construction sites).", "Inclined plane (ramp): spreads the force over a longer distance; smoother = less force. A screw is an inclined plane. Wedge: splits or cuts."], "#14B8A6"]
+];
+LAB[6] = W6;
 
 window.__lab = { openLab, labHome, LAB };
 })();
