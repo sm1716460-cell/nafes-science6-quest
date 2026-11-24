@@ -49,7 +49,8 @@ img{user-select:none;-webkit-user-drag:none}
 .ibtn img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
 .ibtn:active{transform:scale(.92)}
 .chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.92);color:var(--pd);border-radius:999px;padding:6px 14px;font-weight:800;font-size:clamp(14px,1.3vw,19px);box-shadow:0 3px 10px rgba(20,10,80,.25);white-space:nowrap}
-.chip img{width:22px;height:22px}
+.chip img{width:22px;height:22px;flex:none;object-fit:contain}.chip{flex-shrink:0}
+@media (max-width:440px){#home .who b{display:none}#home .who{padding:3px}#home .top .round{width:42px;height:42px;font-size:20px}}
 .round{width:46px;height:46px;border-radius:50%;display:inline-grid;place-items:center;background:rgba(255,255,255,.92);color:var(--pd);box-shadow:0 3px 10px rgba(20,10,80,.25);font-size:20px;flex:none}
 .round svg{width:22px;height:22px}
 :focus-visible{outline:3px solid var(--y);outline-offset:3px}
@@ -260,6 +261,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
  .top{flex-wrap:nowrap;gap:5px;padding-left:8px;padding-right:8px}
  .who{padding-right:10px;gap:6px}.av{width:34px;height:34px;font-size:17px}
  .who b{max-width:22vw;font-size:14px}
+ .who{flex-shrink:0}
  .chip{padding:5px 8px;font-size:13px;gap:4px}.chip img{width:18px;height:18px}
  .round{width:36px;height:36px;font-size:17px}.round svg{width:18px;height:18px}
  .mrow .stars img{width:17px}.mrow .btn{padding:6px 14px}
@@ -313,8 +315,14 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .item img{width:70px;height:62px;object-fit:contain}
 .item .btn{min-height:36px;padding:4px 12px;font-size:14px;margin-top:4px}
 .item.eq{border-color:var(--t);background:#e5fbf7}
+.goalchip{position:sticky;top:6px;z-index:3;margin:6px auto 0;width:min(560px,92%);background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;border:2px solid #6e451a;box-shadow:0 0 0 2px #c9a35a,0 4px 10px rgba(0,0,0,.35);border-radius:18px;padding:6px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:700}
+.goalchip b{font-size:15px}.goalchip i{display:block;height:10px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden}.goalchip em{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
+.badge .mb{font-size:44px;line-height:1.2}
 .cinfo{display:grid;gap:8px}.cinfo>div{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;background:#faf8ff;border:2px solid #e6defd;border-radius:16px;padding:8px 12px;font-size:14px;color:#4a3f80}
 .cinfo>div span{grid-row:span 2;font-size:30px}.cinfo>div b{color:#2a1d5c;font-size:16px}.cinfo .btn{grid-column:2;justify-self:start;margin-top:6px;padding:6px 14px}
+.lbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.lbtabs button{background:#f1edff;color:#5B3FD9;font-weight:800;border-radius:99px;padding:6px 14px}.lbtabs button.on{background:#5B3FD9;color:#fff}
+.lbtabs.dark{justify-content:center}.lbtabs.dark button{background:rgba(255,255,255,.15);color:#fff;font-size:clamp(14px,2.2vh,20px)}.lbtabs.dark button.on{background:#ffd23f;color:#2a1d5c}
+.gbar{height:14px;border-radius:99px;background:#eee;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .lbfull{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 30%,#4b2fa8,#1c0f4a);color:#fff;overflow:auto;padding:2vh 3vw;text-align:center;font-family:var(--hf,inherit)}
 .lbfull h1{margin:1vh 0 0;font-size:clamp(30px,6vh,64px);color:#ffd23f}.lbsub{margin:0 0 2vh;opacity:.85;font-weight:700}.lbx{position:absolute;top:2vh;right:2vw}
 .podium{display:flex;justify-content:center;align-items:flex-end;gap:2vw}.pd{display:flex;flex-direction:column;align-items:center;width:min(26vw,260px)}
@@ -525,7 +533,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <button class="round hide-sm" id="bFull" title="Full screen" aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   <button class="round" id="bOut" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button>
  </div>
- <div id="mapScroll"><div class="brandchip" id="brandChip"><img src="img/logo.webp" alt="Andalus International Schools logo"><div>Nafes Science Quest<small>Teacher Basma Ahmed</small></div></div><div id="map"></div></div>
+ <div id="mapScroll"><div class="goalchip hide" id="goalChip"></div><div class="brandchip" id="brandChip"><img src="img/logo.webp" alt="Andalus International Schools logo"><div>Nafes Science Quest<small>Teacher Basma Ahmed</small></div></div><div id="map"></div></div>
  <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
 </section>
 
@@ -696,13 +704,15 @@ function demoApi(action, d){
    db.attempts.push(a); if (db.students[key(d.name)]) db.students[key(d.name)].last = a.ts; save();
    return { ok:true, attemptNo:a.attemptNo };
   }
-  case "sync": return { ok:true, attempts: mine(d.name) };
+  case "sync": return { ok:true, attempts: mine(d.name), goal: db.goal ? demoGoal(db) : null };
+  case "classGoal": return { ok:true, goal: db.goal ? demoGoal(db) : null };
+  case "setGoal": if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password." }; db.goal = d.target ? { target:+d.target, reward:d.reward || "", start:new Date().toISOString() } : null; save(); return { ok:true, goal: db.goal ? demoGoal(db) : null };
   case "saveProfile": { const st = db.students[key(d.name)]; if (st){ st.coins = d.coins; st.stars = d.stars; st.avatar = (d.profile || {}).avatar || 0; save(); } return { ok:true }; }
   case "getQuestions": return { ok:true, questions: db.questions };
   case "saveQuestions": db.questions = d.append ? db.questions.concat(d.questions) : d.questions; save(); return { ok:true, count:d.questions.length };
   case "teacherData":
-   if (d.teacherPass !== "Basma2026") return { ok:false, error:"Wrong teacher password. (Demo password: Basma2026)" };
-   return { ok:true, students:Object.values(db.students), attempts:db.attempts, sheetUrl:"" };
+   if (d.teacherPass !== "Basma2030") return { ok:false, error:"Wrong teacher password. (Demo password: Basma2030)" };
+   return { ok:true, students:Object.values(db.students), attempts:db.attempts, sheetUrl:"", goal: db.goal ? demoGoal(db) : null };
   case "resetPassword": {
    const s = db.students[key(d.name)]; if (!s) return { ok:false, error:"Student not found." };
    s.pass = d.newPass; save(); return { ok:true };
@@ -849,7 +859,7 @@ $("#fLogin").addEventListener("submit", async e => {
   const r = await api(mode === "new" ? "register" : "login", { name, pass });
   if (!r.ok) throw new Error(r.error);
   USER = { name:r.name, token:r.token }; ATT = r.attempts || [];
-  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile);
+  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile); api("classGoal", {}).then(g => { if (g && g.ok) setGoalLocal(g.goal); }).catch(() => {});
   $("#lPass").value = $("#lPass2").value = "";
   flushQueue(); enterHome(mode === "new");
  }catch(err){ $("#lErr").textContent = err.message || "Something went wrong. Check the internet and try again."; }
@@ -875,6 +885,7 @@ function enterHome(isNew){
  if (isNew) $("#msTitle").textContent = `Welcome ${USER.name.split(" ")[0]}! How do you want to practice?`;
 }
 function updateChips(){
+ try { renderGoal(); } catch(e){}
  const t = totals(); $("#cStars").textContent = t.stars; $("#cXp").textContent = t.xp; $("#cCoins").textContent = wallet(); applyMode();
  const n = mistakeIds().length; $("#mistN").textContent = n ? "(" + n + ")" : ""; $("#bMist").disabled = !n;
 }
@@ -1068,7 +1079,7 @@ async function finish(){
  const before = earnedBadges();
  const attempt = { week: Q.custom ? 0 : Q.w.n, mission: Q.custom ? 0 : Q.mi + 1, score: Q.score, total,
   dur: Math.round((Date.now() - Q.t0) / 1000), streak: Q.maxStreak, hints: Q.hintsUsed, wrong: Q.wrong, fixed: Q.custom ? Q.right : [],
-  weekName: (Q.custom ? "My Mistakes" : weekLabel(Q.w) + " · " + Q.w.title) + (Q.game ? " · Game: " + GAMES[Q.game].name : " · Classic"), mode: Q.game ? "game" : "classic", ts: new Date().toISOString(), student: USER.name };
+  revives: G && G.revives ? G.revives : 0, weekName: (Q.custom ? "My Mistakes" : weekLabel(Q.w) + " · " + Q.w.title) + (Q.game ? " · Game: " + GAMES[Q.game].name : " · Classic"), mode: Q.game ? "game" : "classic", ts: new Date().toISOString(), student: USER.name };
  ATT.push(attempt); store.set("att_" + USER.name.toLowerCase(), ATT);
  const newB = earnedBadges().filter(b => !before.includes(b));
  const payload = { name: USER.name, token: USER.token, attempt, missionCounts: missionCounts() };
@@ -1136,8 +1147,11 @@ $("#bMist").onclick = startMistakes;
 $("#bBadges").onclick = () => {
  const got = earnedBadges();
  modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">My Badges</h2><p>${got.length} of ${BADGES.length} collected</p></div></div>
-  <div class="bgrid">${BADGES.map(b => `<div class="badge ${got.includes(b.id) ? "" : "off"}"><img src="img/${b.img}.webp" alt=""><b>${b.name}</b><small>${b.how}</small></div>`).join("")}</div>`);
+  <div class="bgrid">${BADGES.map(b => `<div class="badge ${got.includes(b.id) ? "" : "off"}"><img src="img/${b.img}.webp" alt=""><b>${b.name}</b><small>${b.how}</small></div>`).join("")}</div>
+  <h3 style="margin:14px 0 6px">🎓 Mastery badges</h3><p style="margin:0 0 8px;font-size:13px;color:#7a6bb3">Get <b>90% or more</b> in every mission of a week to master its topic!</p>
+  <div class="bgrid">${masteryList().map(m => `<div class="badge ${m.ok ? "" : "off"}"><div class="mb">${m.ok ? "🎓" : "🔒"}</div><b>${esc(m.name)} Master</b><small>${m.done}/${m.n} missions at 90%+</small></div>`).join("")}</div>`);
 };
+function masteryList(){ const P = progress(); return WEEKS.filter(w => w.type === "study").map(w => { const n = w.missions.length; let done = 0; for (let i = 0; i < n; i++){ const x = P[w.n + "-" + (i + 1)]; if (x && x.best >= .9) done++; } return { name:w.title || weekLabel(w), n, done, ok: n > 0 && done === n }; }); }
 function toggleSound(){ SOUND = !SOUND; store.set("sound", SOUND); syncSoundBtns(); if (SOUND) sfx.tap(); }
 $("#bSound").onclick = toggleSound; $("#qSound").onclick = toggleSound;
 $("#bFull").onclick = async () => {
@@ -1168,22 +1182,68 @@ async function loadTeacher(){
 }
 $("#tRefresh").onclick = async () => { try{ await loadTeacher(); toast("Updated ✔"); }catch(e){ toast(e.message); } };
 $("#tExit").onclick = () => { TP = null; show(USER ? "home" : "login"); if (USER) renderMap(); };
-function leaderRows(){ return (TD.students || []).slice().sort((a, b) => (b.stars || 0) - (a.stars || 0) || (b.coins || 0) - (a.coins || 0) || a.name.localeCompare(b.name)); }
+let LBM = "week";
+const DAY = 864e5;
+function lbData(){
+ const now = Date.now(), A = TD.attempts || [];
+ return (TD.students || []).map(st => {
+  const k = st.name.toLowerCase(), mine = A.filter(a => String(a.student).toLowerCase() === k);
+  const wk = mine.filter(a => now - new Date(a.ts).getTime() < 7 * DAY), old = mine.filter(a => now - new Date(a.ts).getTime() >= 7 * DAY);
+  const avg = L => L.length ? L.reduce((s, a) => s + (a.total ? a.score / a.total : 0), 0) / L.length : null;
+  const aw = avg(wk), ao = avg(old);
+  return { name:st.name, avatar:st.avatar, stars:st.stars || 0, coins:st.coins || 0, week:wk.reduce((s, a) => s + (a.score || 0), 0),
+   imp: aw != null && ao != null ? Math.round((aw - ao) * 100) : null, rev:wk.reduce((s, a) => s + (a.revives || 0), 0) };
+ });
+}
+function leaderRows(mode = LBM){
+ const D = lbData();
+ if (mode === "week") return D.filter(x => x.week > 0).sort((a, b) => b.week - a.week || b.stars - a.stars);
+ if (mode === "improved") return D.filter(x => x.imp != null && x.imp > 0).sort((a, b) => b.imp - a.imp);
+ return D.sort((a, b) => b.stars - a.stars || b.coins - a.coins || a.name.localeCompare(b.name));
+}
+const LBT = { week:["⚡ This week", "Correct answers in the last 7 days"], improved:["📈 Most improved", "This week's average vs. before"], all:["🏆 All time", "Stars, then coins"] };
+const lbScore = (x, mode) => mode === "week" ? `✅ ${x.week} correct` : mode === "improved" ? `📈 +${x.imp}%` : `⭐ ${x.stars} · 🪙 ${x.coins}`;
 const heroImg = av => av ? `img/p3/h${av}_stand.webp` : "img/m_point2.webp";
 function leaderPanel(){
  const L = leaderRows();
- return `<div class="panel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button></div>
-  <p style="margin:4px 0 8px;color:#6b5ca8;font-size:13px">Ranked by ⭐ stars, then 🪙 coins. Coins & stars update when the girls play (synced from each device).</p>
-  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>⭐ Stars</th><th>🪙 Coins</th></tr></thead><tbody>
-  ${L.map((s, i) => `<tr><td>${i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td class="nm" data-stu="${esc(s.name)}">${esc(s.name)}</td><td>${s.stars || 0}</td><td>${s.coins || 0}</td></tr>`).join("") || `<tr><td colspan="4">No data yet</td></tr>`}</tbody></table></div></div>`;
+ return `<div class="panel" id="lbPanel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button><button class="btn teal" id="lbCert">🖨️ Certificates</button></div>
+  <div class="lbtabs">${Object.entries(LBT).map(([k, t]) => `<button class="${k === LBM ? "on" : ""}" data-lbm="${k}">${t[0]}</button>`).join("")}</div>
+  <p style="margin:4px 0 8px;color:#6b5ca8;font-size:13px">${LBT[LBM][1]}. ❤️ = revives this week (out of hearts — may need extra help).</p>
+  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>${LBM === "week" ? "✅ This week" : LBM === "improved" ? "📈 Change" : "⭐ Stars"}</th><th>🪙 Coins</th><th>❤️</th></tr></thead><tbody>
+  ${L.map((x, i) => `<tr><td>${i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td class="nm" data-stu="${esc(x.name)}">${esc(x.name)}</td><td>${LBM === "week" ? x.week : LBM === "improved" ? "+" + x.imp + "%" : x.stars}</td><td>${x.coins}</td><td>${x.rev ? `<b style="color:#e2483d">${x.rev}</b>` : "–"}</td></tr>`).join("") || `<tr><td colspan="5">No data yet</td></tr>`}</tbody></table></div></div>`;
+}
+function goalPanel(){
+ const g = TD.goal, pc = g && g.target ? Math.min(100, Math.round((g.progress || 0) / g.target * 100)) : 0;
+ return `<div class="panel" id="goalPanel"><h3 style="margin:0 0 6px">🎯 Class goal</h3>
+  ${g && g.target ? `<p style="margin:0 0 6px"><b>${g.progress || 0} / ${g.target}</b> correct answers since ${new Date(g.start).toLocaleDateString()} → <b>${esc(g.reward || "")}</b></p><div class="gbar"><i style="width:${pc}%"></i></div>` : `<p style="margin:0 0 6px;color:#6b5ca8">No goal yet. The whole class works together — every correct answer counts!</p>`}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><input class="inp" id="gT" type="number" min="10" placeholder="Target (e.g. 300)" style="width:150px" value="${g && g.target ? g.target : ""}"><input class="inp" id="gR" placeholder="Reward (e.g. Slime experiment party 🧪)" style="flex:1;min-width:200px" value="${g ? esc(g.reward || "") : ""}"><button class="btn" id="gSave">${g && g.target ? "Start a new goal" : "Start goal"}</button>${g && g.target ? `<button class="btn ghost" id="gClear">Remove</button>` : ""}</div></div>`;
 }
 function showLeaderboard(){
  const L = leaderRows(), top = L.slice(0, 3), order = [1, 0, 2].filter(i => top[i]);
  const d = document.createElement("div"); d.className = "lbfull";
- d.innerHTML = `<button class="btn ghost lbx">✕ Close</button><h1>🏆 Our Top Scientists</h1><p class="lbsub">Andalus International Schools · Grade 6 Science · Miss Basma Ahmed</p>
-  <div class="podium">${order.map(i => `<div class="pd p${i + 1}"><img src="${heroImg(top[i].avatar)}" alt=""><b>${esc(top[i].name)}</b><span>⭐ ${top[i].stars || 0} · 🪙 ${top[i].coins || 0}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>
-  <div class="lblist">${L.slice(3, 15).map((s, i) => `<div><b>${i + 4}</b><img src="${heroImg(s.avatar)}" alt=""><span>${esc(s.name)}</span><em>⭐ ${s.stars || 0} · 🪙 ${s.coins || 0}</em></div>`).join("")}</div>`;
- document.body.appendChild(d); d.querySelector(".lbx").onclick = () => d.remove(); try { confetti(80); } catch(e){}
+ d.innerHTML = `<button class="btn ghost lbx">✕ Close</button><h1>🏆 Our Top Scientists</h1><p class="lbsub">${LBT[LBM][0]} · Andalus International Schools · Grade 6 Science · Miss Basma Ahmed</p>
+  <div class="lbtabs dark">${Object.entries(LBT).map(([k, t]) => `<button class="${k === LBM ? "on" : ""}" data-lbf="${k}">${t[0]}</button>`).join("")}</div>
+  ${top.length ? `<div class="podium">${order.map(i => `<div class="pd p${i + 1}"><img src="${heroImg(top[i].avatar)}" alt=""><b>${esc(top[i].name)}</b><span>${lbScore(top[i], LBM)}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>` : `<p style="font-size:24px;margin-top:10vh">No scores yet — let's play! 🚀</p>`}
+  <div class="lblist">${L.slice(3, 15).map((x, i) => `<div><b>${i + 4}</b><img src="${heroImg(x.avatar)}" alt=""><span>${esc(x.name)}</span><em>${lbScore(x, LBM)}</em></div>`).join("")}</div>`;
+ document.body.appendChild(d); d.querySelector(".lbx").onclick = () => d.remove();
+ d.querySelectorAll("[data-lbf]").forEach(b => b.onclick = () => { LBM = b.dataset.lbf; d.remove(); showLeaderboard(); const lp = $("#lbPanel"); if (lp) lp.outerHTML = leaderPanel(); });
+ try { confetti(80); } catch(e){}
+}
+function printCerts(){
+ const L = leaderRows().slice(0, 3); if (!L.length) return toast("No scores yet for this board.");
+ const logo = new URL("img/logo.webp", location.href).href, title = LBM === "improved" ? "Most Improved Scientist" : LBM === "week" ? "Top Scientist of the Week" : "Top Scientist";
+ const w = window.open("", "_blank"); if (!w) return toast("Please allow pop-ups to print.");
+ w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Certificates</title><style>@page{size:A4 landscape;margin:0}body{margin:0;font-family:Georgia,serif;color:#2a1d5c}
+  .c{width:297mm;height:210mm;box-sizing:border-box;padding:14mm;page-break-after:always;background:#fffdf6}.in{height:100%;box-sizing:border-box;border:6px double #c9a35a;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10mm;position:relative}
+  .in img.lg{height:34mm}.sch{font-family:Arial,sans-serif;font-weight:700;letter-spacing:.04em;color:#7a6bb3;margin:2mm 0 6mm}.t1{font-size:15mm;color:#5B3FD9;margin:0}.t2{font-size:7mm;margin:2mm 0 8mm;color:#a8741a}
+  .nm{font-size:16mm;font-weight:700;border-bottom:2px solid #c9a35a;padding:0 14mm 2mm;margin-bottom:6mm}.why{font-size:6mm;max-width:200mm}.medal{position:absolute;top:10mm;right:14mm;font-size:22mm}.hero{position:absolute;bottom:10mm;left:14mm;height:52mm}
+  .sig{position:absolute;bottom:14mm;right:18mm;font-family:Arial,sans-serif;text-align:center}.sig b{display:block;border-top:2px solid #2a1d5c;padding-top:2mm;margin-top:12mm;min-width:60mm}.dt{position:absolute;bottom:14mm;left:50%;transform:translateX(-50%);font-family:Arial,sans-serif;color:#7a6bb3}</style></head><body>
+  ${L.map((x, i) => `<div class="c"><div class="in"><span class="medal">${["🥇","🥈","🥉"][i]}</span><img class="lg" src="${logo}" alt=""><div class="sch">ANDALUS INTERNATIONAL SCHOOLS · GRADE 6 SCIENCE</div>
+   <p class="t1">Certificate of Achievement</p><p class="t2">${title} · ${["1st", "2nd", "3rd"][i]} place</p><div class="nm">${esc(x.name)}</div>
+   <p class="why">For outstanding effort in <b>Nafes Science Quest</b> — ${lbScore(x, LBM).replace(/[⭐🪙✅📈]/g, "").trim()}. Keep shining, young scientist!</p>
+   ${x.avatar ? `<img class="hero" src="${new URL(heroImg(x.avatar), location.href).href}" alt="">` : ""}<div class="dt">${new Date().toLocaleDateString()}</div><div class="sig"><b>Miss Basma Ahmed</b>Science Teacher</div></div></div>`).join("")}
+  <script>setTimeout(()=>print(),900)<\/script></body></html>`);
+ w.document.close();
 }
 function renderTeacher(){
  const { students, attempts } = TD;
@@ -1220,7 +1280,8 @@ function renderTeacher(){
    <div class="scroll"><table class="grid"><thead><tr><th>Student</th>${WEEKS.map(w => `<th>${esc(w.type === "study" ? "W" + w.n : w.title.replace("Grand ","").replace("Mock Exam ","Mock "))}</th>`).join("")}<th>Last active</th></tr></thead>
    <tbody>${rows.map(r => `<tr><td class="nm" data-stu="${esc(r.s.name)}">${esc(r.s.name)}</td>${WEEKS.map(w => weekCell(r.atts, w)).join("")}<td>${r.atts.length ? new Date(r.atts[r.atts.length-1].ts).toLocaleDateString("en-GB") : "–"}</td></tr>`).join("") || `<tr><td colspan="16">No students yet.</td></tr>`}</tbody></table></div>
   </div>
-  ${leaderPanel(rows)}
+  ${goalPanel()}
+  ${leaderPanel()}
   <div class="row2">
    <div class="panel"><h3>Most-missed questions</h3><div class="miss">${top.map(([id, c]) => { const q = qById(id); return `<div><b class="c">${c}×</b><span>${esc(q.q)}<small>✔ ${esc(q.o[q.a])} · W${q.w} · ${esc(q.l)} · ${id}</small></span></div>`; }).join("") || "<p>No mistakes recorded yet.</p>"}</div></div>
    <div class="panel"><h3>Lessons that need re-teaching</h3>${lt.map(([l, c]) => `<div class="lessonbar"><div><div style="font-size:14px">${esc(l)}</div><div class="bar"><i style="width:${c/lmax*100}%;background:linear-gradient(90deg,#FF6B8B,#FFC93C)"></i></div></div><b style="text-align:right">${c}</b></div>`).join("") || "<p>No data yet.</p>"}
@@ -1232,7 +1293,17 @@ function renderTeacher(){
    </div>
   </div>`;
 }
-$("#tBody").addEventListener("click", e => { if (e.target.id === "lbShow") showLeaderboard(); });
+$("#tBody").addEventListener("click", async e => {
+ if (e.target.id === "lbShow") return showLeaderboard();
+ if (e.target.id === "lbCert") return printCerts();
+ const m = e.target.closest("[data-lbm]"); if (m){ LBM = m.dataset.lbm; $("#lbPanel").outerHTML = leaderPanel(); return; }
+ if (e.target.id === "gSave" || e.target.id === "gClear"){
+  const target = e.target.id === "gClear" ? 0 : +$("#gT").value, reward = e.target.id === "gClear" ? "" : $("#gR").value.trim();
+  if (e.target.id === "gSave" && (!target || target < 1)) return toast("Write a target number first 🎯");
+  try { const r = await api("setGoal", { teacherPass: TP, target, reward }); if (!r.ok) throw new Error(r.error); TD.goal = r.goal; $("#goalPanel").outerHTML = goalPanel(); toast(target ? "Class goal started! 🎯" : "Goal removed"); }
+  catch(err){ toast("Could not save: " + err.message); }
+ }
+});
 $("#tBody").addEventListener("click", async e => {
  const n = e.target.closest("[data-stu]");
  if (n){
@@ -1290,7 +1361,9 @@ function coinsInfo(){
  modal(`<div class="whead"><img src="img/w_coins.webp" alt=""><div><h2 class="h">Your coins: ${wallet()} 🪙</h2><p>What can I do with my coins?</p></div></div>
   <div class="cinfo"><div><span>⚡</span><b>Power-ups</b>Before a mission, buy an extra heart, an extra hint or a coin doubler.</div>
   <div><span>🏝️</span><b>Build your Science Island</b>Buy buildings — your island gives you free coins every day!<button class="btn yel" id="ciIsl">Open my island</button></div>
-  <div><span>🏆</span><b>Class leaderboard</b>Coins and stars put you on Miss Basma's Top Scientists board!</div></div>
+  <div><span>❤️</span><b>Revive</b>Out of hearts and missed the bonus question? Pay coins to get 3 hearts back.</div>
+  <div><span>🏆</span><b>Class leaderboard</b>Coins and stars put you on Miss Basma's Top Scientists board!</div>
+  <div><span>💎</span><b>Gems (${prof().gems || 0})</b>Collect gems inside the games — you need them for the special island buildings!</div></div>
   <h3 style="margin:10px 0 4px">How do I earn coins? 🤑</h3><p style="margin:0">✅ Correct answers · 🔥 combos · ✨ golden questions · 🪙 coins inside the games · 🎲 daily board · 🏝️ island · 🎡 daily spin.<br><b>Every coin you collect is saved — even if you leave a mission early!</b></p>`);
 }
 function starsInfo(){
@@ -1299,6 +1372,12 @@ function starsInfo(){
   <div class="cinfo"><div><span>⭐</span><b>1 star</b>60% or more — the next mission opens!</div><div><span>⭐⭐</span><b>2 stars</b>75% or more</div><div><span>⭐⭐⭐</span><b>3 stars</b>90% or more — science star!</div></div>
   <p style="margin:10px 0 0">🔁 Play a mission again to get more stars — your <b>best</b> score counts.<br>🏅 Stars win you <b>badges</b> and a place on the <b>class leaderboard</b>!</p>`);
 }
+function demoGoal(db){ const t0 = new Date(db.goal.start).getTime(); return Object.assign({}, db.goal, { progress: db.attempts.filter(a => new Date(a.ts).getTime() >= t0).reduce((s, a) => s + (a.score || 0), 0) }); }
+let GOAL = store.get("goal", null);
+function setGoalLocal(g){ GOAL = g || null; store.set("goal", GOAL); renderGoal(); }
+function renderGoal(){ const el = $("#goalChip"); if (!el) return; if (!GOAL || !GOAL.target){ el.classList.add("hide"); return; }
+ const pc = Math.min(100, Math.round((GOAL.progress || 0) / GOAL.target * 100)); el.classList.remove("hide");
+ el.innerHTML = `<b>🎯 Class goal</b><span>${GOAL.progress || 0} / ${GOAL.target} correct answers${GOAL.reward ? ` → ${esc(GOAL.reward)}` : ""}</span><i><em style="width:${pc}%"></em></i>${pc >= 100 ? "<span>🎉 Goal reached! Ask Miss Basma for your reward!</span>" : ""}`; }
 let PSYNC = 0;
 function saveProf(p){ p.ts = Date.now(); store.set(profKey(), p); pushProf(); }
 function pushProf(){ if (!USER) return; clearTimeout(PSYNC); PSYNC = setTimeout(() => { if (!USER) return; let coins = 0, stars = 0; try { coins = wallet(); stars = totals().stars; } catch(e){}
@@ -1693,6 +1772,7 @@ $("#gSound").onclick = toggleSound;
 $("#gHome").onclick = () => $("#qHome").onclick();
 function gameResultExtras(a, pct){
  if (!G) return "";
+ if (G.gems && !G.gemsDone){ G.gemsDone = 1; const pg = prof(); pg.gems = (pg.gems || 0) + G.gems; saveProf(pg); }
  if (G.boost && G.boost.includes("dbl") && !G.dblDone){ G.dblDone = 1; G.extra += G.coins; G.coins *= 2; }
  const p = prof(); p.bonus += G.extra - (G.banked || 0); G.banked = 0; G.over = true; let sticker = 0;
  if (!Q.custom && pct >= PASS && Q.w.type === "study"){ const key = Q.w.n + "-" + (Q.mi+1); sticker = missionSticker(key); }
@@ -1730,7 +1810,7 @@ async function boot(){
   USER = u; ATT = store.get("att_" + u.name.toLowerCase(), []);
   enterHome(false);
   flushQueue().then(() => api("sync", { name: u.name, token: u.token })).then(r => {
-   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); adoptProf(r.profile); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
+   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); adoptProf(r.profile); if ("goal" in r) setGoalLocal(r.goal); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
    else if (r && /log in again/i.test(r.error || "")){ store.del("user"); USER = null; show("login"); }
   }).catch(() => {});
  }
@@ -1841,6 +1921,7 @@ css.textContent = `
 .boosts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.bst{position:relative;background:#fff;border:3px solid #e6defd;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#2a1d5c}
 .bst .e{font-size:clamp(30px,5vmin,46px)}.bst b{font-size:clamp(13px,2vmin,17px)}.bst small{font-size:12px;color:#6b5fa8;font-weight:700;line-height:1.1}.bst .pr{margin-top:4px;background:#fff4cf;color:#8a5a00;border-radius:99px;padding:2px 10px;font-weight:900;display:inline-flex;gap:4px;align-items:center}
 .bst.on{border-color:#2fb36b;background:#e9fbef}.bst i{position:absolute;top:4px;right:8px;color:#2fb36b;font-weight:900;font-style:normal}.bst:disabled{opacity:.45}
+.rvpay{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}.rvpay .btn{flex:1;min-width:180px}
 .rvq{font-weight:900;font-size:clamp(15px,2.6vmin,24px);color:#2a1d5c;margin:4px 0 8px}.rvo{display:grid;gap:6px}.rvo .aopt{min-height:44px;text-align:left}.rvo .aopt b{background:var(--oc)}
 .abox>div{background:#fff;border-radius:26px;padding:24px;text-align:center;width:min(440px,90vw);animation:pop .4s}
 .abox img{width:clamp(90px,16vmin,150px)}
@@ -1947,12 +2028,13 @@ function loop(ts){
  if (!paused() && A && A.update) A.update(dt);
  if (A && A.draw) A.draw(dt);
 }
+function walletNow(){ try { return USER ? wallet() + (G ? (G.coins || 0) - (G.banked || 0) : 0) : (G ? G.coins : 0); } catch(e){ return G ? G.coins : 0; } }
 function hud(){
  if (!Q || !G) return;
  const n = Q.items.length;
  $("#aCount").textContent = Math.min(Q.i + 1, n) + "/" + n;
  $("#aBar").style.width = (Math.min(Q.i, n) / n * 100) + "%";
- $("#aCoins").textContent = G.coins;
+ $("#aCoins").textContent = walletNow();
  const m = comboMult(), cb = $("#aCombo"); cb.textContent = "x" + m; cb.classList.toggle("hide", m < 2);
  $("#aHearts").classList.toggle("hide", G.hearts == null);
  if (G.hearts != null) $("#aHearts").textContent = "❤️".repeat(Math.max(0, G.hearts)) + "🤍".repeat(Math.max(0, 3 - G.hearts));
@@ -1971,7 +2053,7 @@ function grade(k){
  if (ok){ Q.score++; Q.streak++; Q.maxStreak = Math.max(Q.maxStreak, Q.streak); Q.right.push(it.q.id); }
  else { Q.streak = 0; Q.wrong.push(it.q.id); }
  let val = 0;
- if (ok){ const m = comboMult(); val = 10 * m * (gold ? 2 : 1); G.extra += val - 10; G.coins += val; sfx.ok(); if (gold || Q.streak === 5) confetti(40);
+ if (ok){ const m = comboMult(); val = 10 * m * (gold ? 2 : 1) + (Q.custom && !Q.board ? 5 : 0); G.extra += val - 10; G.coins += val; if (Q.custom && !Q.board) setTimeout(() => { try { banner("🔧 Fix-it bonus +5!"); } catch(e){} }, 700); sfx.ok(); if (gold || Q.streak === 5) confetti(40);
   if (m > 1){ const cb = $("#aCombo"); cb.classList.remove("bump"); void cb.offsetWidth; cb.classList.add("bump"); } }
  else sfx.bad();
  hud();
@@ -2040,7 +2122,7 @@ function outOfHearts(after){
  const used = new Set((Q.items || []).map(it => it.q.id).concat(G.reviveUsed || []));
  const src = Q.w && Q.w.src ? Q.w.src : null;
  let pool = BANK.filter(q => (src ? q.w === src : true) && !used.has(q.id)); if (!pool.length) pool = BANK.filter(q => !used.has(q.id));
- const q = pick(pool); (G.reviveUsed = G.reviveUsed || []).push(q.id);
+ const q = pick(pool); (G.reviveUsed = G.reviveUsed || []).push(q.id); G.revives = (G.revives || 0) + 1;
  const ord = noShuffle(q.o) ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
  const d = document.createElement("div"); d.className = "abox rv";
  d.innerHTML = `<div><img src="img/g2/pu_heart.webp" alt="" style="width:clamp(60px,10vmin,96px)"><h3>Out of hearts!</h3><p style="margin:0 0 8px;font-weight:800">Answer this bonus question correctly to get <b>3 hearts</b> back! 💪</p>
@@ -2051,8 +2133,12 @@ function outOfHearts(after){
   b.classList.add(ok ? "ok" : "bad"); if (!ok) d.querySelector(`[data-rk="${q.a}"]`).classList.add("ok");
   if (ok){ sfx.win(); FX.starRain(12); d.querySelector(".rvf").innerHTML = `<b style="color:var(--ok)">Correct! ❤️❤️❤️ Back in the game!</b>`;
    setTimeout(() => { d.remove(); G.hearts = 3; G.hold = false; hud(); after && after(); }, 1300); }
-  else { sfx.bad(); d.querySelector(".rvf").innerHTML = `<p style="margin:6px 0">The answer is <b>${esc(q.o[q.a])}</b>. This mission ends here — your score is saved.</p><button class="btn yel full" id="rvEnd">See my results ➜</button>`;
-   d.querySelector("#rvEnd").onclick = () => { d.remove(); G.hold = false; arcDone(); }; }
+  else { sfx.bad(); const cost = 40 * Math.pow(2, G.paid || 0), have = walletNow(), can = !!USER && have >= cost;
+   d.querySelector(".rvf").innerHTML = `<p style="margin:6px 0">The answer is <b>${esc(q.o[q.a])}</b>.</p>
+    <div class="rvpay"><button class="btn yel" id="rvPay" ${can ? "" : "disabled"}>💰 Pay ${cost} coins → ❤️❤️❤️</button><button class="btn ghost" id="rvEnd">🏁 End mission & save my score</button></div>
+    <p style="margin:6px 0 0;font-size:13px;color:#7a6bb3">You have <b>${have}</b> coins.${can ? "" : ` You need ${cost - have} more.`}</p>`;
+   d.querySelector("#rvEnd").onclick = () => { d.remove(); G.hold = false; arcDone(); };
+   const pb = d.querySelector("#rvPay"); if (pb) pb.onclick = () => { if (!can) return; const p = prof(); p.spent += cost; saveProf(p); G.paid = (G.paid || 0) + 1; sfx.win(); d.remove(); G.hearts = 3; G.hold = false; hud(); banner(`❤️ Revived! -${cost} coins`); after && after(); }; }
  });
 }
 function arcDone(){
@@ -4147,12 +4233,12 @@ const ISL = [
  { id:"is_weather", n:"Weather Station", c:280, inc:18 }, { id:"is_obs", n:"Observatory", c:350, inc:22, cr:3 }, { id:"is_mine", n:"Crystal Mine", c:430, inc:26, cr:5 },
  { id:"is_volc", n:"Volcano Lab", c:520, inc:30, cr:7 }, { id:"is_rocket", n:"Rocket Pad", c:650, inc:40, cr:9 } ];
 function openIsland(){
- const p = prof(), built = p.isl || ["is_lab"], w = wallet(), cr = crystalCount();
+ const p = prof(), built = p.isl || ["is_lab"], w = wallet(), cr = p.gems || 0;
  const inc = ISL.filter(b => built.includes(b.id)).reduce((a, b) => a + b.inc, 0), canCollect = p.islDay !== today();
- modal(`<div class="whead"><img src="img/g2/is_lab.webp" alt=""><div><h2 class="h">My Science Island</h2><p><span class="wallet"><img src="img/o_coin.webp" alt="">${w}</span> coins · island makes <b>${inc}</b> coins a day</p></div></div>
+ modal(`<div class="whead"><img src="img/g2/is_lab.webp" alt=""><div><h2 class="h">My Science Island</h2><p><span class="wallet"><img src="img/o_coin.webp" alt="">${w}</span> coins · <b>💎 ${cr}</b> gems · island makes <b>${inc}</b> coins a day</p><p style="font-size:13px;margin:0">💎 Collect gems inside the games to build the special buildings!</p></div></div>
   <button class="btn ${canCollect ? "yel" : "ghost"} full" id="islCol" ${canCollect ? "" : "disabled"} style="${canCollect ? "" : "color:#7a6bb3"}">${canCollect ? `🪙 Collect today's ${inc} coins` : "✅ Collected today — come back tomorrow"}</button>
   <div class="isl" style="margin-top:10px">${ISL.map(b => { const has = built.includes(b.id), lock = b.cr && cr < b.cr;
-   return `<div class="${has ? "" : "no"}"><img src="img/g2/${has ? b.id : b.id}.webp" alt=""><div>${b.n}</div>${has ? `<div class="lk">+${b.inc}/day</div>` : lock ? `<div class="lk">🔒 needs ${b.cr} 💎</div>` : `<button class="btn yel" data-isl="${b.id}" ${w < b.c ? "disabled" : ""}><img class="coinic" src="img/o_coin.webp" alt="">${b.c}</button>`}</div>`; }).join("")}
+   return `<div class="${has ? "" : "no"}"><img src="img/g2/${has ? b.id : b.id}.webp" alt=""><div>${b.n}</div>${has ? `<div class="lk">+${b.inc}/day</div>` : lock ? `<div class="lk">🔒 needs ${b.cr} 💎 gems</div>` : `<button class="btn yel" data-isl="${b.id}" ${w < b.c ? "disabled" : ""}><img class="coinic" src="img/o_coin.webp" alt="">${b.c}${b.cr ? ` + ${b.cr}💎` : ""}</button>`}</div>`; }).join("")}
    <div><img src="img/g2/is_base.webp" alt=""><div class="lk">More land soon…</div></div></div>`);
 }
 $("#modal").addEventListener("click", e => {
@@ -4160,8 +4246,8 @@ $("#modal").addEventListener("click", e => {
  if (e.target.id === "islCol"){ const p = prof(); if (p.islDay === today()) return; const built = p.isl || ["is_lab"];
   const inc = ISL.filter(b => built.includes(b.id)).reduce((a, b) => a + b.inc, 0); p.bonus += inc; p.islDay = today(); saveProf(p); sfx.win(); confetti(40); updateChips(); applyMode(); openIsland(); return; }
  const b = e.target.closest("[data-isl]"); if (!b) return;
- const it = ISL.find(x => x.id === b.dataset.isl), p = prof(); if (wallet() < it.c) return;
- p.isl = (p.isl || ["is_lab"]).concat(it.id); p.spent += it.c; saveProf(p); sfx.win(); confetti(60); updateChips(); openIsland(); toast(`${it.n} built! 🏗️`);
+ const it = ISL.find(x => x.id === b.dataset.isl), p = prof(); if (wallet() < it.c || (it.cr && (p.gems || 0) < it.cr)) return;
+ p.isl = (p.isl || ["is_lab"]).concat(it.id); p.spent += it.c; if (it.cr) p.gems -= it.cr; saveProf(p); sfx.win(); confetti(60); updateChips(); openIsland(); toast(`${it.n} built! 🏗️`);
 });
 
 /* =====================================================================
@@ -5544,10 +5630,10 @@ st4.textContent = `
 .vtag{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(31,40,56,.85);color:#ffe9b0;font-weight:800;border-radius:12px;padding:4px 12px;font-size:clamp(13px,2vmin,18px);white-space:nowrap}
 .clues{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.clues span{background:#eee;color:#999;border-radius:99px;padding:4px 10px;font-weight:800;font-size:clamp(12px,1.9vmin,17px)}.clues span.on{background:#ffe7a8;color:#7a4b00}
 .eqn{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:6px;font-family:var(--hf)}
-.sp{background:#faf8ff;border:3px solid #e6defd;border-radius:16px;padding:6px 8px;text-align:center;min-width:92px}
-.sp .f{font-size:clamp(18px,3vmin,30px);font-weight:900;color:var(--pd)}.sp .f b{color:var(--p);font-size:1.15em}
-.sp .cc{display:flex;align-items:center;justify-content:center;gap:4px;margin:4px 0}.sp .cc button{width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;font-weight:900;font-size:20px;line-height:1}
-.sp .bl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:150px;margin:auto}
+.bsp{background:#faf8ff;border:3px solid #e6defd;border-radius:16px;padding:6px 8px;text-align:center;min-width:92px}
+.bsp .f{font-size:clamp(18px,3vmin,30px);font-weight:900;color:var(--pd)}.bsp .f b{color:var(--p);font-size:1.15em}
+.bsp .cc{display:flex;align-items:center;justify-content:center;gap:4px;margin:4px 0}.bsp .cc button{width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;font-weight:900;font-size:20px;line-height:1}
+.bsp .bl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:150px;margin:auto}
 .at{width:clamp(16px,2.6vmin,24px);height:clamp(16px,2.6vmin,24px);border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:900;font-size:clamp(9px,1.4vmin,12px);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
 .at.H{background:#8fb3ff}.at.O{background:#ef5350}.at.C{background:#444}.at.Mg{background:#9ccc65}.at.Na{background:#ab47bc}.at.Cl{background:#26a69a}
 .arrow{font-size:clamp(26px,4vmin,40px);font-weight:900;color:var(--p);align-self:center}
@@ -5650,7 +5736,7 @@ W4.stations.push({ id:"balance", icon:"⚖️", short:"Atom Balancer", title:"At
    <div><div class="lcard"><h3>🧠 Remember</h3><p><span class="kw2">Reactants</span> → <span class="kw3">Products</span>. Reactants are on the <b>left</b> of the arrow.</p><p>The big number in front is the <span class="kw">coefficient</span> = <b>how many molecules</b>.</p><p>The <span class="kw">law of conservation of mass</span>: mass stays the same in a closed system, so a <b>balanced equation</b> has the same atoms on both sides.</p><p>Example: <b>2H₂ + O₂ → 2H₂O</b> has <b>4 hydrogen atoms</b> on each side.</p></div></div></div><div id="bqQ"></div>`;
   function draw(){
    const E = EQS[ei], all = [...E.r, ...E.p];
-   const spH = ([f, at], i) => `<div class="sp"><div class="f"><b>${co[i] > 1 ? co[i] : ""}</b>${f}</div><div class="cc"><button data-m="${i}">−</button><button data-p="${i}">+</button></div><div class="bl">${Array.from({ length:co[i] }, () => Object.entries(at).map(([a, n]) => AT(a, n)).join("")).join("<span style='width:6px'></span>")}</div></div>`;
+   const spH = ([f, at], i) => `<div class="bsp"><div class="f"><b>${co[i] > 1 ? co[i] : ""}</b>${f}</div><div class="cc"><button data-m="${i}">−</button><button data-p="${i}">+</button></div><div class="bl">${Array.from({ length:co[i] }, () => Object.entries(at).map(([a, n]) => AT(a, n)).join("")).join("<span style='width:6px'></span>")}</div></div>`;
    $("#bqE").innerHTML = `<div class="eqn">${E.r.map((s, i) => spH(s, i)).join(`<span class="plus">+</span>`)}<span class="arrow">→</span>${E.p.map((s, i) => spH(s, i + E.r.length)).join(`<span class="plus">+</span>`)}</div>`;
    const cnt = side => { const c = {}; side.forEach(([f, at], k) => { const idx = side === E.r ? k : k + E.r.length; Object.entries(at).forEach(([a, n]) => c[a] = (c[a] || 0) + n * co[idx]); }); return c; };
    const L = cnt(E.r), R = cnt(E.p), els = [...new Set([...Object.keys(L), ...Object.keys(R)])];
