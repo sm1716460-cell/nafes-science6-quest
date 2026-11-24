@@ -5310,6 +5310,351 @@ W3.notes = [
 ];
 LAB[3] = W3;
 
+/* =====================================================================
+   WEEK 4 — Chemical Reactions, Acids, Bases & Salts
+   ===================================================================== */
+const W4 = { w:4, emoji:"⚗️", label:"Week 4 · Chemical Reactions, Acids & Bases", stations:[] };
+const st4 = document.createElement("style");
+st4.textContent = `
+.bench{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.bench button{background:#fff;border:3px solid #e6defd;border-radius:16px;padding:6px;font-weight:800;color:var(--pd);font-size:clamp(12px,2vmin,18px);line-height:1.15}
+.bench button .bi{height:clamp(52px,9vmin,90px);display:flex;align-items:center;justify-content:center;font-size:clamp(34px,6vmin,60px)}
+.bench button .bi img{max-height:100%;max-width:90%;object-fit:contain}
+.bench button.on{border-color:var(--p);background:#f1ecff}.bench button.ok{border-color:var(--ok);background:#e6fbef}
+.vessel{position:relative;height:clamp(200px,34vmin,340px);border-radius:20px;background:radial-gradient(circle at 50% 120%,#fff6d8,#f3ecff 60%);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.vessel .flask{position:relative;width:clamp(120px,22vmin,210px);height:78%;margin-bottom:6%}
+.vessel .flask svg{width:100%;height:100%;overflow:visible}
+.vessel .fx{position:absolute;inset:0;pointer-events:none}
+.vessel .fx i{position:absolute;border-radius:50%;background:rgba(255,255,255,.85);border:2px solid rgba(120,180,255,.7);animation:bub 1.6s linear infinite}
+@keyframes bub{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-150px) scale(1.1);opacity:0}}
+.vessel .fx .stink{position:absolute;font-size:34px;animation:stink 2s ease-in-out infinite}
+@keyframes stink{0%{transform:translateY(0) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:translateY(-90px) rotate(8deg);opacity:0}}
+.vessel .fx .flame{position:absolute;bottom:52%;left:50%;font-size:clamp(50px,9vmin,90px);transform:translateX(-50%);animation:flick .3s ease-in-out infinite alternate}
+@keyframes flick{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.12) rotate(4deg)}}
+.vtag{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(31,40,56,.85);color:#ffe9b0;font-weight:800;border-radius:12px;padding:4px 12px;font-size:clamp(13px,2vmin,18px);white-space:nowrap}
+.clues{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.clues span{background:#eee;color:#999;border-radius:99px;padding:4px 10px;font-weight:800;font-size:clamp(12px,1.9vmin,17px)}.clues span.on{background:#ffe7a8;color:#7a4b00}
+.eqn{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:6px;font-family:var(--hf)}
+.sp{background:#faf8ff;border:3px solid #e6defd;border-radius:16px;padding:6px 8px;text-align:center;min-width:92px}
+.sp .f{font-size:clamp(18px,3vmin,30px);font-weight:900;color:var(--pd)}.sp .f b{color:var(--p);font-size:1.15em}
+.sp .cc{display:flex;align-items:center;justify-content:center;gap:4px;margin:4px 0}.sp .cc button{width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;font-weight:900;font-size:20px;line-height:1}
+.sp .bl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:150px;margin:auto}
+.at{width:clamp(16px,2.6vmin,24px);height:clamp(16px,2.6vmin,24px);border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:900;font-size:clamp(9px,1.4vmin,12px);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
+.at.H{background:#8fb3ff}.at.O{background:#ef5350}.at.C{background:#444}.at.Mg{background:#9ccc65}.at.Na{background:#ab47bc}.at.Cl{background:#26a69a}
+.arrow{font-size:clamp(26px,4vmin,40px);font-weight:900;color:var(--p);align-self:center}
+.plus{font-size:clamp(22px,3.4vmin,34px);font-weight:900;color:#9a8fd0;align-self:center}
+.tally{width:100%;border-collapse:collapse;margin-top:8px;font-weight:800;text-align:center}.tally td,.tally th{border-bottom:2px solid #eee;padding:4px}.tally .ok{color:var(--ok)}.tally .no{color:var(--bad)}
+.scale{width:min(100%,360px);display:block;margin:6px auto}
+.rtcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.rtcard{background:#faf8ff;border:3px solid #e6defd;border-radius:18px;padding:8px;text-align:center;cursor:pointer}
+.rtcard h4{margin:2px 0;color:var(--p)}.rtcard svg{width:100%;height:80px}.rtcard small{font-weight:700;color:#6b5fa8}
+.rtcard.on{border-color:var(--p);background:#f1ecff}
+.rcv{width:100%;aspect-ratio:16/10;border-radius:18px;background:linear-gradient(#e8f6ff,#cfe9ff);display:block;touch-action:none}
+.ctl{display:grid;gap:8px}.ctl label{font-weight:800;color:var(--pd)}.ctl input[type=range]{width:100%}
+.seg{display:flex;gap:4px;flex-wrap:wrap}.seg button{flex:1;background:#f1edff;color:var(--p);font-weight:800;border-radius:12px;padding:6px 4px;border:3px solid transparent;font-size:clamp(12px,1.9vmin,17px)}.seg button.on{background:var(--p);color:#fff}
+.rbar{height:22px;border-radius:99px;background:#eee;overflow:hidden}.rbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#ff7a59);transition:width .4s}
+.thermo{position:relative;width:60px;height:clamp(200px,32vmin,320px);margin:auto}
+.thermo .tube{position:absolute;left:20px;top:0;width:20px;bottom:30px;border-radius:12px;background:#fff;border:3px solid #cfd8dc;overflow:hidden}
+.thermo .liq{position:absolute;left:0;right:0;bottom:0;height:45%;background:#ef5350;transition:height 2s ease,background 1s}
+.thermo .bulb{position:absolute;left:8px;bottom:0;width:44px;height:44px;border-radius:50%;border:3px solid #cfd8dc;background:#ef5350;transition:background 1s}
+.eflow{display:flex;align-items:center;justify-content:center;gap:10px;min-height:clamp(160px,28vmin,280px)}
+.eflow .big{font-size:clamp(60px,11vmin,110px)}
+.earr{font-size:clamp(28px,5vmin,46px);font-weight:900;transition:transform .6s,opacity .6s}
+.phbar{position:relative;height:clamp(46px,7vmin,64px);border-radius:14px;background:linear-gradient(90deg,#e53935,#ff7043,#ffa726,#ffca28,#ffee58,#d4e157,#9ccc65,#66bb6a,#26a69a,#26c6da,#29b6f6,#42a5f5,#5c6bc0,#7e57c2,#6a1b9a);margin:24px 4px 6px}
+.phbar .tk{position:absolute;bottom:-20px;transform:translateX(-50%);font-weight:900;color:var(--pd);font-size:clamp(11px,1.8vmin,15px)}
+.phbar .nd{position:absolute;top:-22px;transform:translateX(-50%);transition:left 1.2s cubic-bezier(.3,1.3,.5,1);font-size:28px}
+.phlab{display:flex;justify-content:space-between;font-weight:900;margin-top:22px}.phlab span:nth-child(1){color:#e53935}.phlab span:nth-child(2){color:#43a047}.phlab span:nth-child(3){color:#5c6bc0}
+.strip{width:34px;height:clamp(90px,15vmin,140px);border-radius:8px;border:3px solid #ddd;background:#f6f0dc;margin:auto;transition:background 1.2s}
+.beak{position:relative;width:clamp(150px,24vmin,230px);height:clamp(170px,27vmin,260px);margin:auto}
+.beak .gl{position:absolute;inset:0 0 0 0;border:5px solid #b7d7ef;border-top:none;border-radius:0 0 30px 30px;overflow:hidden;background:rgba(220,240,255,.3)}
+.beak .sol{position:absolute;left:0;right:0;bottom:0;height:60%;background:rgba(210,230,255,.7);transition:background .8s,height .4s}
+.beak .drop{position:absolute;left:50%;top:-30px;width:12px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#7e57c2;transform:translateX(-50%);opacity:0}
+.beak .drop.go{animation:dropf .5s ease-in}
+@keyframes dropf{0%{top:-30px;opacity:1}100%{top:40%;opacity:0}}
+.farm{display:flex;align-items:flex-end;justify-content:center;gap:6px;min-height:110px;border-radius:16px;background:linear-gradient(#bfe6ff 0 55%,#8d6e63 55%);padding:6px;font-size:clamp(30px,5vmin,48px)}
+.salt3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.salt3 div{background:#faf8ff;border:3px solid #e6defd;border-radius:16px;padding:8px;text-align:center;font-weight:700}
+.salt3 div b{display:block;color:var(--p);font-size:1.1em}.salt3 .em{font-size:40px}
+`;
+document.head.appendChild(st4);
+const AT = (el, n = 1) => Array.from({ length:n }, () => `<span class="at ${el}">${el}</span>`).join("");
+
+/* 1 — CLUE DETECTIVE: what is a chemical reaction? */
+const EXP = [
+ { k:"fizz", im:"t_vinegar", n:"Vinegar + baking soda", chem:1, clue:"bubbles", fx:"bubbles", why:"Bubbles mean <b>a gas is released</b> (carbon dioxide) — a new substance!" },
+ { k:"rust", im:"x_rust", n:"Iron nail in wet air", chem:1, clue:"color", fx:"rust", why:"Iron + oxygen → <b>rust</b>, a brand-new substance. Rusting is a <b>chemical change</b>." },
+ { k:"fire", im:"x_fire", n:"Burning wood", chem:1, clue:"heat", fx:"fire", why:"Burning gives off <b>heat and light</b> and makes new substances (ash, smoke)." },
+ { k:"egg", im:"x_egg", n:"A rotten egg", chem:1, clue:"smell", fx:"smell", why:"That awful smell is a <b>gas being formed</b> — a clue of a reaction! 🤢" },
+ { k:"ice", im:"m_ice", n:"Melting ice", chem:0, fx:"melt", why:"Melting only changes the <b>state</b> (solid → liquid). It's still water — <b>NOT</b> a chemical reaction!" },
+ { k:"paper", im:"x_paper", n:"Cutting paper", chem:0, fx:"cut", why:"Smaller pieces — but still paper. A <b>physical change</b>, not a reaction." }];
+const CLUE = { bubbles:"🫧 Bubbles / gas", color:"🎨 Color change", heat:"🔥 Heat & light", smell:"👃 New smell" };
+W4.stations.push({ id:"clues", icon:"🕵️", short:"Reaction Clues", title:"Reaction Clue Detective", covers:["P059","P060","P061","P062","P063"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🕵️ Is it a chemical reaction?</h2><p style="margin-top:0">1️⃣ Pick an experiment · 2️⃣ Watch closely · 3️⃣ Decide!</p>
+   <div class="bench" id="cxB">${EXP.map((e, i) => `<button data-e="${i}"><div class="bi"><img src="${I2(e.im)}" alt=""></div>${e.n}</button>`).join("")}</div>
+   <div class="vessel" id="cxV" style="margin-top:8px"><div class="vtag" id="cxT">Choose an experiment 👆</div><div class="flask"><svg viewBox="0 0 100 130"><path d="M38 4h24v34l30 74a10 10 0 0 1-9 14H17a10 10 0 0 1-9-14l30-74z" fill="rgba(230,245,255,.55)" stroke="#9cc7e8" stroke-width="4"/><path id="cxL" d="M27 70h46l19 42a10 10 0 0 1-9 14H17a10 10 0 0 1-9-14z" fill="#bde3ff" style="transition:fill 2s"/></svg></div><div class="fx" id="cxF"></div></div>
+   <div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn t" id="cxC">⚗️ Chemical reaction</button><button class="lbtn y" id="cxP">💧 Just a physical change</button></div></div>
+   <div><div class="lcard"><h3>🔎 Clues collected</h3><div class="clues" id="cxK">${Object.entries(CLUE).map(([k, t]) => `<span data-k="${k}">${t}</span>`).join("")}</div>
+    <p>A <span class="kw">chemical reaction</span> makes a <b>new substance</b>. Look for clues: bubbles (gas), color change, heat & light, a new smell.</p></div>
+    <div class="lcard"><h3>⚛️ What holds atoms together?</h3><svg viewBox="0 0 300 110" style="width:100%" id="cxBond"><g id="bd1"><line x1="60" y1="55" x2="100" y2="55" stroke="#7e57c2" stroke-width="6"/><circle cx="60" cy="55" r="18" fill="#8fb3ff"/><circle cx="100" cy="55" r="18" fill="#8fb3ff"/></g>
+     <g id="bd2"><line x1="200" y1="55" x2="240" y2="55" stroke="#7e57c2" stroke-width="6"/><circle cx="200" cy="55" r="22" fill="#ef5350"/><circle cx="240" cy="55" r="22" fill="#ef5350"/></g><text x="150" y="104" text-anchor="middle" font-weight="800" fill="#5B3FD9" id="bdT">H₂ + O₂</text></svg>
+     <button class="lbtn t" id="cxBb">💥 Break & make bonds</button><p>A <span class="kw">chemical bond</span> is a <b>force holding atoms together</b>. In a reaction, old bonds break and new bonds form.</p></div></div></div><div id="cxQ"></div>`;
+  let cur = null; const solved = new Set();
+  const fx = $("#cxF"), L = $("#cxL");
+  el.querySelectorAll("[data-e]").forEach(b => b.onclick = () => {
+   cur = +b.dataset.e; const e = EXP[cur]; el.querySelectorAll("[data-e]").forEach(x => x.classList.toggle("on", x === b)); sfx.tap();
+   $("#cxT").textContent = e.n; fx.innerHTML = ""; L.style.fill = "#bde3ff";
+   if (e.fx === "bubbles"){ for (let i = 0; i < 18; i++){ const d = document.createElement("i"); const s = rnd(8, 18); Object.assign(d.style, { width:s + "px", height:s + "px", left:rnd(42, 58) + "%", bottom:rnd(14, 30) + "%", animationDelay:rnd(0, 1.6) + "s" }); fx.appendChild(d); } tone([300, 500, 700], .05, "sine", .06); }
+   if (e.fx === "rust") lt(() => L.style.fill = "#b5653a", 200);
+   if (e.fx === "fire") fx.innerHTML = `<div class="flame">🔥</div>`;
+   if (e.fx === "smell") fx.innerHTML = [30, 50, 68].map((x, i) => `<div class="stink" style="left:${x}%;bottom:40%;animation-delay:${i * .6}s">〰️</div>`).join("");
+   if (e.fx === "melt") fx.innerHTML = `<div class="flame" style="bottom:38%;animation:none;transition:transform 3s;font-size:clamp(46px,8vmin,80px)" id="mIce">🧊</div>`, lt(() => { const m = $("#mIce"); if (m) m.style.transform = "translateX(-50%) scaleY(.25)"; }, 100);
+   if (e.fx === "cut") fx.innerHTML = `<div class="flame" style="bottom:40%;animation:none">📄✂️</div>`;
+   api.hoot(`Watch the <b>${e.n}</b>… Is a <b>new substance</b> forming? 🤔`, "m_think");
+  });
+  const decide = chem => { if (cur === null) return api.hoot("Pick an experiment first! 👆", "m_point"); const e = EXP[cur];
+   if (!!e.chem !== chem){ bad(chem ? $("#cxC") : $("#cxP"), e.chem ? "Look again — is something NEW forming? 👀" : "Hmm… is it still the same substance? 🤔"); return; }
+   sfx.ok(); solved.add(cur); el.querySelector(`[data-e="${cur}"]`).classList.add("ok"); api.hoot(e.why, "m_wow");
+   if (e.clue) el.querySelector(`[data-k="${e.clue}"]`).classList.add("on");
+   if (solved.size === EXP.length && !el.dataset.q){ el.dataset.q = 1; confetti(50); api.hoot("Detective work complete! 🕵️ Now the case questions!", "m_star"); miniQuiz($("#cxQ"), ["P059","P060","P061","P062","P063"], () => api.done()); } };
+  $("#cxC").onclick = () => decide(true); $("#cxP").onclick = () => decide(false);
+  let bonded = 0; $("#cxBb").onclick = () => { bonded = 1 - bonded; sfx.tap();
+   $("#cxBond").innerHTML = bonded ? `<line x1="70" y1="45" x2="110" y2="70" stroke="#7e57c2" stroke-width="6"/><line x1="150" y1="45" x2="110" y2="70" stroke="#7e57c2" stroke-width="6"/><circle cx="110" cy="70" r="22" fill="#ef5350"/><circle cx="70" cy="45" r="16" fill="#8fb3ff"/><circle cx="150" cy="45" r="16" fill="#8fb3ff"/>
+    <line x1="190" y1="45" x2="230" y2="70" stroke="#7e57c2" stroke-width="6"/><line x1="270" y1="45" x2="230" y2="70" stroke="#7e57c2" stroke-width="6"/><circle cx="230" cy="70" r="22" fill="#ef5350"/><circle cx="190" cy="45" r="16" fill="#8fb3ff"/><circle cx="270" cy="45" r="16" fill="#8fb3ff"/><text x="150" y="104" text-anchor="middle" font-weight="800" fill="#5B3FD9">2H₂O — new bonds, new substance!</text>`
+    : `<line x1="60" y1="55" x2="100" y2="55" stroke="#7e57c2" stroke-width="6"/><circle cx="60" cy="55" r="18" fill="#8fb3ff"/><circle cx="100" cy="55" r="18" fill="#8fb3ff"/><line x1="200" y1="55" x2="240" y2="55" stroke="#7e57c2" stroke-width="6"/><circle cx="200" cy="55" r="22" fill="#ef5350"/><circle cx="240" cy="55" r="22" fill="#ef5350"/><text x="150" y="104" text-anchor="middle" font-weight="800" fill="#5B3FD9">H₂ + O₂</text>`;
+   api.hoot(bonded ? "The old bonds broke and <b>new bonds</b> formed → water! 💧" : "Bonds hold atoms together. Tap again to react them! ⚛️", "m_idea"); };
+  hookCard(el, IMG(3, "hook_react"), ["Fizz! Pop! Smoke! 💥", "Something NEW is being made…", "Become a reaction detective! 🕵️"], () => api.hoot("Pick an experiment and look for the clues! 🔎", "m_point"));
+ }});
+
+/* 2 — ATOM BALANCER: equations, coefficients, conservation of mass */
+const EQS = [
+ { r:[["H₂", { H:2 }], ["O₂", { O:2 }]], p:[["H₂O", { H:2, O:1 }]], ans:[2, 1, 2], tip:"Water needs 2 hydrogen + 1 oxygen per molecule." },
+ { r:[["Mg", { Mg:1 }], ["O₂", { O:2 }]], p:[["MgO", { Mg:1, O:1 }]], ans:[2, 1, 2], tip:"Magnesium burns with a bright white light!" },
+ { r:[["CH₄", { C:1, H:4 }], ["O₂", { O:2 }]], p:[["CO₂", { C:1, O:2 }], ["H₂O", { H:2, O:1 }]], ans:[1, 2, 1, 2], tip:"This is methane burning — a combustion reaction! 🔥" }];
+W4.stations.push({ id:"balance", icon:"⚖️", short:"Atom Balancer", title:"Atom Balancer", covers:["P064","P065","P066","P067","P068"],
+ render(el, api){
+  let ei = 0, co = [];
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>⚖️ Balance the equation!</h2><p style="margin-top:0">Atoms are never created or destroyed — they just <b>rearrange</b>. Use <b>+</b> and <b>−</b> to change the <span class="kw">coefficients</span> (number of molecules).</p>
+   <div id="bqE"></div><svg class="scale" viewBox="0 0 300 120"><polygon points="140,112 160,112 150,60" fill="#b06a30"/><g id="bqBeam" style="transition:transform .6s;transform-origin:150px 60px"><rect x="30" y="56" width="240" height="8" rx="4" fill="#c27a3a"/><path d="M30 60 l-20 34 h40z" fill="#ffd9a8" stroke="#c27a3a" stroke-width="3"/><path d="M270 60 l-20 34 h40z" fill="#ffd9a8" stroke="#c27a3a" stroke-width="3"/><text x="44" y="112" text-anchor="middle" font-weight="900" fill="#5B3FD9" font-size="13">Reactants</text><text x="258" y="112" text-anchor="middle" font-weight="900" fill="#5B3FD9" font-size="13">Products</text></g></svg>
+   <table class="tally" id="bqT"></table><div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn y" id="bqN" disabled>Next equation ➜</button></div></div>
+   <div><div class="lcard"><h3>🧠 Remember</h3><p><span class="kw2">Reactants</span> → <span class="kw3">Products</span>. Reactants are on the <b>left</b> of the arrow.</p><p>The big number in front is the <span class="kw">coefficient</span> = <b>how many molecules</b>.</p><p>The <span class="kw">law of conservation of mass</span>: mass stays the same in a closed system, so a <b>balanced equation</b> has the same atoms on both sides.</p><p>Example: <b>2H₂ + O₂ → 2H₂O</b> has <b>4 hydrogen atoms</b> on each side.</p></div></div></div><div id="bqQ"></div>`;
+  function draw(){
+   const E = EQS[ei], all = [...E.r, ...E.p];
+   const spH = ([f, at], i) => `<div class="sp"><div class="f"><b>${co[i] > 1 ? co[i] : ""}</b>${f}</div><div class="cc"><button data-m="${i}">−</button><button data-p="${i}">+</button></div><div class="bl">${Array.from({ length:co[i] }, () => Object.entries(at).map(([a, n]) => AT(a, n)).join("")).join("<span style='width:6px'></span>")}</div></div>`;
+   $("#bqE").innerHTML = `<div class="eqn">${E.r.map((s, i) => spH(s, i)).join(`<span class="plus">+</span>`)}<span class="arrow">→</span>${E.p.map((s, i) => spH(s, i + E.r.length)).join(`<span class="plus">+</span>`)}</div>`;
+   const cnt = side => { const c = {}; side.forEach(([f, at], k) => { const idx = side === E.r ? k : k + E.r.length; Object.entries(at).forEach(([a, n]) => c[a] = (c[a] || 0) + n * co[idx]); }); return c; };
+   const L = cnt(E.r), R = cnt(E.p), els = [...new Set([...Object.keys(L), ...Object.keys(R)])];
+   const ok = els.every(a => L[a] === R[a]);
+   $("#bqT").innerHTML = `<tr><th>Atom</th><th>Left</th><th>Right</th><th></th></tr>` + els.map(a => `<tr><td>${AT(a)}</td><td>${L[a] || 0}</td><td>${R[a] || 0}</td><td class="${L[a] === R[a] ? "ok" : "no"}">${L[a] === R[a] ? "✅" : "❌"}</td></tr>`).join("");
+   const lm = els.reduce((s, a) => s + (L[a] || 0), 0), rm = els.reduce((s, a) => s + (R[a] || 0), 0);
+   $("#bqBeam").style.transform = `rotate(${clampL((rm - lm) * 5, -18, 18)}deg)`;
+   el.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { if (co[+b.dataset.m] > 1){ co[+b.dataset.m]--; sfx.tap(); draw(); } });
+   el.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { if (co[+b.dataset.p] < 5){ co[+b.dataset.p]++; sfx.tap(); draw(); } });
+   if (ok && !E.done){ E.done = 1; sfx.ok(); confetti(30); api.hoot(`Balanced! ⚖️ Same atoms on both sides = <b>conservation of mass</b>. ${E.tip}`, "m_star"); $("#bqN").disabled = false;
+    if (EQS.every(q => q.done) && !el.dataset.q){ el.dataset.q = 1; miniQuiz($("#bqQ"), ["P064","P065","P066","P067","P068"], () => api.done()); } }
+   else if (!ok) $("#bqN").disabled = !E.done;
+  }
+  const load = i => { ei = i; co = [...EQS[i].r, ...EQS[i].p].map(() => 1); EQS[i].done = 0; draw(); $("#bqN").textContent = i < EQS.length - 1 ? "Next equation ➜" : "↻ Start again"; api.hoot("Count the atoms on each side. Make them match! 🔢", "m_point"); };
+  $("#bqN").onclick = () => load((ei + 1) % EQS.length);
+  EQS.forEach(q => q.done = 0); load(0);
+ }});
+
+/* 3 — REACTION TYPES */
+const TYPES = {
+ comb:{ n:"Combination", f:"A + B → AB", c:"#7e57c2", s:"Two substances join to make one." },
+ decomp:{ n:"Decomposition", f:"AB → A + B", c:"#26a69a", s:"One compound breaks down into simpler substances." },
+ disp:{ n:"Displacement", f:"A + BC → AC + B", c:"#ef6c00", s:"One element replaces another." },
+ burn:{ n:"Combustion", f:"Fuel + O₂ → CO₂ + H₂O + 🔥", c:"#e53935", s:"Always needs oxygen; gives off heat and light." } };
+const TYA = {
+ comb:[["A","#42a5f5",16,[30,40],[85,40]],["B","#ec407a",16,[170,40],[115,40]]],
+ decomp:[["A","#42a5f5",16,[85,40],[30,40]],["B","#ec407a",16,[115,40],[170,40]]],
+ disp:[["A","#42a5f5",16,[25,40],[70,40]],["B","#ec407a",16,[130,40],[175,40]],["C","#66bb6a",16,[160,40],[100,40]]],
+ burn:[["C","#444",15,[50,55],[60,55]],["O","#ef5350",13,[140,55],[84,55]],["O","#ef5350",13,[166,55],[36,55]]] };
+function typeSVG(k){ return `<text class="fire" x="100" y="30" text-anchor="middle" font-size="34" style="opacity:0;transition:opacity .8s">🔥</text>` + TYA[k].map(([t, c, r, p0]) => `<g style="transition:transform 1s cubic-bezier(.4,1.4,.5,1);transform:translate(${p0[0]}px,${p0[1]}px)"><circle r="${r}" fill="${c}"/><text text-anchor="middle" dy="5" fill="#fff" font-weight="900" font-size="13">${t}</text></g>`).join(""); }
+function typeSet(svg, k, on){ svg.querySelectorAll("g").forEach((g, i) => { const p = TYA[k][i][on ? 4 : 3]; g.style.transform = `translate(${p[0]}px,${p[1]}px)`; }); const f = svg.querySelector(".fire"); if (f) f.style.opacity = on && k === "burn" ? 1 : 0; }
+W4.stations.push({ id:"types", icon:"💥", short:"Reaction Types", title:"Reaction Types Arena", covers:["P069","P070","P071","P072","P073","P084","P087"],
+ render(el, api){
+  el.innerHTML = `<div class="lcard"><h2>💥 Four kinds of reactions</h2><p style="margin-top:0">Tap each card to watch the atoms move!</p><div class="rtcards">${Object.entries(TYPES).map(([k, t]) => `<div class="rtcard" data-t="${k}" style="border-color:${t.c}55"><h4 style="color:${t.c}">${t.n}</h4><svg viewBox="0 0 200 80">${typeSVG(k)}</svg><b>${t.f}</b><br><small>${t.s}</small></div>`).join("")}</div></div><div id="tyS"></div><div id="tyQ"></div>`;
+  const seen = new Set();
+  el.querySelectorAll("[data-t]").forEach(c => c.onclick = () => { const k = c.dataset.t, on = !c.classList.contains("on"); c.classList.toggle("on", on); typeSet(c.querySelector("svg"), k, on); seen.add(k); tone(on ? [500, 800] : [800, 500], .06, "triangle", .07);
+   api.hoot(`<b>${TYPES[k].n}</b>: ${TYPES[k].s}`, "m_idea");
+   if (seen.size === 4 && !el.dataset.s){ el.dataset.s = 1; sortGame($("#tyS"), { title:"🗂️ Sort the equations!", sub:"Drag each reaction to its type.", min:150,
+    items:[[null, "2H₂ + O₂ → 2H₂O", "comb"], [null, "2Mg + O₂ → 2MgO", "comb"], [null, "2H₂O → 2H₂ + O₂", "decomp"], [null, "CaCO₃ → CaO + CO₂", "decomp"], [null, "Zn + CuSO₄ → ZnSO₄ + Cu", "disp"], [null, "Fe + CuCl₂ → FeCl₂ + Cu", "disp"], [null, "CH₄ + 2O₂ → CO₂ + 2H₂O + heat", "burn"], [null, "Wood + O₂ → ash, CO₂ + heat & light", "burn"]],
+    bins:Object.entries(TYPES).map(([k, t]) => [k, t.n]), wrong:() => "Look at the pattern: joining? breaking? swapping? burning with O₂? 🤔",
+    onDone:() => { confetti(40); api.hoot("Reaction expert! 💥 Combustion always needs <b>oxygen</b> and makes <b>heat and light</b>.", "m_star"); miniQuiz($("#tyQ"), ["P069","P070","P071","P072","P073","P084","P087"], () => api.done()); } }); }
+  });
+  api.hoot("There are 4 main types of reactions. Tap each card! 👆", "m_point");
+ }});
+
+/* 4 — SPEED LAB: reaction rate */
+W4.stations.push({ id:"rate", icon:"⏱️", short:"Speed Lab", title:"Reaction Speed Lab", covers:["P074","P075","P076","P077","P078","P086"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>⏱️ Make it react faster!</h2><p style="margin-top:0">Acid particles 🔵 hit the solid 🟫. A <b>hard enough</b> hit makes a bubble of gas 🫧.</p><canvas class="rcv" id="rcC"></canvas>
+   <p style="font-weight:800;margin:6px 0 2px">Reaction rate: <span id="rcN">0</span> bubbles / 5 s</p><div class="rbar"><i id="rcB" style="width:0"></i></div></div>
+   <div class="lcard ctl"><label>🌡️ Temperature <input type="range" id="rcT" min="0" max="100" value="30"></label>
+    <label>🧪 Concentration (how many acid particles) <input type="range" id="rcK" min="6" max="60" value="18"></label>
+    <div><label>🔨 Surface area of the solid</label><div class="seg" id="rcS"><button data-s="1" class="on">🧱 One block</button><button data-s="4">🧩 Chunks</button><button data-s="12">✨ Powder</button></div></div>
+    <div><label>🪄 Catalyst</label><div class="seg" id="rcCat"><button data-c="0" class="on">None</button><button data-c="1">Add catalyst</button></div></div>
+    <div><label>🫙 Type of container</label><div class="seg" id="rcBox"><button data-b="glass" class="on">Glass</button><button data-b="metal">Metal</button><button data-b="plastic">Plastic</button></div></div>
+    <p id="rcTip" style="font-weight:700;color:#6b5fa8">Change one thing at a time and watch the rate!</p></div></div><div id="rcQ"></div>`;
+  const cv = $("#rcC"), c = cv.getContext("2d"); let W = 0, H = 0;
+  const fit = () => { const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; c.setTransform(d, 0, 0, d, 0, 0); };
+  let T = 30, K = 18, S = 1, cat = 0, parts = [], bubs = [], hits = [], used = new Set();
+  const spawn = () => { while (parts.length < K) parts.push({ x:rnd(.05, .95), y:rnd(.05, .5), a:rnd(0, 7) }); parts.length = K; };
+  const blocks = () => { const out = [], n = S, tot = .36, sz = n === 1 ? .2 : n === 4 ? .09 : .045; for (let i = 0; i < n; i++){ const col = n === 1 ? 0 : i % (n === 4 ? 4 : 6), row = n === 12 ? Math.floor(i / 6) : 0; out.push({ x:.5 - tot / 2 + (n === 1 ? .08 : col * (tot / (n === 4 ? 4 : 6)) + .01), y:.92 - sz - row * (sz + .01), s:sz }); } return out; };
+  let B = blocks(); spawn();
+  let raf, last = performance.now();
+  function step(now){
+   const dt = Math.min(.05, (now - last) / 1000); last = now;
+   if (!W) fit();
+   const sp = .12 + T / 100 * .55, need = cat ? .2 : .45;
+   c.clearRect(0, 0, W, H);
+   const g = c.createLinearGradient(0, H * .1, 0, H); g.addColorStop(0, "rgba(130,200,255,.35)"); g.addColorStop(1, "rgba(60,150,230,.55)"); c.fillStyle = g; c.fillRect(0, H * .08, W, H * .92);
+   c.fillStyle = "#8d6e63"; B.forEach(b => { c.beginPath(); c.roundRect ? c.roundRect(b.x * W, b.y * H, b.s * W * (H / W) * 1.6, b.s * H, 4) : c.rect(b.x * W, b.y * H, b.s * W * (H / W) * 1.6, b.s * H); c.fill(); });
+   if (cat){ c.font = "26px sans-serif"; c.fillText("🪄", W * .82, H * .2); }
+   for (const p of parts){
+    p.a += rnd(-.3, .3) * (1 + T / 50); p.x += Math.cos(p.a) * sp * dt; p.y += Math.sin(p.a) * sp * dt * (W / H);
+    if (p.x < .02 || p.x > .98){ p.a = Math.PI - p.a; p.x = clampL(p.x, .02, .98); } if (p.y < .1 || p.y > .95){ p.a = -p.a; p.y = clampL(p.y, .1, .95); }
+    for (const b of B){ const bw = b.s * (H / W) * 1.6; if (p.x > b.x - .01 && p.x < b.x + bw + .01 && p.y > b.y - .02 && p.y < b.y + b.s + .01){ p.a = -p.a; p.y = b.y - .025;
+      const energy = sp * rnd(.6, 1.6); if (energy > need){ bubs.push({ x:p.x, y:b.y - .02, r:rnd(3, 6) }); hits.push(now); } } }
+    c.fillStyle = "#3f7de0"; c.beginPath(); c.arc(p.x * W, p.y * H, 5, 0, 7); c.fill();
+   }
+   bubs.forEach(b => { b.y -= dt * .25; b.x += Math.sin(now / 200 + b.r) * .0008; }); bubs = bubs.filter(b => b.y > .08);
+   c.strokeStyle = "rgba(255,255,255,.95)"; c.lineWidth = 2; bubs.forEach(b => { c.beginPath(); c.arc(b.x * W, b.y * H, b.r, 0, 7); c.stroke(); });
+   hits = hits.filter(t => now - t < 5000); $("#rcN").textContent = hits.length; $("#rcB").style.width = Math.min(100, hits.length / 1.2) + "%";
+   raf = requestAnimationFrame(step);
+  }
+  const mark = (k, msg) => { used.add(k); api.hoot(msg, "m_idea"); $("#rcTip").innerHTML = msg;
+   if (used.size >= 5 && !el.dataset.q){ el.dataset.q = 1; lt(() => { api.hoot("You found all the speed secrets! ⏱️ Quiz time!", "m_star"); miniQuiz($("#rcQ"), ["P074","P075","P076","P077","P078","P086"], () => api.done()); }, 2500); } };
+  $("#rcT").oninput = e => { T = +e.target.value; mark("t", T > 50 ? "🔥 <b>Higher temperature</b> → particles move faster and hit harder → the reaction <b>speeds up</b>!" : "❄️ <b>Lowering the temperature</b> slows the reaction down."); };
+  $("#rcK").oninput = e => { K = +e.target.value; spawn(); mark("k", "🧪 <b>Higher concentration</b> → more particles → more collisions → <b>faster</b> reaction!"); };
+  el.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { S = +b.dataset.s; B = blocks(); el.querySelectorAll("[data-s]").forEach(x => x.classList.toggle("on", x === b)); mark("s", "🔨 Breaking the solid into small pieces gives <b>more surface area</b> → more hits → <b>faster</b>!"); });
+  el.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { cat = +b.dataset.c; el.querySelectorAll("[data-c]").forEach(x => x.classList.toggle("on", x === b)); mark("c", cat ? "🪄 A <b>catalyst speeds up</b> a reaction — and it isn't used up!" : "No catalyst → slower."); });
+  el.querySelectorAll("[data-b]").forEach(b => b.onclick = () => { el.querySelectorAll("[data-b]").forEach(x => x.classList.toggle("on", x === b)); mark("b", "🫙 The <b>type of container</b> does NOT change the reaction rate!"); });
+  fit(); raf = requestAnimationFrame(step); CUR.stop = () => cancelAnimationFrame(raf);
+  api.hoot("Try every control. Which ones make more bubbles? 🫧", "m_point");
+ }});
+
+/* 5 — HOT OR COLD: exothermic vs endothermic */
+const ENR = [
+ { n:"Burning wood", e:"🪵🔥", x:1, why:"Combustion of wood <b>releases</b> heat and light." },
+ { n:"Hand warmer", e:"🧤", x:1, why:"Iron reacting with oxygen <b>releases heat</b> — warm hands!" },
+ { n:"Gas stove flame", e:"🔥", x:1, why:"Burning gas is combustion — energy <b>released to the surroundings</b>." },
+ { n:"Instant cold pack", e:"🧊🩹", x:0, why:"The reaction <b>absorbs heat</b> — it feels cold to the touch!" },
+ { n:"Photosynthesis", e:"🌿☀️", x:0, why:"Plants <b>absorb light energy</b> to make sugar — endothermic." },
+ { n:"Baking soda + vinegar", e:"🫧", x:0, why:"This fizzing reaction <b>absorbs heat</b> — the cup gets cooler!" }];
+W4.stations.push({ id:"energy", icon:"🌡️", short:"Hot or Cold?", title:"Hot or Cold? Energy Lab", covers:["P079","P080","P081","P082","P083","P085"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🌡️ Does it release or absorb heat?</h2><p style="margin-top:0">Pick a reaction, <b>predict</b>, then watch the thermometer!</p>
+   <div class="bench" id="enB">${ENR.map((r, i) => `<button data-r="${i}"><div class="bi">${r.e}</div>${r.n}</button>`).join("")}</div>
+   <div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn c" id="enX">🔥 Exothermic</button><button class="lbtn t" id="enN">❄️ Endothermic</button></div>
+   <div class="eflow"><span class="earr" id="enA1" style="opacity:0">⬅️</span><span class="big" id="enE">❓</span><span class="earr" id="enA2" style="opacity:0">➡️</span><div class="thermo"><div class="tube"><div class="liq" id="enL"></div></div><div class="bulb" id="enBu"></div></div></div><p class="cap" id="enC" style="text-align:center;font-weight:800"></p></div>
+   <div class="lcard"><h3>🧠 Remember</h3><p>🔥 <span class="kw3">Exothermic</span> = energy is <b>released</b> to the surroundings → feels <b>hot</b>. Example: combustion.</p><p>❄️ <span class="kw">Endothermic</span> = energy is <b>absorbed</b> → feels <b>cold</b>. Example: photosynthesis.</p><p>⚛️ <b>Breaking bonds absorbs energy</b>; making new bonds releases energy.</p></div></div><div id="enQ"></div>`;
+  let cur = null; const done = new Set();
+  el.querySelectorAll("[data-r]").forEach(b => b.onclick = () => { cur = +b.dataset.r; el.querySelectorAll("[data-r]").forEach(x => x.classList.toggle("on", x === b)); $("#enE").textContent = ENR[cur].e; $("#enC").textContent = ""; $("#enL").style.height = "45%"; $("#enL").style.background = $("#enBu").style.background = "#ef5350"; ["#enA1", "#enA2"].forEach(s => $(s).style.opacity = 0); sfx.tap(); api.hoot(`<b>${ENR[cur].n}</b> — hot or cold? Predict! 🤔`, "m_think"); });
+  const pred = x => { if (cur === null) return api.hoot("Pick a reaction first! 👆", "m_point"); const r = ENR[cur];
+   $("#enL").style.height = r.x ? "92%" : "12%"; $("#enL").style.background = $("#enBu").style.background = r.x ? "#e53935" : "#29b6f6";
+   $("#enA1").textContent = r.x ? "⬅️" : "➡️"; $("#enA2").textContent = r.x ? "➡️" : "⬅️"; ["#enA1", "#enA2"].forEach(s => $(s).style.opacity = 1);
+   $("#enC").innerHTML = r.x ? "🔥 Energy flows OUT → exothermic" : "❄️ Energy flows IN → endothermic";
+   if (!!r.x === x){ sfx.ok(); done.add(cur); el.querySelector(`[data-r="${cur}"]`).classList.add("ok"); api.hoot("✅ " + r.why, "m_wow"); } else { sfx.bad(); api.hoot("Not quite! " + r.why, "m_oops"); }
+   if (done.size === ENR.length && !el.dataset.q){ el.dataset.q = 1; confetti(40); miniQuiz($("#enQ"), ["P079","P080","P081","P082","P083","P085"], () => api.done()); } };
+  $("#enX").onclick = () => pred(true); $("#enN").onclick = () => pred(false);
+  api.hoot("Some reactions feel hot, some feel cold! Let's test 🌡️", "m_point");
+ }});
+
+/* 6 — ELEMENT PROPERTIES: metals, non-metals, metalloids, chemical properties */
+W4.stations.push({ id:"props", icon:"🔩", short:"Metals & Properties", title:"Metals, Non-metals & Properties", covers:["P088","P089","P090","P091","P092"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🔩 Metal in acid!</h2><p style="margin-top:0">Drop a piece of <b>magnesium metal</b> into acid and watch…</p>
+   <div class="vessel" id="maV"><div class="vtag" id="maT">Acid 🧪</div><div class="flask"><svg viewBox="0 0 100 130"><path d="M38 4h24v34l30 74a10 10 0 0 1-9 14H17a10 10 0 0 1-9-14l30-74z" fill="rgba(230,245,255,.55)" stroke="#9cc7e8" stroke-width="4"/><path d="M27 70h46l19 42a10 10 0 0 1-9 14H17a10 10 0 0 1-9-14z" fill="#d7f5c4"/></svg></div><div class="fx" id="maF"></div></div>
+   <div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn t" id="maGo">⬇️ Drop the metal</button><button class="lbtn y" id="maPop">🎈 Test the gas</button></div></div>
+   <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Metals</span>: shiny, good conductors, and they <b>react with acids to make hydrogen gas</b>.</p><p><span class="kw3">Non-metals</span>: dull, brittle, <b>poor conductors</b> of electricity.</p><p><span class="kw2">Metalloids</span> (like silicon) have properties of <b>both</b>.</p><p>A <b>chemical property</b> describes a substance's <b>ability to undergo chemical changes</b> — like <b>flammability</b>.</p></div></div><div id="maS"></div><div id="maS2"></div><div id="maQ"></div>`;
+  let gas = 0;
+  $("#maGo").onclick = () => { const f = $("#maF"); f.innerHTML = `<div class="flame" style="animation:none;bottom:30%;font-size:30px">🔩</div>`; for (let i = 0; i < 22; i++){ const d = document.createElement("i"); const s = rnd(6, 14); Object.assign(d.style, { width:s + "px", height:s + "px", left:rnd(44, 56) + "%", bottom:rnd(14, 28) + "%", animationDelay:rnd(0, 1.6) + "s" }); f.appendChild(d); }
+   gas = 1; $("#maT").textContent = "Metal + acid → hydrogen gas 🫧"; tone([300, 500, 700], .05, "sine", .06); api.hoot("Fizz! The metal reacts with the acid and makes <b>hydrogen gas</b>! 🫧", "m_wow"); };
+  $("#maPop").onclick = () => { if (!gas) return api.hoot("Drop the metal in first! ⬇️", "m_point"); tone([900, 200], .12, "square", .1); $("#maT").textContent = "💥 POP! It's hydrogen!"; api.hoot("A lit splint makes a squeaky <b>POP</b> — that's the test for hydrogen! 💥", "m_star"); el.dataset.pop = 1; };
+  sortGame($("#maS"), { title:"🧲 Metal, non-metal or metalloid?", min:140, items:[[null, "🟠 Copper", "m"], [null, "⚙️ Iron", "m"], [null, "🥇 Gold", "m"], [null, "🟡 Sulfur", "n"], [null, "💨 Oxygen", "n"], [null, "✏️ Carbon (graphite)", "n"], [null, "💻 Silicon", "x"], [null, "🔷 Boron", "x"]],
+   bins:[["m", "🔩 Metals"], ["n", "🌫️ Non-metals"], ["x", "🔀 Metalloids"]], wrong:() => "Think: shiny & conducts? dull & brittle? a bit of both? 🤔",
+   onDone:() => { api.hoot("Great sorting! Now: physical or chemical property? 🔥", "m_thumbs");
+    sortGame($("#maS2"), { title:"🔥 Physical or chemical property?", sub:"A <b>chemical property</b> can only be seen when the substance <b>changes into something new</b>.", min:150,
+     items:[[null, "🔥 Flammability", "c"], [null, "🧪 Reacts with acid", "c"], [null, "🟤 Can rust", "c"], [null, "🎨 Color", "p"], [null, "⚖️ Density", "p"], [null, "🌡️ Melting point", "p"]],
+     bins:[["p", "👀 Physical property"], ["c", "⚗️ Chemical property"]], onDone:() => { confetti(40); miniQuiz($("#maQ"), ["P088","P089","P090","P091","P092"], () => api.done()); } }); } });
+  api.hoot("Metals have a special reaction with acids… let's see! 🔩", "m_point");
+ }});
+
+/* 7 — pH LAB */
+const PHS = [
+ { n:"Battery acid", e:"🔋", ph:1, use:"<b>Sulfuric acid</b> is used in <b>car batteries</b>." },
+ { n:"Lemon juice", e:"🍋", ph:2, use:"Lemon juice is a strong food acid — pH about <b>2</b>. Acids taste <b>sour</b>." },
+ { n:"Vinegar", e:"🫙", ph:3, use:"Vinegar contains acetic acid." },
+ { n:"Milk", e:"🥛", ph:6.5, use:"Milk is just a little acidic." },
+ { n:"Distilled water", e:"💧", ph:7, use:"Pure (distilled) water is <b>neutral</b> — pH 7." },
+ { n:"Baking soda", e:"🧁", ph:9, use:"Baking soda is a weak base." },
+ { n:"Soap", e:"🧼", ph:10, use:"Soap is <b>basic</b> — bases feel slippery and taste <b>bitter</b>." },
+ { n:"Oven cleaner", e:"🧴", ph:13.5, use:"<b>Sodium hydroxide</b> (NaOH) is a strong base — used in <b>making soap</b>." }];
+const phCol = p => ["#e53935","#e53935","#ff7043","#ffa726","#ffca28","#ffee58","#d4e157","#9ccc65","#66bb6a","#26a69a","#26c6da","#29b6f6","#42a5f5","#5c6bc0","#7e57c2"][Math.round(p)];
+W4.stations.push({ id:"ph", icon:"🌈", short:"pH Lab", title:"The pH Lab", covers:["P093","P094","P095","P096","P097","P098","P099","P100","P101","P102","P103","P104","P105","P106","P107"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🌈 Test it on the pH scale!</h2><p style="margin-top:0">Pick a substance, choose an indicator, then <b>test</b>.</p>
+   <div class="bench" id="phB">${PHS.map((s, i) => `<button data-p="${i}"><div class="bi">${s.e}</div>${s.n}</button>`).join("")}</div>
+   <div class="seg" id="phI" style="margin-top:8px"><button data-i="paper" class="on">🌈 pH paper</button><button data-i="litmus">📄 Litmus</button><button data-i="phen">🩷 Phenolphthalein</button></div>
+   <div class="lrow" style="justify-content:center;align-items:center;margin-top:8px;gap:16px"><div class="strip" id="phS"></div><button class="lbtn t" id="phGo">🧪 Test!</button><div id="phR" style="font-weight:900;font-size:clamp(16px,2.6vmin,26px);color:var(--pd)">pH = ?</div></div>
+   <div class="phbar" id="phBar">${Array.from({ length:15 }, (_, i) => `<span class="tk" style="left:${i / 14 * 100}%">${i}</span>`).join("")}<span class="nd" id="phN" style="left:50%">⬇️</span></div><div class="phlab"><span>⬅ ACIDS (below 7)</span><span>NEUTRAL 7</span><span>BASES (above 7) ➡</span></div></div>
+   <div class="lcard"><h3>🧠 Remember</h3><p><b>pH</b> = <span class="kw">potential of Hydrogen</span>. Scale 0–14.</p><p>🍋 <span class="kw3">Acids</span>: pH <b>below 7</b>, release <b>H⁺ ions</b>, taste sour. Examples: <b>HCl</b>, sulfuric acid.</p><p>🧼 <span class="kw">Bases</span>: pH <b>above 7</b>, taste <b>bitter</b>, feel slippery. Example: <b>sodium hydroxide</b>, soap.</p><p>💧 pH <b>7</b> = <span class="kw2">neutral</span> (distilled water).</p><p>🩷 <b>Phenolphthalein</b> turns <b>pink in a base</b>. Litmus: red in acid, blue in base.</p><p>⚠️ Never taste or touch lab chemicals!</p></div></div><div id="phSort"></div><div id="phQ"></div>`;
+  let cur = null, ind = "paper"; const tested = new Set();
+  el.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { cur = +b.dataset.p; el.querySelectorAll("[data-p]").forEach(x => x.classList.toggle("on", x === b)); $("#phS").style.background = "#f6f0dc"; $("#phR").textContent = "pH = ?"; sfx.tap(); api.hoot(`<b>${PHS[cur].n}</b>: acid, base or neutral? Test it! 🧪`, "m_think"); });
+  el.querySelectorAll("[data-i]").forEach(b => b.onclick = () => { ind = b.dataset.i; el.querySelectorAll("[data-i]").forEach(x => x.classList.toggle("on", x === b)); $("#phS").style.background = ind === "phen" ? "rgba(255,255,255,.6)" : ind === "litmus" ? "#c9a3d9" : "#f6f0dc"; sfx.tap(); });
+  $("#phGo").onclick = () => { if (cur === null) return api.hoot("Pick a substance first! 👆", "m_point"); const s = PHS[cur];
+   const col = ind === "paper" ? phCol(s.ph) : ind === "litmus" ? (s.ph < 7 ? "#e53935" : s.ph > 7 ? "#3f6fd8" : "#c9a3d9") : (s.ph > 8 ? "#ff5fb0" : "rgba(255,255,255,.6)");
+   $("#phS").style.background = col; $("#phN").style.left = (s.ph / 14 * 100) + "%"; tone([500, 800], .06, "triangle", .07);
+   const kind = s.ph < 7 ? "ACID 🍋" : s.ph > 7 ? "BASE 🧼" : "NEUTRAL 💧";
+   $("#phR").innerHTML = ind === "paper" ? `pH ≈ ${s.ph}<br><small>${kind}</small>` : ind === "litmus" ? `Litmus: ${s.ph < 7 ? "RED → acid" : s.ph > 7 ? "BLUE → base" : "no change"}` : `Phenolphthalein: ${s.ph > 8 ? "PINK → base!" : "colorless"}`;
+   tested.add(cur); api.hoot(s.use, s.ph > 7 ? "m_idea" : "m_wow");
+   if (tested.size >= 6 && !el.dataset.s){ el.dataset.s = 1; sortGame($("#phSort"), { title:"🗂️ Acid, base or neutral?", min:140,
+     items:[[null, "🍋 Lemon juice", "a"], [null, "🧪 HCl", "a"], [null, "🔋 Sulfuric acid", "a"], [null, "🧼 Soap", "b"], [null, "🧴 Sodium hydroxide", "b"], [null, "🧁 Baking soda", "b"], [null, "💧 Distilled water", "n"]],
+     bins:[["a", "🍋 Acid (pH < 7)"], ["n", "💧 Neutral (pH 7)"], ["b", "🧼 Base (pH > 7)"]], onDone:() => { confetti(40); miniQuiz($("#phQ"), ["P093","P094","P095","P096","P097","P098","P099","P100","P101","P102","P103","P104","P105","P106","P107"], () => api.done()); } }); } };
+  api.hoot("Acids are below 7, bases are above 7. Let's test! 🌈", "m_point");
+ }});
+
+/* 8 — NEUTRALIZATION & SALTS */
+W4.stations.push({ id:"neutral", icon:"🧂", short:"Neutralize!", title:"Neutralization & Salts", covers:["P108","P109","P110","P111","P112","P113","P114","P115","P116","P117"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🧂 Acid + base = ?</h2><p style="margin-top:0">The beaker has <b>HCl (acid)</b> and a few drops of <b>phenolphthalein</b>. Add <b>NaOH (base)</b> drop by drop until it's <b>neutral</b>!</p>
+   <div class="lrow" style="justify-content:center;align-items:flex-end;gap:16px"><div class="beak"><div class="gl"><div class="sol" id="nuS"></div></div><div class="drop" id="nuD"></div></div>
+    <div style="text-align:center"><div style="font-weight:900;color:var(--pd)">pH meter</div><div id="nuP" style="font-family:var(--hf);font-size:clamp(34px,6vmin,60px);font-weight:900;color:#e53935">1.0</div><div id="nuK" style="font-weight:800">ACID</div></div></div>
+   <div class="lrow" style="justify-content:center;margin-top:8px"><button class="lbtn t" id="nu1">💧 Add 1 drop</button><button class="lbtn y" id="nu5">💧💧 Add 5 drops</button><button class="lbtn" id="nuR">↻ Reset</button></div>
+   <div id="nuEq" style="text-align:center;font-family:var(--hf);font-size:clamp(17px,2.8vmin,28px);font-weight:900;color:var(--pd);min-height:40px;margin-top:6px"></div></div>
+   <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Neutralization</span>: an <b>acid reacts with a base</b>.</p><p>It always makes <b>water</b> + a <b>salt</b>.</p><p><b>HCl + NaOH → NaCl + H₂O</b></p><p>A <span class="kw2">salt</span> is a substance formed by the reaction of an acid and a base. <b>Sodium chloride</b> is a salt.</p></div></div>
+   <div class="lcard"><h3>🧂 Salts (and a base) in real life</h3><div class="salt3"><div><span class="em">🍟</span><b>Sodium chloride (NaCl)</b>Table salt — used in <b>food</b>.</div><div><span class="em">🏗️</span><b>Calcium carbonate (CaCO₃)</b>Used in <b>construction</b> (limestone, cement).</div><div><span class="em">🌾</span><b>Calcium hydroxide</b>A base farmers use to <b>neutralize acidic soil</b>.</div></div>
+    <h3 style="margin-top:10px">🌾 Fix the farm!</h3><p>This soil is too acidic (pH 5) — the plants are sad. Add calcium hydroxide (lime)!</p><div class="farm" id="nuF">🥀🥀🥀🥀</div><div class="lrow" style="justify-content:center;margin-top:6px"><button class="lbtn t" id="nuLime">🪣 Add lime</button><b id="nuSoil">Soil pH: 5</b></div></div><div id="nuQ"></div>`;
+  let drops = 0, soil = 5, neutralized = 0, farmed = 0;
+  const phOf = d => d < 20 ? 1 + d * .08 : d < 25 ? 2.6 + (d - 20) * .88 : d < 30 ? 7 + (d - 25) * .8 : Math.min(13, 11 + (d - 30) * .1);
+  const upd = () => { const p = phOf(drops); $("#nuP").textContent = p.toFixed(1); $("#nuP").style.color = phCol(p);
+   $("#nuK").textContent = p < 6.6 ? "ACID" : p <= 7.4 ? "NEUTRAL ✅" : "BASE"; $("#nuS").style.background = p > 8.2 ? "rgba(255,95,176,.75)" : p > 7.4 ? "rgba(255,170,210,.6)" : "rgba(210,230,255,.7)"; $("#nuS").style.height = Math.min(85, 60 + drops * .6) + "%";
+   if (p >= 6.6 && p <= 7.4 && !neutralized){ neutralized = 1; sfx.ok(); confetti(40); $("#nuEq").innerHTML = "HCl + NaOH → <span style='color:#26a69a'>NaCl</span> + <span style='color:#29b6f6'>H₂O</span> 🎉"; api.hoot("NEUTRAL! 🎉 The acid and base made <b>salt (NaCl)</b> and <b>water</b>. That's neutralization!", "m_star"); check(); }
+   if (p > 8.2 && neutralized === 1){ neutralized = 2; api.hoot("Too much base! Phenolphthalein turned <b>pink</b> — now it's basic. 🩷", "m_oops"); } };
+  const add = n => { const d = $("#nuD"); d.classList.remove("go"); void d.offsetWidth; d.classList.add("go"); tone([700], .04, "sine", .06); drops += n; lt(upd, 400); };
+  $("#nu1").onclick = () => add(1); $("#nu5").onclick = () => add(5); $("#nuR").onclick = () => { drops = 0; neutralized = 0; $("#nuEq").textContent = ""; upd(); };
+  $("#nuLime").onclick = () => { if (soil >= 7) return; soil = Math.min(7, soil + .5); $("#nuSoil").textContent = "Soil pH: " + soil.toFixed(1); sfx.tap();
+   const n = Math.round((soil - 5) / 2 * 4); $("#nuF").textContent = "🌻".repeat(n) + "🥀".repeat(4 - n);
+   if (soil >= 7 && !farmed){ farmed = 1; sfx.ok(); api.hoot("The soil is neutral now — the plants are happy! 🌻 Calcium hydroxide neutralizes <b>acidic soil</b>.", "m_thumbs"); check(); } };
+  const check = () => { if (neutralized && farmed && !el.dataset.q){ el.dataset.q = 1; lt(() => miniQuiz($("#nuQ"), ["P108","P109","P110","P111","P112","P113","P114","P115","P116","P117"], () => api.done()), 1200); } };
+  upd(); api.hoot("Add the base slowly… watch the pH meter! 💧", "m_point");
+ }});
+
+/* 9–10 */
+W4.stations.push(cardsStation(W4, [["⚛️","Chemical bond","A force holding atoms together"],["x_rust","Chemical change","A new substance forms (rust)"],["🫧","Gas released","Bubbles = a clue of a reaction"],["⚖️","Conservation of mass","Mass stays the same in a closed system"],["➡️","Reactants","Substances on the LEFT of the arrow"],["🔢","Coefficient","The number of molecules"],["🤝","Combination","A + B → AB"],["💔","Decomposition","A compound breaks into simpler substances"],["🔄","Displacement","One element replaces another"],["x_fire","Combustion","Needs oxygen; gives heat & light"],["🌡️","Temperature ↑","Reaction speeds up"],["🪄","Catalyst","Speeds up a reaction"],["🔥","Exothermic","Releases energy (feels hot)"],["❄️","Endothermic","Absorbs energy (feels cold) — photosynthesis"],["🍋","Acid","pH below 7; releases H⁺"],["🧼","Base","pH above 7; bitter (soap, NaOH)"],["💧","Neutral","pH 7 (distilled water)"],["🩷","Phenolphthalein","Turns pink in a base"],["🧂","Neutralization","Acid + base → salt + water"],["🔩","Metals","React with acids → hydrogen gas"],["🔀","Metalloids","Properties of metals AND non-metals"],["🔥","Flammability","A chemical property"]]));
+W4.stations.push(challengeStation(4));
+W4.notes = [
+ ["🕵️ Chemical reactions", ["A chemical bond is a force holding atoms together. Reactions break and form bonds → new substances.", "Clues: bubbles (gas released), color change, heat & light, a new smell (rotten egg = gas formed).", "Rusting iron = chemical change. Melting ice is NOT a reaction."], "#5B3FD9"],
+ ["⚖️ Equations", ["Reactants → products. Coefficients = number of molecules.", "Conservation of mass: mass stays constant in a closed system.", "A balanced equation has the same atoms on both sides (2H₂ + O₂ → 2H₂O: 4 H atoms)."], "#f59e0b"],
+ ["💥 Types of reactions", ["Combination: A + B → AB (2Mg + O₂ → 2MgO).", "Decomposition: a compound breaks down. Displacement: one element replaces another.", "Combustion: always needs oxygen; produces heat and light."], "#ef4444"],
+ ["⏱️ Reaction rate", ["Faster: higher temperature, more surface area, higher concentration, a catalyst.", "Slower: lowering the temperature. The type of container does NOT matter."], "#0ea5e9"],
+ ["🌡️ Energy", ["Exothermic: releases energy (combustion of wood).", "Endothermic: absorbs heat, feels cold (photosynthesis).", "Breaking bonds absorbs energy."], "#ec4899"],
+ ["🔩 Properties", ["Chemical property = ability to undergo chemical change (flammability).", "Metals react with acids → hydrogen gas. Non-metals: poor conductors. Metalloids: both."], "#14B8A6"],
+ ["🌈 Acids, bases & salts", ["Acids: pH < 7, release H⁺ (HCl, lemon juice pH ≈ 2). Bases: pH > 7, bitter (NaOH, soap). Neutral: 7 (distilled water). pH = potential of Hydrogen.", "Phenolphthalein turns pink in bases. Sulfuric acid → car batteries; NaOH → soap.", "Neutralization: acid + base → salt + water (HCl + NaOH → NaCl + H₂O).", "Salts: NaCl (food), CaCO₃ (construction). Calcium hydroxide neutralizes acidic soil."], "#22a34a"]
+];
+LAB[4] = W4;
+
 window.__lab = { openLab, labHome, LAB };
 })();
 
