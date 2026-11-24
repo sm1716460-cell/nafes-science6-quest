@@ -4439,8 +4439,8 @@ label.f{color:#6b4a22}
 /* arcade hud spacing */
 .apow{top:calc(clamp(64px,9.5vmin,96px) + env(safe-area-inset-top))}
 /* fx */
-.fxstar{position:fixed;z-index:120;width:clamp(30px,4.5vmin,54px);top:-60px;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35));animation:starfall linear forwards;touch-action:none}
-@keyframes starfall{to{transform:translateY(calc(100vh + 120px)) rotate(540deg)}}
+.fxstar{position:fixed;z-index:120;left:0;top:0;width:clamp(30px,4.5vmin,54px);pointer-events:auto;cursor:pointer;will-change:transform;backface-visibility:hidden;touch-action:none;animation:starfall linear forwards}
+@keyframes starfall{from{transform:translate3d(var(--x),-70px,0) rotate(0)}to{transform:translate3d(var(--x),calc(100vh + 80px),0) rotate(360deg)}}
 .fxgot{position:fixed;z-index:121;pointer-events:none;font:900 22px var(--hf);color:#ffd23f;text-shadow:0 2px 0 #6e451a,0 0 8px #fff;animation:fxup .9s ease-out forwards}
 @keyframes fxup{to{transform:translateY(-60px);opacity:0}}
 .fxhero{position:fixed;z-index:110;left:clamp(6px,2vw,30px);bottom:calc(8px + var(--safe-b));width:clamp(90px,15vmin,170px);pointer-events:none;filter:drop-shadow(0 10px 10px rgba(0,0,0,.4))}
@@ -4495,9 +4495,10 @@ renderMap = function(){
 
 /* ---------- FX: star rain + hero reactions ---------- */
 function starRain(n = 16){
+ n = Math.min(n, innerWidth < 700 ? 14 : 24);
  for (let i = 0; i < n; i++){
-  const s = document.createElement("img"); s.src = P("ui_star"); s.className = "fxstar"; s.alt = "";
-  s.style.left = (4 + Math.random() * 90) + "vw"; const d = 1.6 + Math.random() * 1.4; s.style.animationDuration = d + "s"; s.style.animationDelay = (Math.random() * .7) + "s";
+  const s = document.createElement("img"); s.src = P("fx_star"); s.className = "fxstar"; s.alt = "";
+  s.style.setProperty("--x", (4 + Math.random() * 90) + "vw"); const d = 2 + Math.random() * 1.2; s.style.animationDuration = d + "s"; s.style.animationDelay = (Math.random() * .7) + "s";
   s.addEventListener("pointerdown", e => { e.stopPropagation(); e.preventDefault(); const r = s.getBoundingClientRect(); s.remove(); tone([1300, 1700], .04, "square", .05);
    const g = document.createElement("div"); g.className = "fxgot"; g.textContent = "+1 🪙"; g.style.left = r.left + "px"; g.style.top = r.top + "px"; document.body.appendChild(g); setTimeout(() => g.remove(), 900);
    try { if (typeof G !== "undefined" && G && G.coins != null){ G.coins++; G.extra++; } else { const p = prof(); p.bonus = (p.bonus || 0) + 1; saveProf(p); } } catch(_){} }, { once:true });
