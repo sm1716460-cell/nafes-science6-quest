@@ -2562,8 +2562,9 @@ function makeJump(){
  const GRAV = 6.4, JV = 2.3, SPEED = .62 + hard * .1, SEA = .87, HH = .19, HW = .055;
  const s = { t:0, x:.35, y:.62, vy:0, ground:null, jumps:0, hold:0, holding:false, inv:0, state:"run", pose:"run", poseT:0, rot:0, spin:0, squash:0,
   cam:0, plats:[], ents:[], parts:[], qz:null, safe:{ x:.35, y:.62 }, shield:0, magnet:0, fin:null, script:null, ended:false, landT:0 };
- let W = view.w, H = view.h, VW = W / H;
- const geo = () => { W = view.w; H = view.h; VW = W / H; };
+ let W = view.w, H = view.h, U = H, OY = 0, VW = W / H;
+ const geo = () => { W = view.w; H = view.h; U = Math.min(H, W / 1.35); OY = H - U; VW = W / U; };
+ geo();
 
  /* ---------- level generation ---------- */
  const plat = (x, y, w, kind = "long", ex = {}) => { const p = Object.assign({ x, y, w, kind, y0:y, amp:0, ph:0, ct:0, fall:0, vy:0, grow:1 }, ex); s.plats.push(p); return p; };
@@ -2577,7 +2578,8 @@ function makeJump(){
   let x = x0, y = y0;
   const first = plat(x, y, 1.1); deco(first); x += 1.1;
   while (x < x0 + len){
-   const r = Math.random(), gap = rnd(.2, .36) + hard * .06, ny = clampL(y + rnd(-.12, .12), .46, .72);
+   const easy = Q.i < 1 && x < x0 + 2.4;
+   const r = easy ? Math.random() * .16 : Math.random(), gap = easy ? rnd(.14, .22) : rnd(.2, .34) + hard * .06, ny = clampL(y + rnd(-.12, .12), .46, .72);
    if (r < .16){ // gap + coins arc
     const w = rnd(.7, 1.3); coinArc(x, x + gap, y - .05, ny - .05); x += gap; const p = plat(x, ny, w); deco(p); y = ny; x += w;
    } else if (r < .32){ // walking germ
@@ -2617,7 +2619,7 @@ function makeJump(){
   const sg = segment(x, .62, (Q.i === 0 ? 3.6 : 5.2) + hard * 1.2);
   s.qz = qzone(sg.x + .25, sg.y);
  }
- nextChunk(0); window.__js = s;
+ nextChunk(0); window.__js = s; window.__jsU = () => ({U, OY, VW, W, H}); window.__HS = HS;
 
  /* ---------- question panel ---------- */
  const panel = document.createElement("div"); panel.className = "spanel hide"; layer.appendChild(panel);
@@ -2700,7 +2702,8 @@ function makeJump(){
  const platY = p => p.y0 + (p.amp ? Math.sin(s.t * 1.6 + p.ph) * p.amp : 0) + p.fall * 0;
  function jump(){
   if (["run"].indexOf(s.state) < 0) return;
-  if (s.ground){ s.vy = -JV; s.ground = null; s.jumps = 1; s.holding = true; s.hold = .2; tone([420, 680], .05, "sine", .07); }
+  s.buf = s.t;
+  if (s.ground || (s.jumps === 0 && s.t - (s.lastG || -9) < .14)){ s.vy = -JV; s.ground = null; s.jumps = 1; s.holding = true; s.hold = .2; tone([420, 680], .05, "sine", .07); }
   else if (s.jumps < 2){ s.vy = -JV * .92; s.jumps = 2; s.spin = 1; s.holding = true; s.hold = .12; tone([600, 900], .05, "sine", .07); burst(s.x, s.y, 8, ["#fff","#f3c4ff"]); }
  }
  function stomp(){ if (s.state === "run" && !s.ground) s.vy = Math.max(s.vy, 3.4); }
@@ -2710,7 +2713,7 @@ function makeJump(){
   s.t += dt; geo();
   ["inv","magnet","poseT","spin","squash"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt * (k === "spin" ? 2.2 : 1)); });
   if (s.state === "run"){
-   s.x += SPEED * dt;
+   if (s.freeze > 0) s.freeze -= dt; else s.x += SPEED * (Q.i < 2 ? .8 : 1) * dt;
    if (s.holding && s.hold > 0 && s.vy < 0){ s.vy -= GRAV * .5 * dt; s.hold -= dt; }
    const py0 = s.y; s.vy += GRAV * dt; s.y += s.vy * dt;
    // landing
@@ -2723,15 +2726,16 @@ function makeJump(){
     const py = platY(landed);
     if (!s.ground){ s.squash = .18; s.landT = s.t; }
     s.y = py; s.vy = 0; s.ground = landed; s.jumps = 0;
+    if (s.buf && s.t - s.buf < .13 && s.t - s.buf > 0.001){ s.buf = 0; jump(); }
     if (landed.kind === "crumble"){ landed.ct += dt; if (landed.ct > .55){ landed.fall = 1; landed.crack = 1; } }
-    else if (landed.kind !== "opt" && landed.kind !== "move") s.safe = { x:clampL(s.x, landed.x + .08, landed.x + landed.w - .08), y:py };
-   } else if (s.ground){ s.ground = null; }
+    else if (landed.kind !== "opt" && landed.kind !== "move") s.safe = { x:landed.x + Math.min(.15, landed.w * .3), y:py };
+   } else if (s.ground){ s.ground = null; s.lastG = s.t; }
    // question zone
    if (s.qz && !s.qz.asked && s.x >= s.qz.cliffEnd - .08 && s.y <= .64){ s.qz.asked = true; s.x = s.qz.cliffEnd - .08; s.y = .62; s.ground = s.qz.cliff; ask(); }
    // finish
    if (s.fin && s.x >= s.fin.x && !s.ended){ s.ended = true; s.state = "cheer"; s.pose = "cheer"; s.spin = 1; FX.starRain(34); sfx.win(); banner("🏁 LEVEL CLEAR!"); later(arcDone, 2200); }
    // fall in sea
-   if (s.y > SEA + .06){ splash(s.x); s.y = s.safe.y; s.x = s.safe.x; s.vy = 0; s.ground = null; if (!s.shield){ hurt(); } else { s.shield = 0; s.inv = 1; } banner("💦 SPLASH!"); }
+   if (s.y > SEA + .06){ splash(s.x); s.y = s.safe.y; s.x = s.safe.x; s.vy = 0; s.ground = null; if (Q.i < 1){ s.inv = 1; banner("💦 Practice splash — no heart lost!"); } else if (!s.shield){ hurt(); } else { s.shield = 0; s.inv = 1; } s.freeze = .9; s.inv = Math.max(s.inv, 1.8); banner("💦 SPLASH!"); }
   } else if (s.state === "script"){
    const sc = s.script; sc.t += dt / sc.dur; const k = Math.min(1, sc.t);
    s.x = sc.fx + (sc.tx - sc.fx) * k; s.y = sc.fy + (sc.ty - sc.fy) * k - Math.sin(Math.PI * k) * .32;
@@ -2785,7 +2789,7 @@ function makeJump(){
  }
 
  /* ---------- draw ---------- */
- const X = x => (x - s.cam) * H, Y = y => y * H;
+ const X = x => (x - s.cam) * U, Y = y => OY + y * U;
  function img(name, x, y, w, opt = {}){ const im = A(name); if (!ready(im)) return 0; const h = w * im.naturalHeight / im.naturalWidth;
   cx.save(); cx.globalAlpha = opt.a == null ? 1 : opt.a; cx.translate(x, y); if (opt.rot) cx.rotate(opt.rot); cx.scale(opt.sx || 1, opt.sy || 1); if (opt.flip) cx.scale(-1, 1);
   cx.drawImage(im, -w / 2, opt.bottom ? -h : -h / 2, w, h); cx.restore(); return h; }
@@ -2794,48 +2798,48 @@ function makeJump(){
   // background parallax (seamless tiles)
   const bg = A("w1_bg");
   cx.fillStyle = "#8fd3ff"; cx.fillRect(0, 0, W, H);
-  if (ready(bg)){ const bh = H * 1.12, bw = bh * bg.naturalWidth / bg.naturalHeight; let ox = -((s.cam * H * .35) % bw); if (ox > 0) ox -= bw; for (let x = ox; x < W; x += bw) cx.drawImage(bg, x, -H * .05, bw, bh); }
+  if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; let ox = -((s.cam * U * .35) % bw); if (ox > 0) ox -= bw; for (let x = ox; x < W; x += bw) cx.drawImage(bg, x, H - bh * .97, bw, bh); }
   // sea
   const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85");
   cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, H);
-  for (let x = 0; x <= W + 20; x += 20) cx.lineTo(x, sy + Math.sin(x * .02 + s.t * 2.4 + s.cam * 4) * H * .008);
+  for (let x = 0; x <= W + 20; x += 20) cx.lineTo(x, sy + Math.sin(x * .02 + s.t * 2.4 + s.cam * 4) * U * .008);
   cx.lineTo(W, H); cx.fill();
   cx.strokeStyle = "rgba(255,255,255,.35)"; cx.lineWidth = 2; for (let k = 0; k < 3; k++){ cx.beginPath(); const yy = sy + H * (.03 + k * .035); for (let x = 0; x <= W; x += 24){ const v = yy + Math.sin(x * .03 + s.t * 2 + k * 2 + s.cam * 5) * 3; x ? cx.lineTo(x, v) : cx.moveTo(x, v); } cx.stroke(); }
   // decorations (behind)
-  for (const e of s.ents) if (e.type === "deco" && X(e.x) > -200 && X(e.x) < W + 200) img(e.img, X(e.x), Y(e.y) + 2, e.sz * H, { bottom:1 });
+  for (const e of s.ents) if (e.type === "deco" && X(e.x) > -200 && X(e.x) < W + 200) img(e.img, X(e.x), Y(e.y) + 2, e.sz * U, { bottom:1 });
   // platforms
   for (const p of s.plats){
-   const px = X(p.x), pw = p.w * H * (p.grow), py = Y(platY(p)); if (px > W + 50 || px + pw < -50) continue;
+   const px = X(p.x), pw = p.w * U * (p.grow), py = Y(platY(p)); if (px > W + 50 || px + pw < -50) continue;
    const im = A(p.kind === "crumble" ? (p.crack ? "w1_plat_crumble" : "w1_plat_short") : p.kind === "move" ? "w1_plat_move" : p.kind === "opt" || p.kind === "short" ? "w1_plat_short" : "w1_plat_long");
-   if (!ready(im)) continue; const th = Math.min(pw * im.naturalHeight / im.naturalWidth, H * .2);
+   if (!ready(im)) continue; const th = Math.min(pw * im.naturalHeight / im.naturalWidth, U * .2);
    cx.save(); if (p.kind === "crumble" && p.ct > .2 && !p.fall) cx.translate(rnd(-2, 2), 0);
    if (p.glow){ cx.shadowColor = "#ffe066"; cx.shadowBlur = 30 * p.glow; }
    if (p.kind === "opt" && !p.fall){ cx.shadowColor = OPTC[p.k]; cx.shadowBlur = 18; }
    cx.drawImage(im, px, py - th * .12, pw, th); cx.restore();
-   if (p.kind === "opt" && !p.dead && s.qz && !s.qz.done){ const r = Math.max(15, H * .042), cxp = px + pw / 2, cyp = py + th * .3 + Math.sin(s.t * 3 + p.k) * 2;
+   if (p.kind === "opt" && !p.dead && s.qz && !s.qz.done){ const r = Math.max(15, U * .042), cxp = px + pw / 2, cyp = py + th * .3 + Math.sin(s.t * 3 + p.k) * 2;
     cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(cxp, cyp, r + 4, 0, 7); cx.fill(); cx.fillStyle = OPTC[p.k]; cx.beginPath(); cx.arc(cxp, cyp, r, 0, 7); cx.fill();
     cx.fillStyle = "#fff"; cx.font = `900 ${r * 1.2}px 'Baloo 2',sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(LET[p.k], cxp, cyp + 1); }
   }
   // entities
   for (const e of s.ents){
    if (!e.alive || e.type === "deco") continue; const ex = X(e.x), ey = Y(e.y); if (ex < -80 || ex > W + 80) continue;
-   if (e.type === "coin" || e.type === "coinpop") img("it_coin", ex, ey, H * .06, { sx:.35 + .65 * Math.abs(Math.cos(s.t * 4 + e.ph)) });
-   else if (e.type === "gem") img("it_gem", ex, ey + Math.sin(s.t * 3) * 5, H * .08);
-   else if (e.type === "box") img("it_box", ex, ey, H * .09, { a:e.used ? .55 : 1 });
-   else if (e.type === "spring"){ const sq = e.sq > 0 ? (e.sq -= 1 / 60, .7) : 1; img("w1_spring", ex, ey + 2, H * .1, { bottom:1, sy:sq }); }
-   else if (e.type === "germ") img("en_germ", ex, ey + Math.abs(Math.sin(s.t * 8)) * -4 + 2, H * .11, { bottom:1, flip:e.dir > 0 });
-   else if (e.type === "virus") img("en_virus", ex, ey - H * .055, H * .1, { rot:s.t * 2 });
-   else if (e.type === "fly") img("en_fly", ex, ey, H * .11, { sy:.9 + Math.abs(Math.sin(s.t * 14)) * .12 });
-   else if (e.type === "flag") img("w1_flag", ex, ey + 2, H * .2, { bottom:1 });
-   else if (e.type === "finish") img("w1_finish", ex, ey + 4, H * .36, { bottom:1 });
+   if (e.type === "coin" || e.type === "coinpop") img("it_coin", ex, ey, U * .06, { sx:.35 + .65 * Math.abs(Math.cos(s.t * 4 + e.ph)) });
+   else if (e.type === "gem") img("it_gem", ex, ey + Math.sin(s.t * 3) * 5, U * .08);
+   else if (e.type === "box") img("it_box", ex, ey, U * .09, { a:e.used ? .55 : 1 });
+   else if (e.type === "spring"){ const sq = e.sq > 0 ? (e.sq -= 1 / 60, .7) : 1; img("w1_spring", ex, ey + 2, U * .1, { bottom:1, sy:sq }); }
+   else if (e.type === "germ") img("en_germ", ex, ey + Math.abs(Math.sin(s.t * 8)) * -4 + 2, U * .11, { bottom:1, flip:e.dir > 0 });
+   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * .1, { rot:s.t * 2 });
+   else if (e.type === "fly") img("en_fly", ex, ey, U * .11, { sy:.9 + Math.abs(Math.sin(s.t * 14)) * .12 });
+   else if (e.type === "flag") img("w1_flag", ex, ey + 2, U * .2, { bottom:1 });
+   else if (e.type === "finish") img("w1_finish", ex, ey + 4, U * .36, { bottom:1 });
   }
   // hero
-  const hx = X(s.x), hy = Y(s.y), hh = HH * H;
+  const hx = X(s.x), hy = Y(s.y), hh = HH * U;
   let pose = s.state === "cheer" ? "cheer" : s.state === "sink" ? "dizzy" : s.poseT > 0 ? "dizzy" : s.state === "q" ? "stand" : (!s.ground || s.state === "script") ? "jump" : "run";
   const im = HS[pose];
   if (ready(im)){
    const w = hh * im.naturalWidth / im.naturalHeight * (pose === "cheer" || pose === "dizzy" ? 1 : 1);
-   cx.save(); if (s.inv > 0 && ((s.t * 12) | 0) % 2) cx.globalAlpha = .4;
+   cx.save(); if (s.inv > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .6;
    cx.fillStyle = "rgba(0,0,0,.22)"; if (s.ground) { cx.beginPath(); cx.ellipse(hx, hy, w * .3, hh * .05, 0, 0, 7); cx.fill(); }
    const bob = pose === "run" ? -Math.abs(Math.sin(s.t * 13)) * hh * .05 : pose === "cheer" ? -Math.abs(Math.sin(s.t * 6)) * hh * .25 : 0;
    cx.translate(hx, hy + bob);
@@ -2848,7 +2852,11 @@ function makeJump(){
    cx.restore();
    if (pose === "dizzy"){ for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; img("ui_star", hx + Math.cos(a) * w * .35, hy - hh * 1.02 + Math.sin(a) * hh * .06, hh * .14); } }
   }
-  s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(X(p.x), Y(p.y), p.r * H, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+  if (s.state === "run" && s.ground && Q.i < 2 && s.ground.kind !== "opt" && s.ground.x + s.ground.w - s.x < .22){
+   const bx = X(s.x) + U * .07, by = Y(s.y) - U * .27 - Math.abs(Math.sin(s.t * 8)) * 8;
+   cx.fillStyle = "#fff"; cx.strokeStyle = "#6e451a"; cx.lineWidth = 3; cx.beginPath(); cx.roundRect ? cx.roundRect(bx - 34, by - 18, 68, 34, 12) : cx.rect(bx - 34, by - 18, 68, 34); cx.fill(); cx.stroke();
+   cx.fillStyle = "#e8643a"; cx.font = "900 18px 'Baloo 2',sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("TAP!", bx, by); }
+  s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(X(p.x), Y(p.y), p.r * U, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
  }
 
  /* ---------- input ---------- */
@@ -2857,7 +2865,7 @@ function makeJump(){
   if (G.hold) return;
   const p = ptr(e);
   if (s.state === "q"){ // tap a platform to answer
-   for (const o of s.qz.opts){ const px = X(o.x), pw = o.w * H, py = Y(o.y0); if (!o.dead && p.x > px - 10 && p.x < px + pw + 10 && p.y > py - H * .2 && p.y < py + H * .14) return choose(o.k); }
+   for (const o of s.qz.opts){ const px = X(o.x), pw = o.w * U, py = Y(o.y0); if (!o.dead && p.x > px - 10 && p.x < px + pw + 10 && p.y > py - U * .2 && p.y < py + U * .16) return choose(o.k); }
    return;
   }
   if (s.state === "sink") return cont();
