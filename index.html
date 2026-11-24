@@ -4842,10 +4842,13 @@ W1.stations.push({ id:"boss", icon:"🏆", short:"Lab Challenge", title:"Lab Cha
  }});
 
 /* smart notes — printable one-pager */
+const NOTE_CSS = `.hd{display:flex;align-items:center;gap:14px;border-bottom:3px solid #5B3FD9;padding-bottom:8px}.hd img{height:92px;width:auto}.hd .t{flex:1}.hd .sch{font-weight:900;color:#2a1d5c;font-size:15px}.hd .by{font-weight:800;color:#7a6bb3;font-size:13px}.ft{margin-top:12px;border-top:2px dashed #cbbdf8;padding-top:6px;display:flex;justify-content:space-between;font-size:12px;color:#7a6bb3;font-weight:700}.ft img{height:30px;vertical-align:middle}`;
+const noteHead = lab => { const logo = new URL("img/logo.webp", location.href).href; return `<div class="hd"><img src="${logo}" alt="Andalus International Schools"><div class="t"><h1>🦉 Smart Notes · ${lab.label}</h1><div class="sch">Andalus International Schools · Grade 6 Science</div><div class="by">Prepared by Miss Basma Ahmed · Nafes Science Quest</div></div></div>`; };
+const noteFoot = () => `<div class="ft"><span><img src="${new URL("img/logo.webp", location.href).href}" alt=""> Andalus International Schools</span><span>Name: ____________________ &nbsp; Class: ______</span><span>© Miss Basma Ahmed</span></div>`;
 function smartNotes(lab){
  if (lab.notes){
   const w = window.open("", "_blank"); if (!w){ toast("Please allow pop-ups to print the notes."); return; }
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Smart Notes · ${lab.label}</title><style>body{font-family:Nunito,Segoe UI,Arial,sans-serif;margin:18px;color:#2a1d5c}h1{margin:0;color:#5B3FD9}small{color:#7a6bb3}.g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.s{border:3px solid;border-radius:14px;padding:8px 12px}.s h2{margin:0 0 4px;font-size:18px}ul{margin:0;padding-left:18px}li{margin:2px 0;font-size:13.5px}b{color:#5B3FD9}@media print{body{margin:8mm}}</style></head><body><h1>🦉 Smart Notes · ${lab.label}</h1><small>Nafes Science Quest · Professor Hoot's Lab</small><div class="g">${lab.notes.map(([t, items, c]) => `<div class="s" style="border-color:${c}"><h2 style="color:${c}">${t}</h2><ul>${items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("")}</div><script>setTimeout(()=>print(),400)<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Smart Notes · ${lab.label}</title><style>body{font-family:Nunito,Segoe UI,Arial,sans-serif;margin:18px;color:#2a1d5c}h1{margin:0;color:#5B3FD9}small{color:#7a6bb3}.g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.s{border:3px solid;border-radius:14px;padding:8px 12px}.s h2{margin:0 0 4px;font-size:18px}ul{margin:0;padding-left:18px}li{margin:2px 0;font-size:13.5px}b{color:#5B3FD9}@media print{body{margin:8mm}}${NOTE_CSS}</style></head><body>${noteHead(lab)}<div class="g">${lab.notes.map(([t, items, c]) => `<div class="s" style="border-color:${c}"><h2 style="color:${c}">${t}</h2><ul>${items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("")}</div>${noteFoot()}<script>setTimeout(()=>print(),900)<\/script></body></html>`);
   w.document.close(); return;
  }
  const w = window.open("", "_blank"); if (!w){ toast("Please allow pop-ups to print the notes."); return; }
@@ -4853,7 +4856,7 @@ function smartNotes(lab){
  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Smart Notes · ${lab.label}</title><style>
   body{font-family:Nunito,Segoe UI,Arial,sans-serif;margin:18px;color:#2a1d5c}h1{margin:0;color:#5B3FD9}small{color:#7a6bb3}
   .g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.s{border:3px solid;border-radius:14px;padding:8px 12px}.s h2{margin:0 0 4px;font-size:18px}ul{margin:0;padding-left:18px}li{margin:2px 0;font-size:13.5px}b{color:#5B3FD9}
-  @media print{body{margin:8mm}}</style></head><body><h1>🦉 Smart Notes · ${lab.label}</h1><small>Nafes Science Quest · Professor Hoot's Lab</small><div class="g">
+  @media print{body{margin:8mm}}${NOTE_CSS}</style></head><body>${noteHead(lab)}<div class="g">
   ${sec2("🧩 Cells", ["A <b>cell</b> is the smallest unit of life.", "<b>Unicellular</b> = one cell (bacteria). <b>Multicellular</b> = many cells.", "Cells do vital jobs that keep living things alive."], "#5B3FD9")}
   ${sec2("🏙️ Cell parts", ["<b>Nucleus</b>: control center, holds genetic material. No nucleus → cell dies.", "<b>Cytoplasm</b>: jelly-like; holds organelles; reactions happen.", "<b>Cell membrane</b>: controls what enters/leaves (barrier).", "<b>Mitochondria</b>: powerhouse — cellular respiration → energy."], "#9b6bff")}
   ${sec2("🌿 Plant vs 🐾 Animal", ["Only plants: <b>cell wall</b> (support, protection, rigidity, stand upright) and <b>chloroplasts</b> (chlorophyll, photosynthesis).", "Plant cells: <b>rectangular</b>. Animal cells: <b>irregular</b>.", "Both: membrane, cytoplasm, nucleus, mitochondria, cellular respiration.", "Water enters a plant cell → it becomes <b>rigid</b> (wall)."], "#2fae4f")}
@@ -4861,7 +4864,7 @@ function smartNotes(lab){
   ${sec2("☀️ Energy", ["<b>Photosynthesis</b> (leaves, chloroplasts): sunlight + water + CO₂ → sugar + <b>oxygen</b> (by-product).", "<b>Cellular respiration</b> (mitochondria): sugar + oxygen → energy + CO₂ + water."], "#f59e0b")}
   ${sec2("🌻 Plant parts", ["<b>Roots</b> absorb water & nutrients; <b>taproots</b> store food.", "<b>Stem</b> supports & transports. <b>Xylem</b> = water up. <b>Phloem</b> = food/sugars.", "<b>Leaves</b>: photosynthesis; <b>stomata</b> = gas exchange.", "<b>Flowers</b> attract pollinators; reproduction."], "#14B8A6")}
   ${sec2("🧍 Body systems", ["<b>Nervous</b> (brain): controls & coordinates.", "<b>Circulatory</b>: heart pumps blood. Works with <b>respiratory</b> to deliver oxygen.", "<b>Respiratory</b>: exchanges O₂ and CO₂.", "<b>Digestive</b>: digestion breaks food down; <b>small intestine</b> absorbs nutrients.", "<b>Excretory</b>: removes waste; <b>kidneys</b> filter blood.", "<b>Skeletal</b>: structure & support. <b>Skeletal muscles</b> move bones (muscular + skeletal)."], "#e53935")}
-  </div><script>setTimeout(()=>print(),400)<\/script></body></html>`);
+  </div>${noteFoot()}<script>setTimeout(()=>print(),900)<\/script></body></html>`);
  w.document.close();
 }
 
