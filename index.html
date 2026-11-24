@@ -318,6 +318,10 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .goalchip{position:sticky;top:6px;z-index:3;margin:6px auto 0;width:min(560px,92%);background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;border:2px solid #6e451a;box-shadow:0 0 0 2px #c9a35a,0 4px 10px rgba(0,0,0,.35);border-radius:18px;padding:6px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:700}
 .goalchip b{font-size:15px}.goalchip i{display:block;height:10px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden}.goalchip em{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
 .badge .mb{font-size:44px;line-height:1.2}
+.wsg{display:grid;gap:8px;max-height:52vh;overflow:auto}.wsc{background:#faf8ff;border:2px solid #e6defd;border-radius:16px;padding:8px 10px}.wsc.lk{border-color:#f1d27a;background:#fffbea}
+.wsc h4{margin:0 0 4px;display:flex;gap:6px;align-items:baseline;color:#5B3FD9}.wsc h4 small{color:#7a6bb3;font-weight:600;flex:1}.wsc h4 span{font-size:12px}
+.wsr{display:flex;align-items:center;gap:8px;padding:2px 0;font-weight:700;color:#2a1d5c}.wsr img{height:34px}.wsr span{flex:1}.wsr em{font-style:normal;font-size:13px;color:#6b5fa8}.wsr.me span{color:#e2483d}.wsr.dim{opacity:.6}.ws0{margin:0;color:#999;font-size:13px}
+.wsc .btn{margin-top:6px;padding:6px 14px;font-size:14px}
 .myaw{margin-top:10px}.myaw h3{margin:0 0 6px;text-align:center}.myaw>div{display:flex;align-items:center;gap:8px;background:#fff7dd;border:2px solid #f1d27a;border-radius:14px;padding:6px 10px;margin-top:6px}
 .myaw span{flex:1;display:flex;flex-direction:column;font-size:14px}.myaw small{color:#7a6bb3}.myaw .btn{padding:6px 14px}
 .mpod{display:flex;justify-content:center;align-items:flex-end;gap:8px}.mp{display:flex;flex-direction:column;align-items:center;width:32%;text-align:center}
@@ -329,6 +333,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .lbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.lbtabs button{background:#f1edff;color:#5B3FD9;font-weight:800;border-radius:99px;padding:6px 14px}.lbtabs button.on{background:#5B3FD9;color:#fff}
 .lbtabs.dark{justify-content:center}.lbtabs.dark button{background:rgba(255,255,255,.15);color:#fff;font-size:clamp(14px,2.2vh,20px)}.lbtabs.dark button.on{background:#ffd23f;color:#2a1d5c}
 .pwrow{display:flex;gap:4px}.pwrow .inp{width:130px;padding:6px 10px}.pwrow .btn,[data-del]{padding:6px 12px;font-size:14px}
+.tws{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));max-height:none}
 .awf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.awf label{display:flex;flex-direction:column;font-size:12px;font-weight:800;color:#6b5ca8;flex:1;min-width:120px}.awf .inp{padding:6px 10px}
 .awl{display:flex;align-items:center;gap:8px;border-top:1px solid #eee;padding:6px 0}.awl span{flex:1}.awl .btn{padding:6px 12px;font-size:14px}
 .gbar{height:14px;border-radius:99px;background:#eee;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#7cc13a)}
@@ -726,6 +731,10 @@ function demoApi(action, d){
    return { ok:true, attemptNo:a.attemptNo };
   }
   case "sync": return { ok:true, attempts: mine(d.name), goal: db.goal ? demoGoal(db) : null };
+  case "weekStars": return { ok:true, stars: demoStars(db) };
+  case "lockWeek": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." }; db.weekStars = db.weekStars || {}; const w = String(+d.week);
+   if (d.unlock) delete db.weekStars[w]; else { const cur = demoStars(db)[w]; if (!cur || !cur.list.length) return { ok:false, error:"Nobody finished this week yet." }; db.weekStars[w] = { at:new Date().toISOString(), list: cur.list.slice(0, 3) }; }
+   save(); return { ok:true, stars: demoStars(db) }; }
   case "awards": return { ok:true, awards: db.awards || [] };
   case "publishAward": { if (d.teacherPass !== "demo1234") return { ok:false, error:"Wrong teacher password." }; db.awards = db.awards || [];
    db.awards.unshift({ id: Math.random().toString(36).slice(2, 10), date: new Date().toISOString(), title: d.award.title, from: d.award.from, to: d.award.to, winners: d.award.winners }); save(); return { ok:true, awards: db.awards }; }
@@ -1203,7 +1212,7 @@ $("#modal").addEventListener("submit", async e => {
 async function loadTeacher(){
  const r = await api("teacherData", { teacherPass: TP });
  if (!r.ok) throw new Error(r.error);
- TD = r; try { const aw = await api("awards", {}); TD.awards = aw.awards || []; } catch(e){ TD.awards = []; } renderTeacher();
+ TD = r; try { const aw = await api("awards", {}); TD.awards = aw.awards || []; } catch(e){ TD.awards = []; } try { const ws = await api("weekStars", {}); TD.stars = ws.stars || {}; } catch(e){ TD.stars = {}; } renderTeacher();
 }
 $("#tRefresh").onclick = async () => { try{ await loadTeacher(); toast("Updated ✔"); }catch(e){ toast(e.message); } };
 $("#tExit").onclick = () => { TP = null; show(USER ? "home" : "login"); if (USER) renderMap(); };
@@ -1355,6 +1364,7 @@ function renderTeacher(){
    <tbody>${rows.map(r => `<tr><td class="nm" data-stu="${esc(r.s.name)}">${esc(r.s.name)}</td>${WEEKS.map(w => weekCell(r.atts, w)).join("")}<td>${r.atts.length ? new Date(r.atts[r.atts.length-1].ts).toLocaleDateString("en-GB") : "–"}</td></tr>`).join("") || `<tr><td colspan="16">No students yet.</td></tr>`}</tbody></table></div>
   </div>
   ${awardPanel()}
+  <div class="panel" id="wsPanel"><h3 style="margin:0 0 4px">⭐ Week stars</h3><p style="margin:0 0 8px;color:#6b5ca8;font-size:13px">For each week: <b>first try</b> of every mission, fewest mistakes (hint = ½ mistake), tie → faster. Only girls who finished <b>all</b> missions of the week. Lock a week to make its top 3 final — late finishers won't change it.</p><div class="wsg tws">${TD.stars ? weekStarsHTML(TD.stars, "", true) : "Loading… ⏳"}</div></div>
   ${goalPanel()}
   ${leaderPanel()}
   <div class="row2">
@@ -1377,7 +1387,7 @@ $("#tBody").addEventListener("submit", async e => {
   toast(`✔ ${r.name} added`); await reloadTeacher(); const m = $("#asMsg"); if (m) m.innerHTML = `<span class="ok-msg">✔ ${esc(r.name)} can now log in with the password you set.</span>`; }
  catch(err){ $("#asMsg").innerHTML = `<span class="err">${esc(err.message)}</span>`; }
 });
-async function reloadTeacher(){ const r = await api("teacherData", { teacherPass: TP }); if (r.ok){ const aw = TD && TD.awards; TD = r; TD.awards = aw || []; renderTeacher(); } }
+async function reloadTeacher(){ const r = await api("teacherData", { teacherPass: TP }); if (r.ok){ const aw = TD && TD.awards; const ws = TD && TD.stars; TD = r; TD.awards = aw || []; TD.stars = ws || {}; renderTeacher(); } }
 $("#tBody").addEventListener("click", async e => {
  const sp = e.target.closest("[data-setpw]"); if (sp){ const nm = sp.dataset.setpw, inp = [...document.querySelectorAll("[data-pw]")].find(x => x.dataset.pw === nm), np = inp ? inp.value.trim() : "";
   if (np.length < 4) return toast("Password must be at least 4 characters");
@@ -1386,6 +1396,8 @@ $("#tBody").addEventListener("click", async e => {
   if (!confirm(`Delete ${nm}?\n\nHer account, scores, coins and stars will be removed. She will need to register again.`)) return;
   try { const r = await api("deleteStudent", { teacherPass: TP, name: nm }); if (!r.ok) throw new Error(r.error); toast(`🗑️ ${nm} deleted`); await reloadTeacher(); } catch(err){ toast(err.message); } return; }
  if (e.target.id === "lbShow") return showLeaderboard();
+ const lw = e.target.closest("[data-lockw]"); if (lw){ try { const r = await api("lockWeek", { teacherPass: TP, week: +lw.dataset.lockw, unlock: !!lw.dataset.unlock }); if (!r.ok) throw new Error(r.error);
+  TD.stars = r.stars; $("#wsPanel .wsg").innerHTML = weekStarsHTML(TD.stars, "", true); toast(lw.dataset.unlock ? "Week is live again" : "🔒 Week stars locked"); } catch(err){ toast(err.message); } return; }
  if (e.target.id === "awPrev") return certWin(awardWinners().map(x => Object.assign(x, { date:fmtD(new Date()) })), AWF.title);
  if (e.target.id === "awPub"){ const W = awardWinners(); if (!W.length) return;
   if (!confirm(`Publish "${AWF.title}" certificates for:\n${W.map(w => ["1st","2nd","3rd"][w.rank] + " – " + w.name).join("\n")}\n\nThey will be able to print them.`)) return;
@@ -1470,19 +1482,52 @@ async function checkNewAwards(){ await loadAwards(); const seen = store.get("awS
  try { confetti(80); } catch(e){} }
 document.addEventListener("click", e => { const c = e.target.closest("[data-mycert2]"); if (c) printMyAward(c.dataset.mycert2); });
 
+function weekStarsCalc(rows, mc, avatars){
+ const per = {};
+ rows.forEach(r => { const w = +r.week, m = +r.mission; if (!w || !m || !r.first) return; const k = String(r.student).trim().toLowerCase();
+  const s = ((per[w] = per[w] || {})[k] = per[w][k] || { name:String(r.student).trim(), m:{} }); if (!s.m[m]) s.m[m] = r; });
+ const out = {};
+ Object.keys(per).forEach(w => { const need = +mc[w] || 0, L = [];
+  Object.values(per[w]).forEach(s => { const ms = Object.values(s.m); if (!need || ms.length < need) return;
+   let q = 0, wrong = 0, hints = 0, dur = 0; ms.forEach(a => { q += a.total; wrong += a.total - a.score; hints += a.hints || 0; dur += a.dur || 0; });
+   L.push({ name:s.name, avatar:avatars[s.name.toLowerCase()] || 0, pct: q ? Math.round((q - wrong - hints * .5) / q * 1000) / 10 : 0, wrong, hints, dur }); });
+  L.sort((a, b) => b.pct - a.pct || a.dur - b.dur); out[w] = L; });
+ return out;
+}
+function demoStars(db){
+ const seen = {}, rows = db.attempts.map(a => { const k = a.student.toLowerCase() + "|" + a.week + "|" + a.mission, first = !seen[k]; seen[k] = 1; return Object.assign({}, a, { first }); });
+ const av = {}; Object.values(db.students).forEach(s => av[s.name.toLowerCase()] = s.avatar || 0);
+ const live = weekStarsCalc(rows, missionCounts(), av), out = {}, lk = db.weekStars || {};
+ Object.keys(live).forEach(w => out[w] = { locked:false, list: live[w].slice(0, 10) });
+ Object.keys(lk).forEach(w => out[w] = { locked:true, at: lk[w].at, list: lk[w].list });
+ return out;
+}
+const fmtDur = s => s >= 60 ? Math.floor(s / 60) + "m " + (s % 60) + "s" : s + "s";
+function weekStarsHTML(S, me, teacher){
+ const W = WEEKS.filter(w => w.type === "study");
+ const cards = W.map(w => { const d = S[w.n]; if (!d || !d.list.length) return teacher ? `<div class="wsc"><h4>Week ${w.n} <small>${esc(w.title || "")}</small></h4><p class="ws0">Nobody finished all missions yet.</p></div>` : "";
+  const L = teacher ? d.list : d.list.slice(0, 3);
+  return `<div class="wsc ${d.locked ? "lk" : ""}"><h4>Week ${w.n} <small>${esc(w.title || "")}</small><span>${d.locked ? "🔒 Final" : "🟢 Live"}</span></h4>
+   ${L.map((x, i) => `<div class="wsr ${x.name.toLowerCase() === me ? "me" : ""} ${i > 2 ? "dim" : ""}"><b>${i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</b><img src="${heroImg(x.avatar)}" alt=""><span>${esc(x.name)}</span><em>${x.pct}%${teacher ? ` · ❌${x.wrong} · 💡${x.hints} · ⏱️${fmtDur(x.dur)}` : ""}</em></div>`).join("")}
+   ${teacher ? `<button class="btn ${d.locked ? "ghost" : "yel"}" data-lockw="${w.n}" data-unlock="${d.locked ? 1 : ""}">${d.locked ? "🔓 Unlock (make live again)" : "🔒 Lock week stars"}</button>` : ""}</div>`; }).join("");
+ return cards || `<p style="text-align:center">No week stars yet — finish all the missions of a week to compete! 🚀</p>`;
+}
+let WSTARS = null;
 async function openTop(){
  modal(`<div class="whead"><img src="img/m_star.webp" alt=""><div><h2 class="h">Top Scientists 🏆</h2><p>Updated every time someone finishes a mission</p></div></div><div id="topBody"><p style="text-align:center">Loading… ⏳</p></div>`);
  let r; try { r = await api("top", {}); } catch(e){ r = null; }
  const body = $("#topBody"); if (!body) return;
  if (!r || !r.ok){ body.innerHTML = `<p style="text-align:center">Couldn't load the board right now. Try again later 🙏</p>`; return; }
- const draw = () => { const L = TOPM === "week" ? r.week : r.all, me = USER ? USER.name.toLowerCase() : "";
-  body.innerHTML = `<div class="lbtabs" style="justify-content:center"><button data-topm="week" class="${TOPM === "week" ? "on" : ""}">⚡ This week</button><button data-topm="all" class="${TOPM === "all" ? "on" : ""}">🏆 All time</button></div>
-   <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
+ const draw = () => { const L = (TOPM === "week" ? r.week : r.all) || [], me = USER ? USER.name.toLowerCase() : "";
+  body.innerHTML = `<div class="lbtabs" style="justify-content:center"><button data-topm="week" class="${TOPM === "week" ? "on" : ""}">⚡ Live now</button><button data-topm="stars" class="${TOPM === "stars" ? "on" : ""}">⭐ Week stars</button><button data-topm="all" class="${TOPM === "all" ? "on" : ""}">🏆 All time</button></div>
+   ${TOPM === "stars" ? `<p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3">The top 3 of each week: <b>first try</b> of every mission, <b>fewest mistakes</b> (a hint = ½ mistake). Tie → <b>faster</b> wins. Labs don't count.</p><div class="wsg">${WSTARS ? weekStarsHTML(WSTARS, me) : "<p style='text-align:center'>Loading… ⏳</p>"}</div>` : `
+   <p style="text-align:center;margin:2px 0 8px;font-size:13px;color:#7a6bb3;${TOPM === "stars" ? "display:none" : ""}">${TOPM === "week" ? "Most <b>correct answers</b> in the last 7 days, up to this moment" : "Most <b>stars</b> ⭐, then most <b>coins earned</b> 🪙 (spending coins never lowers your rank!)"}</p>
    ${L.length ? `<div class="mpod">${[1, 0, 2].filter(i => L[i]).map(i => `<div class="mp p${i + 1} ${L[i].name.toLowerCase() === me ? "me" : ""}"><img src="${heroImg(L[i].avatar)}" alt=""><b>${esc(L[i].name)}</b><span>${TOPM === "week" ? "✅ " + L[i].week : "⭐ " + L[i].stars + " · 🪙 " + L[i].coins}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>`
-    : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}
+    : `<p style="text-align:center">No one yet — be the first! 🚀</p>`}`}
    ${myAwardsHTML()}
    <p style="text-align:center;margin:10px 0 0;font-weight:700">Play missions, earn ⭐ stars and answer correctly to climb the board! 💪</p>`; };
- body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw(); return; }
+ body.addEventListener("click", e => { const b = e.target.closest("[data-topm]"); if (b){ TOPM = b.dataset.topm; draw();
+   if (TOPM === "stars") api("weekStars", {}).then(x => { if (x && x.ok){ WSTARS = x.stars; if (TOPM === "stars") draw(); } }).catch(() => {}); return; }
   const c = e.target.closest("[data-mycert]"); if (c) printMyAward(c.dataset.mycert); });
  loadAwards().then(() => { const box = $("#myAw"); if (box) box.outerHTML = myAwardsHTML(); });
  draw();
