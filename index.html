@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795561483";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795561820";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -7417,6 +7417,244 @@ W7.notes = [
  ["💡 Light", ["Light is electromagnetic: electric and magnetic fields; it travels through a vacuum at ~300,000 km/s.", "Reflection: bouncing off a surface. Refraction: changing direction in a new medium (light slows in water).", "A concave lens makes light diverge. A prism splits light into a rainbow by refraction."], "#7e57c2"]
 ];
 LAB[7] = W7;
+
+/* =====================================================================
+   WEEK 8 — Reflection, Refraction & Sound · Electric Charge & Circuits (P288–P340)
+   uses helpers: arr5, kid5, tasks5, loop5, seg5, quiz5, bar6, wave7
+   ===================================================================== */
+const W8 = { w:8, emoji:"⚡", label:"Week 8 · Light, Sound & Circuits", stations:[] };
+
+/* 1 — COLOR & REFLECTION */
+const LC8 = { white:{ n:"⚪ White", c:"#ffffff", has:["red", "green", "blue"] }, red:{ n:"🔴 Red", c:"#ff5252", has:["red"] }, green:{ n:"🟢 Green", c:"#69f0ae", has:["green"] }, blue:{ n:"🔵 Blue", c:"#448aff", has:["blue"] } };
+const OB8 = { apple:{ n:"🍎 Red apple", r:"red", col:"#e53935" }, leaf:{ n:"🍃 Green leaf", r:"green", col:"#43a047" }, ball:{ n:"🔵 Blue ball", r:"blue", col:"#1e88e5" } };
+W8.stations.push({ id:"color", icon:"🎨", short:"Colour & Reflection", title:"Why Is an Apple Red?", covers:["P288","P293","P295","P297","P300","P316"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🎨 Colour detective</h2><p style="margin-top:0">Shine a coloured light on an object. Which colour <b>bounces back</b> to your eye?</p>
+   <div class="ctl"><div><label>🔦 Light</label><div class="seg" id="coL">${Object.entries(LC8).map(([k, l], i) => `<button data-v="${k}" class="${i ? "" : "on"}">${l.n}</button>`).join("")}</div></div>
+    <div><label>🧺 Object</label><div class="seg" id="coO">${Object.entries(OB8).map(([k, o], i) => `<button data-v="${k}" class="${i ? "" : "on"}">${o.n}</button>`).join("")}</div></div></div>
+   <svg class="f5sc" viewBox="0 0 400 210" id="coV" style="margin-top:6px;background:#141a33"></svg><div class="f5big" id="coT"></div>
+   <div class="lcard" style="margin-top:6px;box-shadow:none;border:3px dashed #e6defd"><h3>🌈 Wavelengths of colours</h3><svg viewBox="0 0 400 110" style="width:100%" id="coW"></svg></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="coK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Reflection</span>: light <b>bouncing off</b> a surface — a mirror reflects light.</p><p>An object's colour = the light it <b>reflects</b> (the <b>wavelength</b> it reflects). The other colours are <b>absorbed</b>. When light is absorbed it does not change direction — it is taken in.</p><p>In the rainbow, <b>violet</b> has the <b>shortest</b> wavelength; red has the longest.</p></div></div></div><div id="coQ"></div>`;
+  let L = "white", O = "apple", t = 0;
+  const mark = tasks5($("#coK"), [["white", "See the apple in white light"], ["dark", "Make an object look BLACK"], ["violet", "Find the shortest wavelength"]], () => quiz5(el, api, "#coQ", ["P288","P293","P295","P297","P300","P316"]));
+  const draw = () => { const l = LC8[L], o = OB8[O], refl = l.has.includes(o.r), seen = refl ? o.col : "#1b1b1b";
+   let s = `<text x="20" y="40" font-size="26">🔦</text>` + [0, 1, 2].map(k => `<line x1="50" y1="${32 + k * 6}" x2="180" y2="${100 + k * 6}" stroke="${l.c}" stroke-width="4" opacity=".85" stroke-dasharray="10 6" stroke-dashoffset="${-t * 40}"/>`).join("");
+   s += `<circle cx="200" cy="120" r="38" fill="${seen}" stroke="#555" stroke-width="2"/>` + (O === "apple" ? `<path d="M200 82 q4 -12 12 -14" stroke="#6d4c41" stroke-width="4" fill="none"/>` : "");
+   if (refl) s += `<line x1="225" y1="100" x2="330" y2="50" stroke="${o.col}" stroke-width="5" stroke-dasharray="10 6" stroke-dashoffset="${-t * 40}"/>`;
+   s += `<text x="350" y="56" font-size="28">👁️</text>`;
+   l.has.filter(c => c !== o.r).forEach((c, i) => s += `<text x="${170 + i * 40}" y="190" font-size="12" font-weight="900" fill="#90a4ae">${c} absorbed</text>`);
+   $("#coV").innerHTML = s;
+   $("#coT").innerHTML = refl ? `You see <b style="color:${o.col}">${o.r.toUpperCase()}</b> — it reflects ${o.r} light.` : `You see <b>BLACK</b> — no ${o.r} light to reflect, everything is absorbed!`; };
+  const wdraw = () => { const cols = [["Red", "#e53935", 700], ["Orange", "#fb8c00", 620], ["Yellow", "#fdd835", 580], ["Green", "#43a047", 530], ["Blue", "#1e88e5", 470], ["Violet", "#8e24aa", 400]];
+   let s = ""; cols.forEach(([n, c, wl], i) => { const L = wl / 18; s += `<g transform="translate(${8 + i * 66},0)" data-cw="${n}" style="cursor:pointer"><rect width="60" height="100" rx="10" fill="#fafafa" stroke="${c}" stroke-width="3"/>${wave7(4, 56, 45, 12, L, t * 3, c, 3)}<text x="30" y="88" font-size="11" font-weight="900" text-anchor="middle" fill="${c}">${n}</text></g>`; });
+   $("#coW").innerHTML = s; };
+  $("#coW").onclick = e => { const g = e.target.closest("[data-cw]"); if (!g) return; const n = g.dataset.cw;
+   if (n === "Violet"){ mark("violet"); api.hoot("Yes! <b>Violet</b> has the <b>shortest wavelength</b> (most waves packed together). Red has the longest. 🌈", "m_star"); } else api.hoot(`${n}: look at the waves — are they the most squeezed together? Find the shortest!`, "m_think"); };
+  seg5(el, "#coL", k => { L = k; check(); }); seg5(el, "#coO", k => { O = k; check(); });
+  const check = () => { const refl = LC8[L].has.includes(OB8[O].r);
+   if (L === "white" && O === "apple"){ mark("white"); api.hoot("White light has ALL colours. The apple <b>reflects red</b> and <b>absorbs</b> the rest → we see red! 🍎", "m_wow"); }
+   else if (!refl){ mark("dark"); api.hoot("No matching colour to reflect → all the light is <b>absorbed</b> → it looks <b>black</b>! 🖤", "m_wow"); } };
+  loop5(dt => { t += dt; draw(); wdraw(); });
+  api.hoot("Why is an apple red? The answer is reflection! 🍎", "m_point");
+ }});
+
+/* 2 — LENSES & THE EYE */
+W8.stations.push({ id:"eye", icon:"👁️", short:"Lenses & Eye", title:"Lenses & the Human Eye", covers:["P290","P291","P292","P294","P296","P298","P299","P312","P315"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🔍 Lens lab</h2>
+   <div class="seg" id="lnM"><button data-v="convex" class="on">🔍 Convex lens</button><button data-v="concave">🥽 Concave lens</button><button data-v="eye">👁️ The eye</button></div>
+   <svg class="f5sc" viewBox="0 0 400 220" id="lnV" style="margin-top:6px;background:#10162e"></svg><div class="f5big" id="lnT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="lnGo">🔦 Shine light</button><button class="lbtn y" id="lnG" style="display:none">👓 Add eyeglasses</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="lnK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Refraction</span>: light <b>changes direction</b> when it enters a new medium (air → water: it <b>slows down</b>). A prism refracts light and separates it into colours.</p><p><b>Convex</b> lens → light <b>converges</b> (comes together). <b>Concave</b> lens → bends light <b>outward</b> (diverges). <b>Eyeglass lenses</b> use refraction to focus light.</p><p>👁️ Light enters through the <b>cornea</b>, the <b>lens</b> focuses it on the <b>retina</b>, and the brain forms the image.</p></div></div></div><div id="lnQ"></div>`;
+  let M = "convex", p = 0, run = 0, glasses = 0;
+  const mark = tasks5($("#lnK"), [["convex", "Converge light with a convex lens"], ["concave", "Spread light with a concave lens"], ["eye", "Send light into the eye"], ["glasses", "Fix blurry vision with glasses"]], () => quiz5(el, api, "#lnQ", ["P290","P291","P292","P294","P296","P298","P299","P312","P315"]));
+  const ray = (pts) => { let tot = 0, seg = []; for (let i = 1; i < pts.length; i++){ const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; } let left = p * tot, d = `M${pts[0][0]} ${pts[0][1]}`;
+   for (let i = 1; i < pts.length && left > 0; i++){ const f = Math.min(1, left / seg[i - 1]); d += ` L${pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f} ${pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f}`; left -= seg[i - 1]; } return `<path d="${d}" stroke="#ffeb3b" stroke-width="4" fill="none" stroke-linecap="round"/>`; };
+  const draw = () => { let s = "";
+   if (M === "convex"){ s += `<ellipse cx="200" cy="110" rx="16" ry="80" fill="#80deea" opacity=".7"/>`; [-50, -25, 0, 25, 50].forEach(o => s += ray([[20, 110 + o], [200, 110 + o], [320, 110], [390, 110 - o * .6]])); if (p >= 1) s += `<circle cx="320" cy="110" r="7" fill="#fff"/><text x="320" y="200" font-size="12" font-weight="900" fill="#ffe9b0" text-anchor="middle">focus point: rays CONVERGE</text>`; }
+   if (M === "concave"){ s += `<path d="M190 30 q24 80 0 160 h20 q-24 -80 0 -160z" fill="#80deea" opacity=".7"/>`; [-50, -25, 0, 25, 50].forEach(o => s += ray([[20, 110 + o], [200, 110 + o], [390, 110 + o * 2.2]])); if (p >= 1) s += `<text x="300" y="24" font-size="12" font-weight="900" fill="#ffe9b0" text-anchor="middle">bends light OUTWARD (diverges)</text>`; }
+   if (M === "eye"){ s += `<circle cx="250" cy="110" r="80" fill="#fff" stroke="#f48fb1" stroke-width="4"/><path d="M168 78 q-16 32 0 64" stroke="#80deea" stroke-width="8" fill="none"/><ellipse cx="190" cy="110" rx="12" ry="30" fill="#80deea" opacity=".8"/><path d="M318 60 q22 50 0 100" stroke="#ef5350" stroke-width="8" fill="none"/><path d="M326 110 h60" stroke="#ffb74d" stroke-width="6"/>`;
+    s += `<text x="160" y="60" font-size="11" font-weight="900" fill="#80deea" text-anchor="end">cornea</text><text x="190" y="160" font-size="11" font-weight="900" fill="#80deea" text-anchor="middle">lens</text><text x="330" y="48" font-size="11" font-weight="900" fill="#ef5350">retina</text><text x="360" y="102" font-size="11" font-weight="900" fill="#ffb74d">to brain 🧠</text>`;
+    if (glasses) s += `<ellipse cx="110" cy="110" rx="10" ry="40" fill="#b39ddb" opacity=".8"/><text x="110" y="166" font-size="11" font-weight="900" fill="#b39ddb" text-anchor="middle">glasses</text>`;
+    const f = glasses ? 322 : 292; [-24, 0, 24].forEach(o => s += ray([[20, 110 + o], [168, 110 + o * (glasses ? .9 : 1)], [190, 110 + o * .8], [f, 110], [f + (330 - f), 110 - o * .3]]));
+    if (p >= 1) s += `<text x="40" y="24" font-size="12" font-weight="900" fill="${glasses ? "#7CFC9A" : "#ffb74d"}">${glasses ? "✅ focused on the retina → clear!" : "😵 focus point misses the retina → blurry"}</text>`; }
+   $("#lnV").innerHTML = s; };
+  seg5(el, "#lnM", k => { M = k; p = 0; run = 0; glasses = 0; $("#lnG").style.display = k === "eye" ? "" : "none"; $("#lnT").innerHTML = ""; draw(); });
+  $("#lnGo").onclick = () => { if (run) return; p = 0; run = 1; sfx.tap(); };
+  $("#lnG").onclick = () => { glasses = 1; p = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; p = Math.min(1, p + dt / 1.4); draw(); if (p >= 1){ run = 0;
+   if (M === "convex"){ mark("convex"); $("#lnT").innerHTML = "🔍 Convex: light converges"; api.hoot("The convex lens <b>refracts</b> light so the rays <b>converge</b> at a focus point — like a magnifying glass! 🔍", "m_wow"); }
+   if (M === "concave"){ mark("concave"); $("#lnT").innerHTML = "🥽 Concave: light bends outward"; api.hoot("The concave lens bends light <b>outward</b> — the rays spread apart. 🥽", "m_wow"); }
+   if (M === "eye" && !glasses){ mark("eye"); $("#lnT").innerHTML = "👁️ cornea → lens → retina → brain"; api.hoot("Light enters through the <b>cornea</b>, the <b>lens</b> focuses it on the <b>retina</b>, then the brain makes the picture. But this eye is blurry… add glasses! 👓", "m_idea"); }
+   if (M === "eye" && glasses){ mark("glasses"); api.hoot("The <b>eyeglass lens</b> refracts the light so it focuses exactly on the retina → clear vision! 👓", "m_star"); } } });
+  draw(); api.hoot("Lenses bend light by refraction. Let's see how! 🔍", "m_point");
+ }});
+
+/* 3 — ECHO CANYON & ABSORPTION */
+const SF8 = { rock:{ n:"🪨 Rock wall", c:"#a1887f", ab:.05 }, glass:{ n:"🪟 Glass", c:"#b3e5fc", ab:.1 }, carpet:{ n:"🧶 Thick carpet", c:"#ad1457", ab:.8 }, foam:{ n:"🧽 Foam", c:"#ffd54f", ab:.95 } };
+W8.stations.push({ id:"echo", icon:"🗣️", short:"Echo & Absorption", title:"Echo Canyon", covers:["P289","P301","P302","P303","P304","P305","P306","P313","P314","P317"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🗣️ Hello… hello… hello!</h2><p style="margin-top:0">Choose a surface, then <b>shout</b>. Does the sound bounce back?</p>
+   <div class="seg" id="ecS">${Object.entries(SF8).map(([k, f], i) => `<button data-v="${k}" class="${i ? "" : "on"}">${f.n}</button>`).join("")}</div>
+   <div class="seg" id="ecT" style="margin-top:6px"><button data-v="w" class="on">☀️ Warm day</button><button data-v="c">❄️ Cold day</button></div>
+   <svg class="f5sc" viewBox="0 0 400 200" id="ecV" style="margin-top:6px"></svg><div class="f5read" id="ecR"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="ecGo">📣 Shout!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="ecK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>Sound travels through air by <b>compressing and expanding</b> air particles, at about <b>340 m/s</b>.</p><p>Hard surfaces <span class="kw">reflect</span> sound → an <b>echo</b> (e.g. in a canyon). Reflection of sound = sound bouncing off a wall.</p><p>Soft materials like <b>foam</b> and <b>thick carpet</b> <span class="kw3">absorb</span> sound.</p><p>Sound travels <b>faster</b> at higher temperatures.</p></div></div></div><div id="ecQ"></div>`;
+  let S = "rock", T = "w", x = -1, back = 0, run = 0;
+  const mark = tasks5($("#ecK"), [["echo", "Hear an echo from the rock wall"], ["absorb", "Absorb the sound"], ["warm", "Compare warm & cold air"]], () => quiz5(el, api, "#ecQ", ["P289","P301","P302","P303","P304","P305","P306","P313","P314","P317"]));
+  const v = () => T === "w" ? 346 : 331;
+  const draw = () => { const f = SF8[S]; let s = `<rect width="400" height="200" fill="#ffe0b2"/><rect x="0" y="170" width="400" height="30" fill="#d7a46a"/>${kid5(40, 148, "#ec407a", 0, .9)}<rect x="330" y="20" width="70" height="150" fill="${f.c}"/>`;
+   if (S === "carpet" || S === "foam") for (let i = 0; i < 40; i++) s += `<circle cx="${334 + (i * 13) % 62}" cy="${26 + (i * 29) % 140}" r="3" fill="rgba(0,0,0,.15)"/>`;
+   if (x >= 0){ const sx = back ? 330 - x : 60 + x; const op = back ? (1 - f.ab) : 1; for (let k = 0; k < 3; k++){ const xx = back ? sx + k * 10 : sx - k * 10; s += `<path d="M${xx} ${70} q${back ? -12 : 12} 30 0 60" stroke="${back ? "#7e57c2" : "#ff7043"}" stroke-width="4" fill="none" opacity="${op}"/>`; } }
+   $("#ecV").innerHTML = s; $("#ecR").innerHTML = `<span>Surface: ${f.n}</span><span>Speed of sound: ${v()} m/s</span><span>${T === "w" ? "☀️ warm" : "❄️ cold"} air</span>`; };
+  seg5(el, "#ecS", k => { S = k; x = -1; draw(); }); seg5(el, "#ecT", k => { T = k; draw(); if (k === "c"){ mark("warm"); api.hoot(`Cold air: ${v()} m/s. Warm air: 346 m/s. Sound travels <b>faster at higher temperature</b>! 🌡️`, "m_idea"); } });
+  $("#ecGo").onclick = () => { if (run) return; x = 0; back = 0; run = 1; sfx.tap(); tone([300, 360], .12, "sawtooth", .06); };
+  loop5(dt => { if (!run) return; x += dt * v() * .9; if (!back && x >= 270){ back = 1; x = 0; const ab = SF8[S].ab; tone([300, 360], .12, "sawtooth", .06 * (1 - ab)); }
+   if (back && x >= 270){ run = 0; x = -1; const ab = SF8[S].ab;
+    if (ab < .5){ mark("echo"); api.hoot("ECHO! 🗣️ The <b>hard surface reflected</b> the sound waves back to you — like in a canyon.", "m_wow"); }
+    else { mark("absorb"); api.hoot("Almost silent! The soft material <b>absorbed</b> the sound. That's why rooms with thick carpet are quiet. 🧶", "m_wow"); } }
+   draw(); });
+  draw(); api.hoot("Shout at different surfaces — which ones echo? 🗣️", "m_point");
+ }});
+
+/* 4 — GUITAR: PITCH & LOUDNESS */
+W8.stations.push({ id:"guitar", icon:"🎸", short:"Pitch & Loudness", title:"The Science Guitar", covers:["P307","P308","P309","P310","P311"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🎸 Pluck a string!</h2><p style="margin-top:0">Choose a <b>string</b> (frequency) and how <b>hard</b> you pluck (amplitude).</p>
+   <div class="ctl"><div><label>🎵 String</label><div class="seg" id="gtS"><button data-v="1" class="on">Thick (low)</button><button data-v="2">Medium</button><button data-v="4">Thin (high)</button></div></div>
+    <div><label>💪 Pluck</label><div class="seg" id="gtA"><button data-v="1" class="on">Soft</button><button data-v="2.4">Hard</button></div></div></div>
+   <svg class="f5sc" viewBox="0 0 400 200" id="gtV" style="margin-top:6px;background:#1a1033"></svg><div class="f5read" id="gtR"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="gtP">🎸 Pluck!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="gtK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Pitch</span> = how high or low a sound is. It depends on the <b>frequency</b>: higher frequency → <b>higher pitch</b>.</p><p><span class="kw3">Loudness (intensity)</span> depends on the <b>amplitude</b>: the greater the amplitude, the <b>louder</b> the sound.</p></div></div></div><div id="gtQ"></div>`;
+  let F = 1, Am = 1, vib = 0, t = 0;
+  const mark = tasks5($("#gtK"), [["hi", "Play a high pitch"], ["lo", "Play a low pitch"], ["loud", "Play a LOUD sound"]], () => quiz5(el, api, "#gtQ", ["P307","P308","P309","P310","P311"]));
+  const draw = () => { let s = ""; [1, 2, 4].forEach((f, i) => { const y = 30 + i * 22, on = f === F, a = on ? vib * Am * 6 : 0; s += on && vib > 0 ? wave7(20, 380, y, a, 380 / (f * 6), t * 40, "#ffd23f", 2 + (3 - i)) : `<line x1="20" y1="${y}" x2="380" y2="${y}" stroke="#cfd8dc" stroke-width="${2 + (3 - i)}"/>`; });
+   s += `<rect x="10" y="108" width="380" height="84" rx="10" fill="#0b0720"/>` + (vib > 0 ? wave7(20, 380, 150, Math.min(38, vib * Am * 16), 360 / (F * 3), t * 10, "#4fc3f7", 3) : `<line x1="20" y1="150" x2="380" y2="150" stroke="#4fc3f7" stroke-width="2"/>`) + `<text x="20" y="124" font-size="11" font-weight="900" fill="#90caf9">sound wave</text>`;
+   $("#gtV").innerHTML = s; $("#gtR").innerHTML = `<span>Frequency: ${F === 1 ? "low" : F === 2 ? "medium" : "high"}</span><span>Pitch: ${F === 4 ? "HIGH 🎶" : F === 2 ? "middle" : "LOW 🎵"}</span><span>Loudness: ${Am > 1 ? "LOUD 🔊" : "soft 🔈"}</span>`; };
+  seg5(el, "#gtS", k => { F = +k; draw(); }); seg5(el, "#gtA", k => { Am = +k; draw(); });
+  $("#gtP").onclick = () => { vib = 1; tone([[0, 147, 220, 0, 330][F]], .5, "triangle", Am > 1 ? .2 : .05);
+   if (F === 4){ mark("hi"); api.hoot("Thin string → vibrates fast → <b>high frequency</b> → <b>high pitch</b>! 🎶", "m_wow"); } else if (F === 1){ mark("lo"); api.hoot("Thick string → slow vibrations → <b>low frequency</b> → <b>low pitch</b>. 🎵", "m_idea"); }
+   if (Am > 1){ mark("loud"); lt(() => api.hoot("A hard pluck makes a bigger <b>amplitude</b> → a <b>louder</b> sound! 🔊", "m_star"), 1400); } };
+  loop5(dt => { t += dt; vib = Math.max(0, vib - dt * .45); draw(); });
+  api.hoot("Pitch and loudness are different! Let's play 🎸", "m_point");
+ }});
+
+/* 5 — STATIC ELECTRICITY */
+W8.stations.push({ id:"static", icon:"🎈", short:"Static Charges", title:"Static Balloon Lab", covers:["P318","P319","P330","P331","P332"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🎈 Rub the balloon!</h2>
+   <div class="seg" id="stM"><button data-v="hair" class="on">👧 Balloon & hair</button><button data-v="two">🎈🎈 Two balloons</button><button data-v="wall">🧱 Balloon & wall</button></div>
+   <svg class="f5sc" viewBox="0 0 400 230" id="stV" style="margin-top:6px"></svg><div class="f5big" id="stT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn y" id="stR">🔄 Rub (<span id="stC">0</span>/5)</button><button class="lbtn t" id="stGo">🤏 Bring closer</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="stK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>Rubbing moves <b>electrons</b> (they have a <b>negative</b> charge) from your hair to the balloon.</p><p><span class="kw3">Opposite charges attract</span> (+ and −). <span class="kw2">Same charges repel</span>. This push or pull is the <b>electric force</b>.</p><p>A charged object <b>attracts</b> an uncharged object (balloon sticks to the wall!).</p></div></div></div><div id="stQ"></div>`;
+  let M = "hair", rub = 0, close = 0, run = 0;
+  const mark = tasks5($("#stK"), [["hair", "Make hair stand up"], ["repel", "Make two balloons repel"], ["wall", "Stick a balloon to a wall"]], () => quiz5(el, api, "#stQ", ["P318","P319","P330","P331","P332"]));
+  const sign = (x, y, neg) => `<circle cx="${x}" cy="${y}" r="7" fill="${neg ? "#1e88e5" : "#e53935"}"/><text x="${x}" y="${y + 4}" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">${neg ? "−" : "+"}</text>`;
+  const balloon = (x, y, col, nNeg) => { let s = `<ellipse cx="${x}" cy="${y}" rx="32" ry="40" fill="${col}"/><path d="M${x} ${y + 40} q-6 20 4 40" stroke="#555" fill="none"/>`; for (let i = 0; i < nNeg; i++) s += sign(x - 16 + (i % 3) * 16, y - 14 + Math.floor(i / 3) * 18, 1); return s; };
+  const draw = () => { const q = Math.round(rub); let s = `<rect width="400" height="230" fill="#f3e5f5"/>`;
+   if (M === "hair"){ const bx = 300 - close * 110; s += `<circle cx="110" cy="130" r="40" fill="#f5c9a0"/>`; for (let i = 0; i < 14; i++){ const a = -Math.PI + i / 13 * Math.PI, up = close * Math.min(1, q / 3); const ex = 110 + Math.cos(a) * (60 + up * 30) + up * 30, ey = 130 + Math.sin(a) * (60 + up * 10) - up * 10; s += `<path d="M${110 + Math.cos(a) * 38} ${130 + Math.sin(a) * 38} Q${110 + Math.cos(a) * 56} ${118 + Math.sin(a) * 50} ${ex} ${ey}" stroke="#4e342e" stroke-width="4" fill="none"/>`; }
+    for (let i = 0; i < Math.min(q, 5); i++) s += sign(80 + i * 15, 190, 0); s += balloon(bx, 110, "#ab47bc", Math.min(q, 6)); }
+   if (M === "two"){ const d = close * (q >= 3 ? -40 : 60); s += balloon(130 + d * .5, 110, "#ab47bc", Math.min(q, 6)) + balloon(270 - d * .5, 110, "#ec407a", Math.min(q, 6)); }
+   if (M === "wall"){ const bx = 260 - close * 150 * (q >= 3 ? 1 : .6); s += `<rect x="40" y="0" width="60" height="230" fill="#bcaaa4"/>`; for (let i = 0; i < 6; i++) s += sign(90, 30 + i * 32, 0); s += balloon(Math.max(132, bx), 110, "#26a69a", Math.min(q, 6)); }
+   $("#stV").innerHTML = s; $("#stC").textContent = Math.min(5, q); };
+  seg5(el, "#stM", k => { M = k; rub = 0; close = 0; $("#stT").innerHTML = ""; draw(); });
+  $("#stR").onclick = () => { if (rub >= 5) return; rub++; close = 0; tone([600 + rub * 60], .04, "square", .04); draw(); if (rub === 1) api.hoot("Each rub moves <b>electrons</b> (negative −) onto the balloon! Keep rubbing.", "m_think"); };
+  $("#stGo").onclick = () => { if (run) return; if (rub < 3) return api.hoot("Rub it at least 3 times first! 🔄", "m_point"); close = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; close = Math.min(1, close + dt * .9); draw(); if (close >= 1){ run = 0;
+   if (M === "hair"){ mark("hair"); $("#stT").innerHTML = "− balloon + hair → ATTRACT"; api.hoot("The balloon is <b>negative</b> (extra electrons), the hair is <b>positive</b> → <b>opposite charges attract</b>! 💇‍♀️", "m_wow"); }
+   if (M === "two"){ mark("repel"); $("#stT").innerHTML = "− and − → REPEL"; api.hoot("Both balloons have the <b>same (negative) charge</b> → they <b>repel</b> each other! 🎈↔️🎈", "m_wow"); }
+   if (M === "wall"){ mark("wall"); $("#stT").innerHTML = "charged balloon + uncharged wall → ATTRACT"; api.hoot("A charged balloon <b>attracts</b> an uncharged wall — it sticks! That's the <b>electric force</b>. 🧱", "m_star"); } } });
+  draw(); api.hoot("Static electricity is all about tiny charges. Rub and see! 🎈", "m_point");
+ }});
+
+/* 6 — BUILD A CIRCUIT + CONDUCTOR TESTER */
+const MT8 = { copper:{ n:"🟠 Copper wire", c:1 }, steel:{ n:"🔩 Steel nail", c:1 }, rubber:{ n:"🧤 Rubber", c:0 }, plastic:{ n:"🥤 Plastic", c:0 }, wood:{ n:"🪵 Wood", c:0 } };
+W8.stations.push({ id:"circuit", icon:"💡", short:"Build a Circuit", title:"Build a Circuit", covers:["P320","P321","P322","P323","P324","P335","P337","P338","P339","P340"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>💡 Light the bulb!</h2><p style="margin-top:0">Put a material in the <b>gap</b>, then close the <b>switch</b>.</p>
+   <div class="seg" id="ciM">${Object.entries(MT8).map(([k, m]) => `<button data-v="${k}">${m.n}</button>`).join("")}</div>
+   <svg class="f5sc" viewBox="0 0 400 240" id="ciV" style="margin-top:6px"></svg><div class="f5big" id="ciT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="ciSw">🔘 Switch: OFF</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="ciK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Electric current</span> = the flow of electric charge. It flows from the <b>positive (+)</b> terminal to the <b>negative (−)</b> terminal.</p><p>🔋 The <b>battery</b> supplies electrical energy. 💡 The <b>bulb</b> uses (consumes) it. The charge <b>carries energy</b> to the parts of the circuit.</p><p>🔘 The <b>switch</b> controls the current: OFF → the current stops.</p><p><b>Conductors</b> (copper, metals) let charge move from atom to atom. <b>Insulators</b> (rubber, plastic, wood) don't.</p></div></div></div><div id="ciQ"></div>`;
+  let G = null, sw = 0, t = 0; const tried = new Set();
+  const mark = tasks5($("#ciK"), [["light", "Light the bulb"], ["ins", "Find an insulator"], ["off", "Stop the current with the switch"], ["all", "Test all 5 materials"]], () => quiz5(el, api, "#ciQ", ["P320","P321","P322","P323","P324","P335","P337","P338","P339","P340"]));
+  const on = () => sw && G && MT8[G].c;
+  const path = [[60, 190], [60, 50], [200, 50], [340, 50], [340, 190], [250, 190], [150, 190], [60, 190]];
+  const ptAt = f => { let tot = 0; const L = []; for (let i = 1; i < path.length; i++){ const d = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); L.push(d); tot += d; } let r = f * tot; for (let i = 1; i < path.length; i++){ if (r <= L[i - 1]){ const k = r / L[i - 1]; return [path[i - 1][0] + (path[i][0] - path[i - 1][0]) * k, path[i - 1][1] + (path[i][1] - path[i - 1][1]) * k]; } r -= L[i - 1]; } return path[0]; };
+  const draw = () => { const lit = on(); let s = `<path d="M60 190 V50 H170 M230 50 H340 V190 H262 M238 190 H200 M120 190 H60" stroke="#c62828" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+   s += `<rect x="30" y="100" width="60" height="40" rx="6" fill="#1f2838"/><rect x="30" y="100" width="20" height="40" fill="#ffb300"/><text x="40" y="96" font-size="14" font-weight="900" fill="#e53935">+</text><text x="78" y="96" font-size="16" font-weight="900" fill="#1e88e5">−</text><text x="60" y="160" font-size="11" font-weight="900" text-anchor="middle" fill="#5B3FD9">battery</text>`;
+   s += `<circle cx="200" cy="42" r="26" fill="${lit ? "#fff59d" : "#eceff1"}" stroke="#90a4ae" stroke-width="3"/>${lit ? `<circle cx="200" cy="42" r="44" fill="#ffeb3b" opacity=".35"/>` : ""}<rect x="190" y="62" width="20" height="14" fill="#90a4ae"/><text x="200" y="100" font-size="11" font-weight="900" text-anchor="middle" fill="#5B3FD9">bulb</text>`;
+   s += `<circle cx="238" cy="190" r="5" fill="#555"/><circle cx="262" cy="190" r="5" fill="#555"/><line x1="238" y1="190" x2="${sw ? 262 : 258}" y2="${sw ? 190 : 168}" stroke="#555" stroke-width="5" stroke-linecap="round"/><text x="250" y="216" font-size="11" font-weight="900" text-anchor="middle" fill="#5B3FD9">switch ${sw ? "ON" : "OFF"}</text>`;
+   s += `<rect x="120" y="178" width="80" height="24" rx="6" fill="${G ? { copper:"#e6893a", steel:"#90a4ae", rubber:"#fdd835", plastic:"#e0f7fa", wood:"#a1683a" }[G] : "#fff"}" stroke="#5B3FD9" stroke-width="2" stroke-dasharray="${G ? "" : "5 4"}"/><text x="160" y="226" font-size="11" font-weight="900" text-anchor="middle" fill="#5B3FD9">${G ? MT8[G].n : "gap — add a material"}</text>`;
+   if (lit) for (let i = 0; i < 14; i++){ const [x, y] = ptAt((i / 14 + t * .15) % 1); s += `<circle cx="${x}" cy="${y}" r="4" fill="#ffd23f"/>`; }
+   $("#ciV").innerHTML = s; };
+  const check = () => { draw();
+   if (on()){ mark("light"); $("#ciT").innerHTML = "✅ Closed circuit — current flows from + to −"; api.hoot(`💡 It lights up! ${MT8[G].n.split(" ").slice(1).join(" ")} is a <b>conductor</b>: charge moves from atom to atom. Current flows from <b>+</b> to <b>−</b>.`, "m_wow"); }
+   else if (sw && G && !MT8[G].c){ mark("ins"); $("#ciT").innerHTML = "❌ No current — insulator!"; api.hoot(`${MT8[G].n} is an <b>insulator</b> — charge can't flow through it, so the bulb stays off. 🧤`, "m_idea"); }
+   else if (!sw && G && MT8[G].c && el.dataset.wasOn){ mark("off"); $("#ciT").innerHTML = "🔘 Switch OFF → open circuit → no current"; api.hoot("Switch OFF → the circuit is <b>open</b> → the current <b>stops</b>. The switch <b>controls</b> the flow! 🔘", "m_idea"); }
+   if (on()) el.dataset.wasOn = 1; };
+  seg5(el, "#ciM", k => { G = k; tried.add(k); if (tried.size === 5) mark("all"); check(); });
+  $("#ciSw").onclick = () => { sw = 1 - sw; $("#ciSw").textContent = "🔘 Switch: " + (sw ? "ON" : "OFF"); tone([sw ? 700 : 400], .05, "square", .05); check(); };
+  loop5(dt => { t += dt; if (on()) draw(); });
+  draw(); api.hoot("A circuit needs a closed loop of conductors. Let's build one! 💡", "m_point");
+ }});
+
+/* 7 — SERIES vs PARALLEL */
+W8.stations.push({ id:"series", icon:"🔀", short:"Series vs Parallel", title:"Series vs Parallel Circuits", covers:["P325","P326","P327","P328","P329","P333","P334","P336"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🔀 One path or many?</h2>
+   <div class="ctl"><div class="seg" id="spT8"><button data-v="s" class="on">➰ Series</button><button data-v="p">🔀 Parallel</button></div>
+    <div class="seg" id="spN8"><button data-v="1">1 bulb</button><button data-v="2" class="on">2 bulbs</button><button data-v="3">3 bulbs</button></div></div>
+   <svg class="f5sc" viewBox="0 0 400 230" id="srV" style="margin-top:6px"></svg><div class="f5read" id="srR"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn c" id="srB">💥 Break a bulb</button><button class="lbtn" id="srF">🔧 Fix</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="srK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Series</span>: <b>one path</b>. One bulb fails → the whole circuit is broken. More bulbs → <b>more resistance</b>, <b>less current</b> (dimmer).</p><p><span class="kw3">Parallel</span>: <b>many paths</b>. One bulb fails → current still flows through the others. The current is <b>divided</b> among the branches, the <b>voltage is the same</b> across each, and more branches → <b>less total resistance</b>.</p></div></div></div><div id="srQ"></div>`;
+  let T = "s", N = 2, broken = -1, t = 0;
+  const mark = tasks5($("#srK"), [["sbreak", "Break a bulb in SERIES"], ["pbreak", "Break a bulb in PARALLEL"], ["dim", "Add 3 bulbs in series (dimmer!)"]], () => quiz5(el, api, "#srQ", ["P325","P326","P327","P328","P329","P333","P334","P336"]));
+  const bulb = (x, y, b, br) => `${b > 0 ? `<circle cx="${x}" cy="${y}" r="${22 + b * 18}" fill="#ffeb3b" opacity="${.15 + b * .3}"/>` : ""}<circle cx="${x}" cy="${y}" r="16" fill="${br ? "#9e9e9e" : b > 0 ? `rgb(255,${Math.round(235 + 20 * b)},${Math.round(120 + 40 * b)})` : "#eceff1"}" stroke="#90a4ae" stroke-width="3"/>${br ? `<text x="${x}" y="${y + 6}" font-size="16" text-anchor="middle">💥</text>` : ""}`;
+  const draw = () => { let s = `<rect x="170" y="190" width="60" height="26" rx="5" fill="#1f2838"/><rect x="170" y="190" width="18" height="26" fill="#ffb300"/>`;
+   const R = T === "s" ? N : 1 / N, I = T === "s" ? (broken >= 0 ? 0 : 1 / N) : 1;
+   if (T === "s"){ s += `<path d="M170 203 H40 V40 H360 V203 H230" stroke="#c62828" stroke-width="5" fill="none"/>`; for (let i = 0; i < N; i++){ const x = 360 / (N + 1) * (i + 1) + 20; s += bulb(x, 40, broken >= 0 ? 0 : 1 / N, broken === i); } }
+   else { s += `<path d="M170 203 H40 V40 M230 203 H360 V40" stroke="#c62828" stroke-width="5" fill="none"/>`; for (let i = 0; i < N; i++){ const y = 40 + i * 50; s += `<path d="M40 ${y} H360" stroke="#c62828" stroke-width="4" fill="none"/>` + bulb(200, y, broken === i ? 0 : 1, broken === i); } }
+   if (I > 0) for (let k = 0; k < 10; k++){ const f = (k / 10 + t * .2 * (T === "s" ? 1 / N + .2 : 1)) % 1; const x = 40 + f * 320; s += `<circle cx="${x}" cy="203" r="3.5" fill="#ffd23f"/>`; }
+   $("#srV").innerHTML = s; $("#srR").innerHTML = `<span>${T === "s" ? "Series: 1 path" : "Parallel: " + N + " paths"}</span><span>Total resistance: ${T === "s" ? "×" + N + " (higher)" : "÷" + N + " (lower)"}</span><span>Current: ${T === "s" ? (broken >= 0 ? "0 — broken!" : (N > 1 ? "smaller" : "full")) : "divided, still flowing"}</span>`; };
+  seg5(el, "#spT8", k => { T = k; broken = -1; draw(); }); seg5(el, "#spN8", k => { N = +k; broken = -1; draw(); if (T === "s" && N === 3){ mark("dim"); api.hoot("3 bulbs in series → <b>more resistance</b> → <b>less current</b> → all the bulbs get dimmer! 🔅", "m_idea"); } });
+  $("#srB").onclick = () => { broken = N > 1 ? 1 : 0; tone([160], .12, "square", .08); draw();
+   if (T === "s"){ mark("sbreak"); api.hoot("One bulb broke → the <b>only path</b> is broken → <b>ALL the bulbs go out</b>! That's a series circuit. 💥", "m_wow"); }
+   else { mark("pbreak"); api.hoot("One bulb broke, but the others <b>stay on</b> — the current still flows through the <b>other paths</b>. That's why houses use parallel circuits! 🏠", "m_star"); } };
+  $("#srF").onclick = () => { broken = -1; sfx.tap(); draw(); };
+  loop5(dt => { t += dt; draw(); });
+  api.hoot("Two ways to connect bulbs… which is better? Let's test! 🔀", "m_point");
+ }});
+
+/* 8–10 */
+W8.stations.push(bigStation([
+ { r:[1,16.5,24,31], lb:[1.5,48.9,22.2,6.1], t:"Reflection", s:0, f:["Reflection: light <b>bouncing off</b> a surface (a mirror, a lake).","An object's colour = the light it reflects."] },
+ { r:[25.8,16.5,24,31], lb:[26.4,48.9,22.2,6.1], t:"Refraction", s:1, f:["Refraction: light changes direction entering a new medium — it slows down in water.","Convex lens → converges; concave lens → spreads light outward."] },
+ { r:[50.7,16.5,24,31], lb:[51.3,48.9,22.3,6.1], t:"Echo", s:2, f:["An echo = sound reflected off a hard surface (a canyon).","Soft materials (foam, carpet) absorb sound. Sound in air ≈ 340 m/s."] },
+ { r:[75.6,16.5,24,31], lb:[76.3,48.9,22.2,6.1], t:"Pitch & loudness", s:3, f:["Pitch depends on <b>frequency</b> (higher frequency → higher pitch).","Loudness depends on <b>amplitude</b>."] },
+ { r:[1,58,24,32], lb:[1.5,91,22.2,6.3], t:"Static charges", s:4, f:["Electrons are <b>negative</b>.","Same charges repel; opposite charges attract (electric force)."] },
+ { r:[25.8,58,24,32], lb:[26.4,91,22.2,6.2], t:"Simple circuit", s:5, f:["Battery supplies energy; bulb uses it; switch controls the current.","Current flows from + to −."] },
+ { r:[50.7,58,24,32], lb:[51.3,91,22.3,6.2], t:"Series vs parallel", s:6, f:["Series: one path — one bulb fails, all go out.","Parallel: many paths — the others keep working; same voltage across each."] },
+ { r:[75.6,58,24,32], lb:[76.3,91,22.2,6.2], t:"Conductors & insulators", s:5, f:["Conductors (copper) let charge flow from atom to atom.","Insulators (rubber, plastic) block it."] }
+], IMG(8, "infographic"), [[18.5,1.8,63,11.9], "Week 8: Light, Sound & Circuits"], true));
+W8.stations.push(cardsStation(W8, [["🪞","Reflection","Light bouncing off a surface"],["🎨","Object colour","The wavelength of light it reflects"],["🟣","Violet","Shortest wavelength of visible light"],["🥛","Refraction","Light changes direction in a new medium"],["🔍","Convex lens","Light converges"],["🥽","Concave lens","Bends light outward"],["👁️","Eye lens","Focuses light on the retina"],["🗣️","Echo","Sound reflected off a hard surface"],["🧽","Foam","Absorbs sound best"],["💨","Speed of sound in air","About 340 m/s (faster when warmer)"],["🎶","Pitch","Depends on frequency"],["🔊","Loudness","Depends on amplitude"],["➖","Electron","Negative charge"],["🎈","Same charges","Repel each other"],["🧲","Opposite charges","Attract each other"],["⚡","Electric current","The flow of electric charge"],["🔋","Battery","Supplies electrical energy"],["💡","Light bulb","Consumes electrical energy"],["🔘","Switch","Controls the flow of current"],["🟠","Copper","A common conductor"],["➰","Series circuit","One path — one failure stops all"],["🔀","Parallel circuit","Many paths — others keep working"]]));
+W8.stations.push(challengeStation(8));
+W8.notes = [
+ ["🪞 Light: reflection & colour", ["Reflection = light bouncing off a surface (mirrors reflect light).", "An object's colour = the wavelength of light it reflects; other colours are absorbed.", "Violet has the shortest wavelength of visible light."], "#7e57c2"],
+ ["🔍 Refraction, lenses & the eye", ["Refraction: light changes direction entering a new medium (slows down in water). A prism refracts light into colours.", "Convex lens → converges. Concave lens → bends light outward. Eyeglass lenses use refraction.", "Eye: cornea → lens focuses light on the retina → the brain forms the image."], "#0ea5e9"],
+ ["🗣️ Sound: echo & absorption", ["Sound travels by compressing and expanding air particles (≈340 m/s); faster at higher temperature.", "Hard surfaces reflect sound → echo (a canyon). Soft materials (foam, thick carpet) absorb it."], "#f59e0b"],
+ ["🎸 Pitch & loudness", ["Pitch depends on frequency: higher frequency → higher pitch.", "Loudness (intensity) depends on amplitude: greater amplitude → louder."], "#ec4899"],
+ ["🎈 Electric charge", ["Electrons are negative. Same charges repel; opposite charges attract — the electric force.", "A charged object attracts an uncharged object."], "#ef4444"],
+ ["💡 Circuits", ["Electric current = the flow of charge, from + to −. The battery supplies energy; the bulb consumes it; the switch controls the current.", "Conductors (copper) carry charge from atom to atom. Series: one path — one failure breaks all; more parts → more resistance, less current.", "Parallel: several paths — the current is divided, the voltage is the same, more branches → less resistance; one failure doesn't stop the others."], "#14B8A6"]
+];
+LAB[8] = W8;
 
 window.__lab = { openLab, labHome, LAB };
 })();
