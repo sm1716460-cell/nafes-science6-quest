@@ -1273,12 +1273,12 @@ function certWin(list, title){
  .medal{position:absolute;top:18mm;right:24mm;width:28mm;height:28mm;border-radius:50%;display:grid;place-items:center;font-family:Cinzel,serif;font-weight:700;font-size:9mm;color:#fff;box-shadow:0 1mm 0 rgba(0,0,0,.2),inset 0 -1.5mm 0 rgba(0,0,0,.15)}
  .medal small{display:block;font-size:2.6mm;letter-spacing:.1em;margin-top:-2mm}
  .ft{position:absolute;left:30mm;right:30mm;bottom:22mm;display:flex;justify-content:space-between;align-items:flex-end;font-size:3.6mm}
- .ft div{text-align:center;min-width:60mm}.ft b{display:block;border-top:.4mm solid #2a1d5c;padding-top:1.5mm;margin-top:10mm;font-size:4mm}</style></head><body>
+ .ft div{text-align:center;min-width:60mm}.ft .dtc{min-width:40mm;font-weight:700;color:#5B3FD9}.ft .dtc span{font-weight:500;color:#2a1d5c;font-size:3.4mm}.ft b{display:block;border-top:.4mm solid #2a1d5c;padding-top:1.5mm;margin-top:10mm;font-size:4mm}</style></head><body>
  ${list.map(x => `<div class="c"><div class="fb"></div><div class="medal" style="background:${medal[x.rank]}">${x.rank + 1}<small>PLACE</small></div><div class="in">
   <img class="lg" src="${logo}" alt=""><div class="sch">ANDALUS INTERNATIONAL SCHOOLS · GRADE 6 SCIENCE</div>
   <p class="t1">Certificate of Achievement</p><p class="t2">${esc(title).toUpperCase()}</p><p class="pr">This certificate is proudly presented to</p>
   <div class="nm">${esc(x.name)}</div><p class="why">for earning <b>${place[x.rank]} Place</b> in <b>Nafes Science Quest</b> with ${esc(x.why)}. Keep shining, young scientist!</p></div>
-  <div class="ft"><div><b>${dt}</b>Date</div><div><b>Miss Basma Ahmed</b>Science Teacher</div></div></div>`).join("")}
+  <div class="ft"><div><b>Miss Basma Ahmed</b>Science Teacher</div><div class="dtc">${dt}<br><span>Date</span></div><div><b>Miss Shatha Alorabi</b>School Principal</div></div></div>`).join("")}
  <script>const i=new Image();i.onload=()=>document.body.classList.add("has-bg");i.src="${bg}";setTimeout(()=>print(),1500)<\/script></body></html>`);
  w.document.close();
 }
@@ -1409,7 +1409,7 @@ const GAMES = {
  treasure: { name:"Treasure Hunt", icon:"🗝️" }, boss: { name:"Boss Battle", icon:"👾" } };
 const BOSSES = { life:{ img:"boss1", name:"Germ King" }, physical:{ img:"boss2", name:"Static Storm" }, earth:{ img:"boss3", name:"Lava Grumble" }, final:{ img:"boss4", name:"Professor Confusion" } };
 const WHEEL = [ { t:"+20", c:20 }, { t:"💡+1", h:1 }, { t:"+50", c:50 }, { t:"🎁", s:1 }, { t:"+10", c:10 }, { t:"💡+2", h:2 }, { t:"+30", c:30 }, { t:"+100", c:100 } ];
-const TEACHER = "Teacher Basma Ahmed", PRINCIPAL = "Miss Shatha Alorabi";
+const TEACHER = "Miss Basma Ahmed", PRINCIPAL = "Miss Shatha Alorabi";
 
 let MODE = store.get("mode", "");
 const isGame = () => MODE === "game";
