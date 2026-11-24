@@ -313,6 +313,17 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 .item img{width:70px;height:62px;object-fit:contain}
 .item .btn{min-height:36px;padding:4px 12px;font-size:14px;margin-top:4px}
 .item.eq{border-color:var(--t);background:#e5fbf7}
+.cinfo{display:grid;gap:8px}.cinfo>div{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;background:#faf8ff;border:2px solid #e6defd;border-radius:16px;padding:8px 12px;font-size:14px;color:#4a3f80}
+.cinfo>div span{grid-row:span 2;font-size:30px}.cinfo>div b{color:#2a1d5c;font-size:16px}.cinfo .btn{grid-column:2;justify-self:start;margin-top:6px;padding:6px 14px}
+.lbfull{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 30%,#4b2fa8,#1c0f4a);color:#fff;overflow:auto;padding:2vh 3vw;text-align:center;font-family:var(--hf,inherit)}
+.lbfull h1{margin:1vh 0 0;font-size:clamp(30px,6vh,64px);color:#ffd23f}.lbsub{margin:0 0 2vh;opacity:.85;font-weight:700}.lbx{position:absolute;top:2vh;right:2vw}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:2vw}.pd{display:flex;flex-direction:column;align-items:center;width:min(26vw,260px)}
+.pd img{height:clamp(90px,19vh,220px)}.pd b{font-size:clamp(18px,3.4vh,32px)}.pd span{font-weight:800;opacity:.9}
+.pd .blk{width:100%;margin-top:8px;border-radius:16px 16px 0 0;background:linear-gradient(#ffd23f,#e0a100);font-size:clamp(34px,7vh,70px);display:grid;place-items:center}
+.pd.p1 .blk{height:14vh}.pd.p2 .blk{height:9vh;background:linear-gradient(#e8edf5,#aab4c4)}.pd.p3 .blk{height:6vh;background:linear-gradient(#f0b27a,#b8692e)}
+.lblist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1vh 2vw;max-width:1200px;margin:3vh auto 0}
+.lblist>div{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border-radius:16px;padding:6px 14px;font-size:clamp(15px,2.4vh,22px);font-weight:800}
+.lblist img{height:clamp(36px,6vh,56px)}.lblist span{flex:1;text-align:left}.lblist em{font-style:normal;opacity:.85}
 .wallet{display:inline-flex;align-items:center;gap:6px;background:#fff4cf;color:#8a5a00;border-radius:999px;padding:4px 14px;font-weight:800}
 .wallet img,.coinic{width:22px;height:22px;vertical-align:middle}
 @media (max-width:600px){.shopwrap{grid-template-columns:1fr}.avgrid{grid-template-columns:repeat(2,1fr)}}
@@ -504,9 +515,9 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
  <div class="bg" style="background:#2c1a7a"></div>
  <div class="top">
   <div class="who"><div class="av" id="av">A</div><b id="whoName">Student</b></div>
-  <span class="chip" title="Stars"><img src="img/star.webp" alt=""><span id="cStars">0</span></span>
+  <span class="chip" title="Stars" id="starChip" style="cursor:pointer"><img src="img/star.webp" alt=""><span id="cStars">0</span></span>
   <span class="chip" title="Experience points" id="xpChip">⚡<span id="cXp">0</span><span class="hide-sm">XP</span></span>
-  <span class="chip hide" title="Coins" id="coinChip"><img src="img/o_coin.webp" alt=""><span id="cCoins">0</span></span>
+  <span class="chip hide" title="Coins" id="coinChip" style="cursor:pointer"><img src="img/o_coin.webp" alt=""><span id="cCoins">0</span></span>
   <span class="sp"></span>
   <button class="round" id="bMode" title="Switch Game / Classic mode" aria-label="Switch mode">🎮</button>
   <button class="round" id="bBadges" title="My badges" aria-label="My badges">🏅</button>
@@ -686,6 +697,7 @@ function demoApi(action, d){
    return { ok:true, attemptNo:a.attemptNo };
   }
   case "sync": return { ok:true, attempts: mine(d.name) };
+  case "saveProfile": { const st = db.students[key(d.name)]; if (st){ st.coins = d.coins; st.stars = d.stars; st.avatar = (d.profile || {}).avatar || 0; save(); } return { ok:true }; }
   case "getQuestions": return { ok:true, questions: db.questions };
   case "saveQuestions": db.questions = d.append ? db.questions.concat(d.questions) : d.questions; save(); return { ok:true, count:d.questions.length };
   case "teacherData":
@@ -837,7 +849,7 @@ $("#fLogin").addEventListener("submit", async e => {
   const r = await api(mode === "new" ? "register" : "login", { name, pass });
   if (!r.ok) throw new Error(r.error);
   USER = { name:r.name, token:r.token }; ATT = r.attempts || [];
-  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT);
+  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile);
   $("#lPass").value = $("#lPass2").value = "";
   flushQueue(); enterHome(mode === "new");
  }catch(err){ $("#lErr").textContent = err.message || "Something went wrong. Check the internet and try again."; }
@@ -1041,11 +1053,13 @@ $("#bRead").onclick = () => {
  const v = speechSynthesis.getVoices().find(v => /en(-|_)(US|GB)/.test(v.lang) && /female|samantha|google us/i.test(v.name)) || speechSynthesis.getVoices().find(v => /^en/.test(v.lang));
  if (v) u.voice = v; speechSynthesis.speak(u);
 };
+function bankCoins(){ if (!G || G.over || !USER) return; const d = (G.coins || 0) - (G.banked || 0); if (d > 0){ const p = prof(); p.bonus += d; saveProf(p); G.banked = G.coins; } }
+addEventListener("pagehide", bankCoins); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") bankCoins(); });
 $("#qHome").onclick = () => {
- modal(`<div class="whead"><img src="img/m_oops.webp" alt=""><div><h2 class="h">Leave this mission?</h2><p>Your answers in this try will not be saved.</p></div></div>
+ modal(`<div class="whead"><img src="img/m_oops.webp" alt=""><div><h2 class="h">Leave this mission?</h2><p>Your score in this try will not be saved — but you keep the <b>${G && G.coins ? G.coins : 0} coins</b> you collected! 🪙</p></div></div>
   <div class="racts"><button class="btn teal" data-close>Keep playing</button><button class="btn cor" id="bQuit">Leave</button></div>`);
 };
-$("#modal").addEventListener("click", e => { if (e.target.id === "bQuit"){ closeModal(); if (window.speechSynthesis) speechSynthesis.cancel(); clearTimers(); Q = null; G = null; document.querySelectorAll(".gnext,.mbox").forEach(x => x.remove()); goHome(); } });
+$("#modal").addEventListener("click", e => { if (e.target.id === "bQuit"){ closeModal(); if (window.speechSynthesis) speechSynthesis.cancel(); bankCoins(); clearTimers(); Q = null; G = null; document.querySelectorAll(".gnext,.mbox").forEach(x => x.remove()); goHome(); } });
 
 /* ---------------- finish & results ---------------- */
 async function finish(){
@@ -1154,6 +1168,23 @@ async function loadTeacher(){
 }
 $("#tRefresh").onclick = async () => { try{ await loadTeacher(); toast("Updated ✔"); }catch(e){ toast(e.message); } };
 $("#tExit").onclick = () => { TP = null; show(USER ? "home" : "login"); if (USER) renderMap(); };
+function leaderRows(){ return (TD.students || []).slice().sort((a, b) => (b.stars || 0) - (a.stars || 0) || (b.coins || 0) - (a.coins || 0) || a.name.localeCompare(b.name)); }
+const heroImg = av => av ? `img/p3/h${av}_stand.webp` : "img/m_point2.webp";
+function leaderPanel(){
+ const L = leaderRows();
+ return `<div class="panel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0;flex:1">🏆 Class leaderboard</h3><button class="btn yel" id="lbShow">📺 Show on smartboard</button></div>
+  <p style="margin:4px 0 8px;color:#6b5ca8;font-size:13px">Ranked by ⭐ stars, then 🪙 coins. Coins & stars update when the girls play (synced from each device).</p>
+  <div class="scroll"><table class="grid"><thead><tr><th>#</th><th>Student</th><th>⭐ Stars</th><th>🪙 Coins</th></tr></thead><tbody>
+  ${L.map((s, i) => `<tr><td>${i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}</td><td class="nm" data-stu="${esc(s.name)}">${esc(s.name)}</td><td>${s.stars || 0}</td><td>${s.coins || 0}</td></tr>`).join("") || `<tr><td colspan="4">No data yet</td></tr>`}</tbody></table></div></div>`;
+}
+function showLeaderboard(){
+ const L = leaderRows(), top = L.slice(0, 3), order = [1, 0, 2].filter(i => top[i]);
+ const d = document.createElement("div"); d.className = "lbfull";
+ d.innerHTML = `<button class="btn ghost lbx">✕ Close</button><h1>🏆 Our Top Scientists</h1><p class="lbsub">Andalus International Schools · Grade 6 Science · Miss Basma Ahmed</p>
+  <div class="podium">${order.map(i => `<div class="pd p${i + 1}"><img src="${heroImg(top[i].avatar)}" alt=""><b>${esc(top[i].name)}</b><span>⭐ ${top[i].stars || 0} · 🪙 ${top[i].coins || 0}</span><div class="blk">${["🥇","🥈","🥉"][i]}</div></div>`).join("")}</div>
+  <div class="lblist">${L.slice(3, 15).map((s, i) => `<div><b>${i + 4}</b><img src="${heroImg(s.avatar)}" alt=""><span>${esc(s.name)}</span><em>⭐ ${s.stars || 0} · 🪙 ${s.coins || 0}</em></div>`).join("")}</div>`;
+ document.body.appendChild(d); d.querySelector(".lbx").onclick = () => d.remove(); try { confetti(80); } catch(e){}
+}
 function renderTeacher(){
  const { students, attempts } = TD;
  const link = $("#tSheet"); link.classList.toggle("hide", !TD.sheetUrl); if (TD.sheetUrl) link.href = TD.sheetUrl;
@@ -1189,6 +1220,7 @@ function renderTeacher(){
    <div class="scroll"><table class="grid"><thead><tr><th>Student</th>${WEEKS.map(w => `<th>${esc(w.type === "study" ? "W" + w.n : w.title.replace("Grand ","").replace("Mock Exam ","Mock "))}</th>`).join("")}<th>Last active</th></tr></thead>
    <tbody>${rows.map(r => `<tr><td class="nm" data-stu="${esc(r.s.name)}">${esc(r.s.name)}</td>${WEEKS.map(w => weekCell(r.atts, w)).join("")}<td>${r.atts.length ? new Date(r.atts[r.atts.length-1].ts).toLocaleDateString("en-GB") : "–"}</td></tr>`).join("") || `<tr><td colspan="16">No students yet.</td></tr>`}</tbody></table></div>
   </div>
+  ${leaderPanel(rows)}
   <div class="row2">
    <div class="panel"><h3>Most-missed questions</h3><div class="miss">${top.map(([id, c]) => { const q = qById(id); return `<div><b class="c">${c}×</b><span>${esc(q.q)}<small>✔ ${esc(q.o[q.a])} · W${q.w} · ${esc(q.l)} · ${id}</small></span></div>`; }).join("") || "<p>No mistakes recorded yet.</p>"}</div></div>
    <div class="panel"><h3>Lessons that need re-teaching</h3>${lt.map(([l, c]) => `<div class="lessonbar"><div><div style="font-size:14px">${esc(l)}</div><div class="bar"><i style="width:${c/lmax*100}%;background:linear-gradient(90deg,#FF6B8B,#FFC93C)"></i></div></div><b style="text-align:right">${c}</b></div>`).join("") || "<p>No data yet.</p>"}
@@ -1200,6 +1232,7 @@ function renderTeacher(){
    </div>
   </div>`;
 }
+$("#tBody").addEventListener("click", e => { if (e.target.id === "lbShow") showLeaderboard(); });
 $("#tBody").addEventListener("click", async e => {
  const n = e.target.closest("[data-stu]");
  if (n){
@@ -1253,7 +1286,25 @@ let MODE = store.get("mode", "");
 const isGame = () => MODE === "game";
 function profKey(){ return "prof_" + (USER ? USER.name.toLowerCase() : "x"); }
 function prof(){ return Object.assign({ avatar:0, bonus:0, spent:0, owned:[], equip:{}, stickers:[], hints:0, lastSpin:"" }, store.get(profKey(), {})); }
-function saveProf(p){ store.set(profKey(), p); }
+function coinsInfo(){
+ modal(`<div class="whead"><img src="img/w_coins.webp" alt=""><div><h2 class="h">Your coins: ${wallet()} 🪙</h2><p>What can I do with my coins?</p></div></div>
+  <div class="cinfo"><div><span>⚡</span><b>Power-ups</b>Before a mission, buy an extra heart, an extra hint or a coin doubler.</div>
+  <div><span>🏝️</span><b>Build your Science Island</b>Buy buildings — your island gives you free coins every day!<button class="btn yel" id="ciIsl">Open my island</button></div>
+  <div><span>🏆</span><b>Class leaderboard</b>Coins and stars put you on Miss Basma's Top Scientists board!</div></div>
+  <h3 style="margin:10px 0 4px">How do I earn coins? 🤑</h3><p style="margin:0">✅ Correct answers · 🔥 combos · ✨ golden questions · 🪙 coins inside the games · 🎲 daily board · 🏝️ island · 🎡 daily spin.<br><b>Every coin you collect is saved — even if you leave a mission early!</b></p>`);
+}
+function starsInfo(){
+ const t = totals();
+ modal(`<div class="whead"><img src="img/star.webp" alt=""><div><h2 class="h">Your stars: ${t.stars} ⭐</h2><p>Stars show how well you did in each mission.</p></div></div>
+  <div class="cinfo"><div><span>⭐</span><b>1 star</b>60% or more — the next mission opens!</div><div><span>⭐⭐</span><b>2 stars</b>75% or more</div><div><span>⭐⭐⭐</span><b>3 stars</b>90% or more — science star!</div></div>
+  <p style="margin:10px 0 0">🔁 Play a mission again to get more stars — your <b>best</b> score counts.<br>🏅 Stars win you <b>badges</b> and a place on the <b>class leaderboard</b>!</p>`);
+}
+let PSYNC = 0;
+function saveProf(p){ p.ts = Date.now(); store.set(profKey(), p); pushProf(); }
+function pushProf(){ if (!USER) return; clearTimeout(PSYNC); PSYNC = setTimeout(() => { if (!USER) return; let coins = 0, stars = 0; try { coins = wallet(); stars = totals().stars; } catch(e){}
+ api("saveProfile", { name:USER.name, token:USER.token, profile:store.get(profKey(), {}), coins, stars }).catch(() => {}); }, 2500); }
+document.addEventListener("click", e => { if (e.target.closest("#coinChip")) coinsInfo(); else if (e.target.closest("#starChip")) starsInfo(); else if (e.target.id === "ciIsl"){ closeModal(); try { openIsland(); } catch(err){} } });
+function adoptProf(sp){ if (!sp || !USER) return; const lp = store.get(profKey(), null); if (!lp || (sp.ts || 0) > (lp.ts || 0)) store.set(profKey(), sp); else if ((lp.ts || 0) > (sp.ts || 0)) pushProf(); }
 function wallet(){ const p = prof(); return totals().xp + p.bonus - p.spent; }
 function weeksPassed(){ return weekState(progress()).filter(s => s.passed && s.w.type === "study").length; }
 function today(){ return new Date().toISOString().slice(0, 10); }
@@ -1642,7 +1693,8 @@ $("#gSound").onclick = toggleSound;
 $("#gHome").onclick = () => $("#qHome").onclick();
 function gameResultExtras(a, pct){
  if (!G) return "";
- const p = prof(); p.bonus += G.extra; let sticker = 0;
+ if (G.boost && G.boost.includes("dbl") && !G.dblDone){ G.dblDone = 1; G.extra += G.coins; G.coins *= 2; }
+ const p = prof(); p.bonus += G.extra - (G.banked || 0); G.banked = 0; G.over = true; let sticker = 0;
  if (!Q.custom && pct >= PASS && Q.w.type === "study"){ const key = Q.w.n + "-" + (Q.mi+1); sticker = missionSticker(key); }
  saveProf(p);
  const parts = [`<div><img src="img/w_coins.webp" alt=""><br><b>+${G.coins} coins</b></div>`];
@@ -1678,7 +1730,7 @@ async function boot(){
   USER = u; ATT = store.get("att_" + u.name.toLowerCase(), []);
   enterHome(false);
   flushQueue().then(() => api("sync", { name: u.name, token: u.token })).then(r => {
-   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
+   if (r && r.ok){ ATT = r.attempts || []; store.set("att_" + u.name.toLowerCase(), ATT); adoptProf(r.profile); if ($("#home").classList.contains("on")){ renderMap(); updateChips(); } }
    else if (r && /log in again/i.test(r.error || "")){ store.del("user"); USER = null; show("login"); }
   }).catch(() => {});
  }
@@ -1785,6 +1837,11 @@ css.textContent = `
 .amsg div{font-family:var(--hf);font-size:clamp(30px,7vmin,80px);color:#fff;-webkit-text-stroke:2px #5B3FD9;text-shadow:0 5px 0 #2c1a7a,0 0 24px rgba(255,201,60,.9);white-space:nowrap;animation:bannerIn 1.4s ease-out forwards}
 @keyframes bannerIn{0%{transform:scale(.3);opacity:0}15%{transform:scale(1.15);opacity:1}25%{transform:scale(1)}80%{opacity:1}100%{transform:translateY(-40px);opacity:0}}
 .abox{position:absolute;z-index:32;inset:0;display:grid;place-items:center;background:rgba(20,8,60,.55)}
+.abox.rv>div{width:min(560px,94vw);max-height:94%;overflow:auto;padding:16px 18px}.abox.rv h3{margin:0}
+.boosts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.bst{position:relative;background:#fff;border:3px solid #e6defd;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#2a1d5c}
+.bst .e{font-size:clamp(30px,5vmin,46px)}.bst b{font-size:clamp(13px,2vmin,17px)}.bst small{font-size:12px;color:#6b5fa8;font-weight:700;line-height:1.1}.bst .pr{margin-top:4px;background:#fff4cf;color:#8a5a00;border-radius:99px;padding:2px 10px;font-weight:900;display:inline-flex;gap:4px;align-items:center}
+.bst.on{border-color:#2fb36b;background:#e9fbef}.bst i{position:absolute;top:4px;right:8px;color:#2fb36b;font-weight:900;font-style:normal}.bst:disabled{opacity:.45}
+.rvq{font-weight:900;font-size:clamp(15px,2.6vmin,24px);color:#2a1d5c;margin:4px 0 8px}.rvo{display:grid;gap:6px}.rvo .aopt{min-height:44px;text-align:left}.rvo .aopt b{background:var(--oc)}
 .abox>div{background:#fff;border-radius:26px;padding:24px;text-align:center;width:min(440px,90vw);animation:pop .4s}
 .abox img{width:clamp(90px,16vmin,150px)}
 .abox h3{font-family:var(--hf);color:var(--p);font-size:clamp(26px,4vmin,40px);margin:6px 0}
@@ -1977,12 +2034,26 @@ document.addEventListener("keydown", e => {
 });
 
 /* out of hearts → revive (never lose the mission) */
+/* revive = answer one bonus question correctly (it does not change the mission score) */
 function outOfHearts(after){
  G.hold = true; sfx.bad();
- const d = document.createElement("div"); d.className = "abox";
- d.innerHTML = `<div><img src="img/g2/pu_heart.webp" alt=""><h3>Out of hearts!</h3><p>Real scientists never give up 💪</p><button class="btn yel full">❤️ Revive & continue</button></div>`;
+ const used = new Set((Q.items || []).map(it => it.q.id).concat(G.reviveUsed || []));
+ const src = Q.w && Q.w.src ? Q.w.src : null;
+ let pool = BANK.filter(q => (src ? q.w === src : true) && !used.has(q.id)); if (!pool.length) pool = BANK.filter(q => !used.has(q.id));
+ const q = pick(pool); (G.reviveUsed = G.reviveUsed || []).push(q.id);
+ const ord = noShuffle(q.o) ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
+ const d = document.createElement("div"); d.className = "abox rv";
+ d.innerHTML = `<div><img src="img/g2/pu_heart.webp" alt="" style="width:clamp(60px,10vmin,96px)"><h3>Out of hearts!</h3><p style="margin:0 0 8px;font-weight:800">Answer this bonus question correctly to get <b>3 hearts</b> back! 💪</p>
+  <div class="rvq">${esc(q.q)}</div><div class="rvo">${ord.map((oi, k) => `<button class="aopt" data-rk="${oi}" style="--oc:${OPTC[k]}"><b>${LET[k]}</b><span>${esc(q.o[oi])}</span></button>`).join("")}</div><div class="rvf"></div></div>`;
  layer.appendChild(d);
- d.querySelector("button").onclick = () => { d.remove(); G.hearts = 3; G.hold = false; hud(); sfx.win(); after && after(); };
+ d.querySelectorAll("[data-rk]").forEach(b => b.onclick = () => {
+  if (d.dataset.lock) return; d.dataset.lock = 1; const ok = +b.dataset.rk === q.a;
+  b.classList.add(ok ? "ok" : "bad"); if (!ok) d.querySelector(`[data-rk="${q.a}"]`).classList.add("ok");
+  if (ok){ sfx.win(); FX.starRain(12); d.querySelector(".rvf").innerHTML = `<b style="color:var(--ok)">Correct! ❤️❤️❤️ Back in the game!</b>`;
+   setTimeout(() => { d.remove(); G.hearts = 3; G.hold = false; hud(); after && after(); }, 1300); }
+  else { sfx.bad(); d.querySelector(".rvf").innerHTML = `<p style="margin:6px 0">The answer is <b>${esc(q.o[q.a])}</b>. This mission ends here — your score is saved.</p><button class="btn yel full" id="rvEnd">See my results ➜</button>`;
+   d.querySelector("#rvEnd").onclick = () => { d.remove(); G.hold = false; arcDone(); }; }
+ });
 }
 function arcDone(){
  if (!G || G.over) return; G.over = true; G.arc = false;
@@ -3992,9 +4063,26 @@ startGame = function(wi, mi, qs, custom){
  G = { kind, coins:0, extra:0, golden: Math.floor(Math.random() * Q.items.length), extraHints: p.hints, timers:[], hearts:null, arc:false };
  const world = custom ? 1 : worldOf(w, w && w.missions[mi] && w.missions[mi][0]);
  G.world = kind === "boss" && w && w.type === "review" ? 3 : world;
- startArc(kind);
+ if (!custom && USER && wallet() >= 20) boostShop(kind); else startArc(kind);
 };
 
+const BOOSTS = [{ id:"heart", e:"❤️", n:"Extra heart", d:"Start with 4 hearts", c:30 }, { id:"hint", e:"💡", n:"Extra hint", d:"+1 hint this mission", c:20 }, { id:"dbl", e:"✨", n:"Coin doubler", d:"Double all coins this mission", c:50 }];
+function boostShop(kind){
+ const picked = new Set();
+ const draw = () => { const w = wallet() - [...picked].reduce((s, id) => s + BOOSTS.find(b => b.id === id).c, 0);
+  modal(`<div class="whead"><img src="img/w_gift.webp" alt=""><div><h2 class="h">Power-ups</h2><p>Spend coins to help you in this mission · <span class="wallet"><img src="img/o_coin.webp" alt="">${w}</span></p></div></div>
+   <div class="boosts">${BOOSTS.map(b => `<button class="bst ${picked.has(b.id) ? "on" : ""}" data-bst="${b.id}" ${!picked.has(b.id) && w < b.c ? "disabled" : ""}><span class="e">${b.e}</span><b>${b.n}</b><small>${b.d}</small><span class="pr"><img class="coinic" src="img/o_coin.webp" alt="">${b.c}</span>${picked.has(b.id) ? `<i>✔</i>` : ""}</button>`).join("")}</div>
+   <button class="btn yel full" id="bstGo" style="margin-top:10px">▶ Start the mission${picked.size ? ` with ${picked.size} power-up${picked.size > 1 ? "s" : ""}` : ""}</button>`);
+  $("#modal .x").onclick = e => { e.stopPropagation(); $("#modal").removeEventListener("click", onClick); BOOST_L = null; go(); }; };
+ const go = () => { closeModal(); if (picked.size){ const p = prof(); picked.forEach(id => { p.spent += BOOSTS.find(b => b.id === id).c; }); saveProf(p); }
+  G.boost = [...picked]; if (picked.has("hint")) G.extraHints += 1; startArc(kind);
+  if (picked.has("heart") && G.hearts != null){ G.hearts += 1; hud(); }
+  if (picked.size) later(() => banner("⚡ Power-ups ON: " + [...picked].map(id => BOOSTS.find(b => b.id === id).e).join(" ")), 600); };
+ const onClick = e => { const b = e.target.closest("[data-bst]"); if (b){ const id = b.dataset.bst; picked.has(id) ? picked.delete(id) : picked.add(id); sfx.tap && sfx.tap(); draw(); return; } if (e.target.id === "bstGo"){ $("#modal").removeEventListener("click", onClick); BOOST_L = null; go(); } };
+ if (BOOST_L) $("#modal").removeEventListener("click", BOOST_L); BOOST_L = onClick;
+ $("#modal").addEventListener("click", onClick); draw();
+}
+let BOOST_L = null;
 const _goHome = goHome;
 goHome = function(){
  if (A || sec.classList.contains("on")){ stopArc(); autoScale(); }
@@ -4156,6 +4244,7 @@ applyMode = function(){
 };
 // preload sprites for the first games
 ["back1","back2","back3","back4","back5","back6","ob_qgate","ob_log","ob_laser","pc_laugh"].forEach(g2);
+window.__dbg = { wallet:() => wallet(), G:() => G, prof:() => prof(), save:p => saveProf(p), start:(a,b,c) => startGame(a,b,c), ooh:f => outOfHearts(f), WEEKS:() => WEEKS };
 window.__arc = { test(kind, wi = 0, mi = 0){ FORCE = kind; try { startMission(wi, mi); } finally { FORCE = ""; } }, startArc, stopArc, openBoard, openIsland, openCrystals, crystalCount };
 })();
 
