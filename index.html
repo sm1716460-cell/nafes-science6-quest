@@ -1712,9 +1712,10 @@ Object.assign(GAMES, {
  kitchen: { name:"Potion Kitchen", icon:"🧪" },
  slice:   { name:"Science Slice", icon:"⚔️" },
  boss:    { name:"Boss Battle", icon:"👾" },
- jump:    { name:"Jelly Jump", icon:"🦘" }
+ jump:    { name:"Jelly Jump", icon:"🦘" },
+ race:    { name:"Safari Race", icon:"🏎️" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -1723,6 +1724,7 @@ gameFor = function(w, mi){
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
  if (w.n === 1 && mi < 4) return ["jump", "slice", "kitchen", "jump"][mi];
+ if (w.n === 2) return ["jump", "race", "slice", "jump", "race", "kitchen"][mi % 6];
  const NEW = ["dash", "kitchen", "slice"];
  return NEW[(mi + w.n - 1) % 3];
 };
@@ -1998,14 +2000,19 @@ function spr(img, x, y, w, rot = 0, alpha = 1, flip = false){
 /* =====================================================================
    1) SCIENCE DASH — 3-lane runner seen from behind
    ===================================================================== */
-function makeDash(){
- const av = prof().avatar || 1, me = g2("back" + av), bg = r1("world" + G.world);
+function makeDash(jungle){
+ const av = prof().avatar || 1;
+ const JM = { ob_log:"en2_spike", ob_arch:"d2_vine", ob_drone:"en2_fly", ob_laser:"w2_crate", ob_crystal:"d2_rock", ob_lava:"k_germ", ob_cart:"k_virus", ob_slime:"d2_pond",
+  ob_qgate:"k_gate", ob_flag:"w2_flag", o_coin:"w2_coin", ing1:"d2_fern", df_sun:"d2_flower", pk_spring:"d2_torch", ing9:"d2_sign", is_garden:"d2_banana", ing3:"an_monkey" };
+ const gi = n => jungle && JM[n] ? P3(JM[n]) : g2(n);
+ const me = jungle ? P3(av % 2 ? "k_purple" : "k_teal") : g2("back" + av), bg = jungle ? P3("w2_bg") : r1("world" + G.world);
  const OB = { log:{ i:"ob_log", t:"jump", sz:1 }, arch:{ i:"ob_arch", t:"slide", sz:1.12 }, drone:{ i:"ob_drone", t:"slide", sz:.62, h:.9 },
   laser:{ i:"ob_laser", t:"lane", sz:1 }, crystal:{ i:"ob_crystal", t:"lane", sz:1 }, lava:{ i:"ob_lava", t:"lane", sz:.95 }, cart:{ i:"ob_cart", t:"lane", sz:.95 },
   slime:{ i:"ob_slime", t:"slime", sz:.9 } };
- const PU = ["pu_magnet", "pu_shield", "pu_shoes", "pu_jet", "pu_heart"], PROPS = ["ing1", "ob_crystal", "df_sun", "pk_spring", "ing9", "is_garden", "ing3"];
- PROPS.forEach(g2);
- Object.values(OB).forEach(o => g2(o.i)); PU.forEach(g2); ["ob_qgate", "ob_flag", "pu_coins"].forEach(g2); r1("o_coin");
+ if (jungle){ OB.arch.h = 1.05; OB.arch.sz = 1.2; OB.drone.sz = .7; OB.lava.sz = 1.15; OB.cart.sz = 1.15; OB.slime.sz = 1.2; }
+ const PU = ["pu_magnet", "pu_shield", "pu_shoes", "pu_jet", "pu_heart"], PROPS = jungle ? ["ing1", "df_sun", "pk_spring", "ing9", "is_garden", "ing3", "an_parrot", "an_frog", "d2_rock"] : ["ing1", "ob_crystal", "df_sun", "pk_spring", "ing9", "is_garden", "ing3"];
+ PROPS.forEach(gi);
+ Object.values(OB).forEach(o => gi(o.i)); PU.forEach(g2); ["ob_qgate", "ob_flag", "pu_coins"].forEach(gi); gi("o_coin");
  const s = { t:0, lane:1, lx:1, jt:-1, st:-1, sp:0, dist:0, objs:[], next:40, qIn:70, gate:null, asking:false, inv:0, shield:0, magnet:0, shoes:0, jet:0, slow:0, turbo:0,
   flag:false, shake:0, parts:[], end:0, rain:0 };
  G.hearts = 3; G.dist = 0; G.coinsRun = 0;
@@ -2111,7 +2118,7 @@ function makeDash(){
   }
   s.objs = s.objs.filter(o => o.d > -9 && !o.dead);
   s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; }); s.parts = s.parts.filter(p => p.life > 0);
-  if (s.sp > 6 && Math.random() < dt * 14) s.parts.push({ x: X(s.lx, 0) + rnd(-20, 20), y: by, vx: rnd(-40, 40), vy: rnd(-90, -30), life: .4, c: "rgba(255,255,255,.7)" });
+  if (s.sp > 6 && Math.random() < dt * (jungle ? 26 : 14)) s.parts.push({ x: X(s.lx, 0) + rnd(-20, 20) * (jungle ? 3 : 1), y: by, vx: rnd(-40, 40), vy: rnd(-90, -30), life: .4, c: jungle ? "rgba(190,140,80,.7)" : "rgba(255,255,255,.7)" });
   if (s.end > 0){ s.end -= dt; if (s.end <= 0) arcDone(); }
   if ((s.t * 5 | 0) !== ((s.t - dt) * 5 | 0)) pows();
  }
@@ -2130,13 +2137,14 @@ function makeDash(){
   if (s.shake > 0) cx.translate(rnd(-8, 8) * s.shake * 2, rnd(-6, 6) * s.shake * 2);
   const skyH = hy + H * .05;
   cx.fillStyle = "#7fd3ff"; cx.fillRect(-10, -10, W + 20, skyH + 10);
-  cover(bg, -10, -10, W + 20, skyH + 10, -(s.lx - 1) * 18);
+  if (jungle && ready(bg)){ const bh = Math.max(skyH + 10, (W + 20) * bg.naturalHeight / bg.naturalWidth) * 1.25, bw = bh * bg.naturalWidth / bg.naturalHeight; cx.drawImage(bg, W / 2 - bw / 2 - (s.lx - 1) * 18, skyH + 10 - bh * .78, bw, bh); }
+  else cover(bg, -10, -10, W + 20, skyH + 10, -(s.lx - 1) * 18);
   // ground
-  const gg = cx.createLinearGradient(0, hy, 0, H); gg.addColorStop(0, "#8be06b"); gg.addColorStop(1, "#3aa35a");
+  const gg = cx.createLinearGradient(0, hy, 0, H); gg.addColorStop(0, jungle ? "#6fb84a" : "#8be06b"); gg.addColorStop(1, jungle ? "#2f7a3a" : "#3aa35a");
   cx.fillStyle = gg; cx.fillRect(-10, hy, W + 20, H - hy + 10);
   // road
   const dF = 160, dN = -9;
-  cx.fillStyle = "#6a4fd6";
+  cx.fillStyle = jungle ? "#b9824a" : "#6a4fd6";
   cx.beginPath(); cx.moveTo(W/2 - rw * sc(dF), Y(dF)); cx.lineTo(W/2 + rw * sc(dF), Y(dF)); cx.lineTo(W/2 + rw * sc(dN), Y(dN)); cx.lineTo(W/2 - rw * sc(dN), Y(dN)); cx.fill();
   // kerbs + lane dashes (scrolling)
   const off = s.dist % 10;
@@ -2144,7 +2152,7 @@ function makeDash(){
    const d0 = Math.max(dN, d), d1 = Math.min(dF, d + 5); if (d1 <= d0) continue;
    const even = Math.round((d + off) / 5) % 2 === 0;
    for (const sgn of [-1, 1]){
-    cx.fillStyle = even ? "#FFC93C" : "#ffffff";
+    cx.fillStyle = jungle ? (even ? "#8a8f8c" : "#c9c2b0") : even ? "#FFC93C" : "#ffffff";
     const a0 = rw * sc(d0), a1 = rw * sc(d1);
     cx.beginPath(); cx.moveTo(W/2 + sgn * a0, Y(d0)); cx.lineTo(W/2 + sgn * a0 * 1.08, Y(d0)); cx.lineTo(W/2 + sgn * a1 * 1.08, Y(d1)); cx.lineTo(W/2 + sgn * a1, Y(d1)); cx.fill();
     if (even){ cx.fillStyle = "rgba(255,255,255,.55)"; const l0 = rw * .32 * sc(d0), l1 = rw * .32 * sc(d1), w0 = rw * .018 * sc(d0), w1 = rw * .018 * sc(d1);
@@ -2172,19 +2180,19 @@ function makeDash(){
   const k = sc(o.d), y = Y(o.d), x = X(o.lane, o.d);
   if (o.d > 150) return;
   const fade = o.d > 110 ? (150 - o.d) / 40 : 1;
-  if (o.type === "coin"){ const c = r1("o_coin"), w = rw * .17 * k * (.55 + .45 * Math.abs(Math.sin(s.t * 6 + o.d))); spr(c, x, y - (o.h || 0) * rw * .7 * k - rw * .1 * k, w, 0, fade); return; }
-  if (o.type === "prop"){ const im = g2(o.img), w = rw * .55 * o.sz * k; const h = ready(im) ? w * im.naturalHeight / im.naturalWidth : w; spr(im, x, y - h / 2, w, 0, fade); return; }
+  if (o.type === "coin"){ const c = gi("o_coin"), w = rw * .17 * k * (.55 + .45 * Math.abs(Math.sin(s.t * 6 + o.d))); spr(c, x, y - (o.h || 0) * rw * .7 * k - rw * .1 * k, w, 0, fade); return; }
+  if (o.type === "prop"){ const im = gi(o.img), w = rw * .55 * o.sz * k; const h = ready(im) ? w * im.naturalHeight / im.naturalWidth : w; spr(im, x, y - h / 2, w, 0, fade); return; }
   if (o.type === "pu"){ spr(g2(o.img), x, y - rw * .3 * k + Math.sin(s.t * 5) * 6 * k, rw * .36 * k, 0, fade); return; }
-  if (o.type === "gate"){ spr(g2("ob_qgate"), W/2, y - rw * .62 * k, rw * 1.9 * k, 0, fade * (o.asked ? .9 : 1)); return; }
-  if (o.type === "flag"){ spr(g2("ob_flag"), W/2 + rw * .55 * k, y - rw * .4 * k, rw * .8 * k, 0, fade); spr(g2("ob_flag"), W/2 - rw * .55 * k, y - rw * .4 * k, rw * .8 * k, 0, fade, true); return; }
-  const ob = OB[o.type], im = g2(ob.i), w = rw * .55 * ob.sz * k;
+  if (o.type === "gate"){ spr(gi("ob_qgate"), W/2, y - rw * (jungle ? .8 : .62) * k, rw * (jungle ? 2.3 : 1.9) * k, 0, fade * (o.asked ? .9 : 1)); return; }
+  if (o.type === "flag"){ spr(gi("ob_flag"), W/2 + rw * .55 * k, y - rw * .4 * k, rw * .8 * k, 0, fade); spr(gi("ob_flag"), W/2 - rw * .55 * k, y - rw * .4 * k, rw * .8 * k, 0, fade, true); return; }
+  const ob = OB[o.type], im = gi(ob.i), w = rw * .55 * ob.sz * k;
   const h = ready(im) ? w * im.naturalHeight / im.naturalWidth : w;
   const lift = (ob.h || 0) * rw * .45 * k + (o.type === "drone" ? Math.sin(s.t * 6 + o.lane) * 5 : 0);
   cx.fillStyle = "rgba(0,0,0,.18)"; cx.beginPath(); cx.ellipse(x, y, w * .45, w * .1, 0, 0, 7); cx.fill();
   spr(im, x, y - h / 2 - lift, w, 0, o.hit ? .45 * fade : fade);
  }
  function drawMe(){
-  const w = rw * (H > W ? .44 : .32), x = X(s.lx, 0);
+  const w = rw * (H > W ? .44 : .32) * (jungle ? 1.3 : 1), x = X(s.lx, 0);
   let lift = 0, sq = 1, rot = (s.lane - s.lx) * -.35;
   if (s.jt >= 0) lift = Math.sin(Math.PI * s.jt) * H * (s.shoes > 0 ? .22 : .14);
   if (s.jet > 0) lift = H * .17 + Math.sin(s.t * 4) * 6;
@@ -2555,7 +2563,10 @@ document.head.appendChild(jcss);
 function makeJump(){
  const av = prof().avatar || 1;
  const HS = { run:P3(`h${av}_run`), jump:P3(`h${av}_jump`), stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
- const A = n => P3(n);
+ const JG = !!(Q.w && Q.w.n === 2);
+ const TM = { w1_bg:"w2_bg", w1_plat_long:"w2_plat_long", w1_plat_short:"w2_plat_short", w1_plat_crumble:"w2_plat_crumble", w1_plat_move:"w2_plat_move", w1_spring:"w2_spring", w1_flag:"w2_flag", w1_finish:"w2_finish",
+  en_germ:"en2_walk", en_virus:"en2_spike", en_fly:"en2_fly", it_coin:"w2_coin", it_gem:"w2_gem", it_heart:"w2_heart", it_box:"w2_box" };
+ const A = n => P3(JG && TM[n] ? TM[n] : n);
  ["w1_bg","w1_plat_long","w1_plat_short","w1_plat_crumble","w1_plat_move","w1_spring","w1_flag","w1_finish","en_germ","en_virus","en_fly","it_coin","it_gem","it_heart","it_box","ui_star","d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"].forEach(A);
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
@@ -2571,7 +2582,8 @@ function makeJump(){
  const ent = (type, x, y, ex = {}) => { const e = Object.assign({ type, x, y, alive:true, ph:Math.random() * 6 }, ex); s.ents.push(e); return e; };
  const coinLine = (x0, y, n, dx = .1) => { for (let i = 0; i < n; i++) ent("coin", x0 + i * dx, y); };
  const coinArc = (x0, x1, y0, y1, h = .22) => { const n = 5; for (let i = 0; i < n; i++){ const t = (i + .5) / n; ent("coin", x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * h); } };
- const DECO = ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
+ const DECO = JG ? ["d2_fern","d2_flower","d2_torch","d2_sign","d2_banana","d2_rock","an_monkey","an_parrot","an_frog","w2_crate"] : ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
+ DECO.concat(JG ? ["an_croc"] : []).forEach(A);
  const deco = p => { if (p.w > .8 && Math.random() < .6) ent("deco", p.x + rnd(.15, p.w - .15), p.y, { img:pick(DECO), sz:rnd(.12, .2) }); };
  let gemsLeft = 3;
  function segment(x0, y0, len){
@@ -2800,11 +2812,12 @@ function makeJump(){
   cx.fillStyle = "#8fd3ff"; cx.fillRect(0, 0, W, H);
   if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; let ox = -((s.cam * U * .35) % bw); if (ox > 0) ox -= bw; for (let x = ox; x < W; x += bw) cx.drawImage(bg, x, H - bh * .97, bw, bh); }
   // sea
-  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85");
+  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); if (JG){ g.addColorStop(0, "#5fd6d0"); g.addColorStop(.5, "#22a3b0"); g.addColorStop(1, "#11667a"); } else { g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85"); }
   cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, H);
   for (let x = 0; x <= W + 20; x += 20) cx.lineTo(x, sy + Math.sin(x * .02 + s.t * 2.4 + s.cam * 4) * U * .008);
   cx.lineTo(W, H); cx.fill();
   cx.strokeStyle = "rgba(255,255,255,.35)"; cx.lineWidth = 2; for (let k = 0; k < 3; k++){ cx.beginPath(); const yy = sy + H * (.03 + k * .035); for (let x = 0; x <= W; x += 24){ const v = yy + Math.sin(x * .03 + s.t * 2 + k * 2 + s.cam * 5) * 3; x ? cx.lineTo(x, v) : cx.moveTo(x, v); } cx.stroke(); }
+  if (JG){ const cw = 2.7, c0 = Math.floor(s.cam / cw); for (let k = c0; k < c0 + VW / cw + 2; k++){ const wx = k * cw + 1.3; if (s.plats.some(p => wx > p.x - .15 && wx < p.x + p.w + .15)) continue; img("an_croc", X(wx), sy + U * .01 + Math.sin(s.t * 1.6 + k) * U * .008, U * .17); } }
   // decorations (behind)
   for (const e of s.ents) if (e.type === "deco" && X(e.x) > -200 && X(e.x) < W + 200) img(e.img, X(e.x), Y(e.y) + 2, e.sz * U, { bottom:1 });
   // platforms
@@ -2828,7 +2841,7 @@ function makeJump(){
    else if (e.type === "box") img("it_box", ex, ey, U * .09, { a:e.used ? .55 : 1 });
    else if (e.type === "spring"){ const sq = e.sq > 0 ? (e.sq -= 1 / 60, .7) : 1; img("w1_spring", ex, ey + 2, U * .1, { bottom:1, sy:sq }); }
    else if (e.type === "germ") img("en_germ", ex, ey + Math.abs(Math.sin(s.t * 8)) * -4 + 2, U * .11, { bottom:1, flip:e.dir > 0 });
-   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * .1, { rot:s.t * 2 });
+   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * (JG ? .11 : .1), JG ? { sx:1 + Math.sin(s.t * 6) * .04 } : { rot:s.t * 2 });
    else if (e.type === "fly") img("en_fly", ex, ey, U * .11, { sy:.9 + Math.abs(Math.sin(s.t * 14)) * .12 });
    else if (e.type === "flag") img("w1_flag", ex, ey + 2, U * .2, { bottom:1 });
    else if (e.type === "finish") img("w1_finish", ex, ey + 4, U * .36, { bottom:1 });
@@ -2897,7 +2910,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(true) : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
@@ -2929,6 +2942,7 @@ const _gre = gameResultExtras;
 gameResultExtras = function(a, pct){
  const kind = G && G.kind;
  let html = _gre(a, pct);
+ if (kind === "race") html += `<div><img src="img/p3/k_${(prof().avatar || 1) % 2 ? "purple" : "teal"}.webp" alt=""><br><b>${G.dist} m · ${G.coinsRun} coins grabbed</b></div>`;
  if (kind === "dash") html += `<div><img src="img/g2/ob_flag.webp" alt=""><br><b>${G.dist} m · ${G.coinsRun} coins grabbed</b></div>`;
  if (kind === "kitchen") html += `<div><img src="img/g2/k_bottlefull.webp" alt=""><br><b>${G.served} potions · ${G.happy} happy customers</b></div>`;
  if (kind === "jump") html += `<div><img src="img/p3/it_gem.webp" alt=""><br><b>${G.gems}/3 gems · ${G.coinsRun} coins · ${G.stomps} germs stomped</b></div>`;
