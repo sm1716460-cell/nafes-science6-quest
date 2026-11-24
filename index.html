@@ -4912,10 +4912,10 @@ function challengeStation(src){
   api.hoot("Show me what you learned! 🏆", "m_fist");
  }};
 }
-function bigStation(BIG, img, title){
+function bigStation(BIG, img, title, wide){
  return { id:"big", icon:"🗺️", short:"Big Picture", title:"The Big Picture", render(el, api){
   const box = (b, cls, txt) => `<div class="tx ${cls}" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%">${txt}</div>`;
-  el.innerHTML = `<div class="big"><div class="lcard" style="padding:10px"><div class="infg" id="ig"><img src="${img}" alt="Summary infographic">
+  el.innerHTML = `<div class="big"><div class="lcard" style="padding:10px"><div class="infg${wide ? " wide" : ""}" id="ig"><img src="${img}" alt="Summary infographic">
     ${box(title[0], "t", title[1])}
     ${BIG.map((p, i) => box(p.lb, "", p.t) + `<div class="hs" data-i="${i}" style="left:${p.r[0]}%;top:${p.r[1]}%;width:${p.r[2]}%;height:${p.r[3]}%"></div>`).join("")}</div></div>
    <div><div class="lcard" id="bgInfo"><h2>🗺️ The Big Picture</h2><p>The whole week on one page! <b>Tap each picture</b> to open its key facts.</p></div></div></div>`;
@@ -5495,6 +5495,7 @@ st4.textContent = `
 .salt3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .salt3 div{background:#faf8ff;border:3px solid #e6defd;border-radius:16px;padding:8px;text-align:center;font-weight:700}
 .salt3 div b{display:block;color:var(--p);font-size:1.1em}.salt3 .em{font-size:40px}
+.infg.wide{width:calc(64vh * 1.333)}.infg.wide .tx{font-size:2.3cqw}.infg.wide .tx.t{font-size:4cqw}.infg.wide .hs.seen::after{width:4cqw;height:4cqw;font-size:2.4cqw}
 `;
 document.head.appendChild(st4);
 const AT = (el, n = 1) => Array.from({ length:n }, () => `<span class="at ${el}">${el}</span>`).join("");
@@ -5762,7 +5763,17 @@ W4.stations.push({ id:"neutral", icon:"🧂", short:"Neutralize!", title:"Neutra
   upd(); api.hoot("Add the base slowly… watch the pH meter! 💧", "m_point");
  }});
 
-/* 9–10 */
+/* 9–11 */
+W4.stations.push(bigStation([
+ { r:[1,17.5,24,37], lb:[1.7,46.3,22.4,6.6], t:"Chemical reactions", s:0, f:["A <b>chemical bond</b> is a force holding atoms together.","Clues: <b>bubbles</b> (gas released), color change, heat & light, a new smell.","Rusting is a chemical change; melting ice is NOT."] },
+ { r:[25.6,17.5,24,37], lb:[26.5,46.3,22.2,6.6], t:"Balanced equations", s:1, f:["<b>Reactants → products</b>; coefficients = number of molecules.","<b>Conservation of mass</b>: mass stays constant in a closed system.","2H₂ + O₂ → 2H₂O has 4 hydrogen atoms on each side."] },
+ { r:[50.3,17.5,24,37], lb:[51.2,46.4,22.1,6.5], t:"Types of reactions", s:2, f:["<b>Combination</b>: A + B → AB (2Mg + O₂ → 2MgO).","<b>Decomposition</b>: a compound breaks into simpler substances.","<b>Displacement</b>: one element replaces another."] },
+ { r:[74.9,17.5,24,37], lb:[75.8,46.4,22.3,6.5], t:"Combustion", s:2, f:["Combustion always needs <b>oxygen</b>.","It always produces <b>heat and light</b>.","Burning wood releases energy (exothermic)."] },
+ { r:[1,57,24,40], lb:[1.7,89.0,22.4,6.7], t:"Reaction rate", s:3, f:["Faster: <b>higher temperature</b>, more <b>surface area</b>, higher <b>concentration</b>.","A <b>catalyst</b> speeds up a reaction.","Lower temperature slows it; the container type doesn't matter."] },
+ { r:[25.6,57,24,40], lb:[26.5,89.0,22.2,6.7], t:"Exothermic & endothermic", s:4, f:["<b>Exothermic</b>: releases energy to the surroundings (feels hot).","<b>Endothermic</b>: absorbs heat (feels cold) — photosynthesis.","Breaking bonds absorbs energy."] },
+ { r:[50.3,57,24,40], lb:[51.0,89.1,22.2,6.6], t:"The pH scale", s:6, f:["<b>Acids</b>: pH below 7, release H⁺ (lemon juice ≈ 2, HCl).","<b>Bases</b>: pH above 7, taste bitter (soap, NaOH). pH 7 = neutral (distilled water).","Phenolphthalein turns <b>pink</b> in a base."] },
+ { r:[74.9,57,24,40], lb:[75.6,89.0,22.5,6.7], t:"Neutralization & salts", s:7, f:["<b>Acid + base → salt + water</b> (HCl + NaOH → NaCl + H₂O).","Salts: NaCl (food), CaCO₃ (construction).","Calcium hydroxide neutralizes acidic soil."] }
+], IMG(4, "infographic"), [[14.8,2.4,70.2,11.7], "Week 4: Reactions, Acids & Bases"], true));
 W4.stations.push(cardsStation(W4, [["⚛️","Chemical bond","A force holding atoms together"],["x_rust","Chemical change","A new substance forms (rust)"],["🫧","Gas released","Bubbles = a clue of a reaction"],["⚖️","Conservation of mass","Mass stays the same in a closed system"],["➡️","Reactants","Substances on the LEFT of the arrow"],["🔢","Coefficient","The number of molecules"],["🤝","Combination","A + B → AB"],["💔","Decomposition","A compound breaks into simpler substances"],["🔄","Displacement","One element replaces another"],["x_fire","Combustion","Needs oxygen; gives heat & light"],["🌡️","Temperature ↑","Reaction speeds up"],["🪄","Catalyst","Speeds up a reaction"],["🔥","Exothermic","Releases energy (feels hot)"],["❄️","Endothermic","Absorbs energy (feels cold) — photosynthesis"],["🍋","Acid","pH below 7; releases H⁺"],["🧼","Base","pH above 7; bitter (soap, NaOH)"],["💧","Neutral","pH 7 (distilled water)"],["🩷","Phenolphthalein","Turns pink in a base"],["🧂","Neutralization","Acid + base → salt + water"],["🔩","Metals","React with acids → hydrogen gas"],["🔀","Metalloids","Properties of metals AND non-metals"],["🔥","Flammability","A chemical property"]]));
 W4.stations.push(challengeStation(4));
 W4.notes = [
