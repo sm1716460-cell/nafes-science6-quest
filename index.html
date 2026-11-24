@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795561178";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795561483";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2812,7 +2812,7 @@ function makeBoss(){
  const JNK = d !== "final" && w && w.n === 2, GOO = d !== "final" && w && w.n === 3, LAVA = d !== "final" && w && w.n === 4, BRK = d !== "final" && w && w.n === 5, RST = d !== "final" && w && w.n === 6, SQL = d !== "final" && w && w.n === 7;
  const B = JNK ? { img:"boss5", name:"Junk Monster" } : GOO ? { img:"boss6", name:"Professor Goo" } : LAVA ? { img:"boss7", name:"Lava King" } : BRK ? { img:"boss8", name:"Captain Friction" } : RST ? { img:"boss9", name:"Rusty the Machine Monster" } : SQL ? { img:"boss10", name:"Squall the Storm Octopus" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
  const fin = d === "final";
- const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(/boss[1567]/.test(B.img) ? B.img + "h" : B.img), down: r1(B.img + "x"), run: r1(/boss[1567]/.test(B.img) ? B.img + "r" : B.img) };
+ const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "h" : B.img), down: r1(B.img + "x"), run: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "r" : B.img) };
  if (fin) G.bossImg = "boss4";
  const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : GOO ? ["../p3/en3_slime", "../p3/en3_spark", "../p3/en3_steam"] : LAVA ? ["../p3/en4_fire", "../p3/en4_acid", "../p3/d4_rock"] : BRK ? ["../p3/en5_tire", "../p3/en5_cone", "../p3/en5_robot"] : RST ? ["../p3/en6_gear", "../p3/en6_screw", "../p3/en6_beetle"] : SQL ? ["../p3/en7_crab", "../p3/en7_jelly", "../p3/en7_speaker"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
  SHOT.forEach(g2);
