@@ -2445,11 +2445,12 @@ function makeKitchen(){
    ===================================================================== */
 function makeBoss(){
  const w = Q.w, d = w && w.type === "review" ? "final" : (w && w.missions[0] && w.missions[0][0] ? w.missions[0][0].d : "life");
- const B = BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
+ const JNK = d !== "final" && w && w.n === 2;
+ const B = JNK ? { img:"boss5", name:"Junk Monster" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
  const fin = d === "final";
- const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(B.img === "boss1" ? "boss1h" : B.img), down: r1(B.img + "x"), run: r1(B.img === "boss1" ? "boss1r" : B.img) };
+ const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(/boss[15]/.test(B.img) ? B.img + "h" : B.img), down: r1(B.img + "x"), run: r1(/boss[15]/.test(B.img) ? B.img + "r" : B.img) };
  if (fin) G.bossImg = "boss4";
- const SHOT = { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
+ const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
  SHOT.forEach(g2);
  const av = prof().avatar || 1, me = IM("img/p3/h" + av + "_jump.webp"), bg = worldBg(), star = r1("o_star");
  const s = { t:0, px:.5, tx:.5, dir:0, stars:[], shots:[], parts:[], fire:1.2, sh:0, charge:0, asking:false, inv:0, hitT:0, beam:0, shake:0, laugh:0, end:0, run:0 };
