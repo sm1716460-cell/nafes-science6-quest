@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795617965";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795618720";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -3326,7 +3326,7 @@ function makeMaze(){
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
  const DIRS = [[0,-1,1,4],[1,0,2,8],[0,1,4,1],[-1,0,8,2]]; // dx,dy,bit,oppositeBit  (N,E,S,W)
- const s = { sp:3.6, stopped:true, budget:0, t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
+ const s = { kd:-1, touch:null, t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
  let W = view.w, H = view.h, cs = 40, ox = 0, oy = 0, panelBox = null;
  const port = () => view.h > view.w * 1.05;
 
@@ -3407,7 +3407,7 @@ function makeMaze(){
 
  /* ---------- question panel ---------- */
  const panel = document.createElement("div"); panel.className = "spanel hide"; layer.appendChild(panel);
- const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Swipe ⬅️➡️⬆️⬇️ to walk · she follows bends by herself<br>Swipe EARLY to turn at the next opening · tap the girl = 🛑 stop"; layer.appendChild(tip);
+ const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Hold your finger where she should go — she walks there<br>Lift your finger = she STOPS 🛑 · you are in control!"; layer.appendChild(tip);
  later(() => tip.style.opacity = 0, 4500); later(() => tip.remove(), 5100);
  function ask(){
   Q.answered = false; s.state = "play";
@@ -3419,7 +3419,7 @@ function makeMaze(){
  }
  panel.addEventListener("click", e => {
   const b = e.target.closest("[data-mk]");
-  if (b){ const g = s.gates[+b.dataset.mk]; if (g && !g.dead && s.state === "play"){ s.path = pathTo(g.x, g.y); s.qd = -1; tone([520], .04, "triangle", .06); } return; }
+  if (b){ const g = s.gates[+b.dataset.mk]; if (g && !g.dead && s.state === "play"){ g.glow = 1; g.shake = .4; banner(`👉 Walk to gate ${LET[g.k]}!`); tone([520], .04, "triangle", .06); } return; }
   if (e.target.closest("[data-aread]")) return readQ();
   if (e.target.closest("[data-ahint]")){ const rm = useHint(); if (!rm) return; const bs = panel.querySelectorAll(".aopt"); rm.forEach(k => { bs[k] && bs[k].classList.add("gone"); if (s.gates[k]) s.gates[k].dead = true; }); panel.querySelector("[data-ahint]").disabled = true; return; }
   if (e.target.closest("[data-mgo]")) next();
@@ -3487,13 +3487,17 @@ function makeMaze(){
   if (s.state !== "play") return -1;
   if (s.path && s.path.length){ const [c, r] = s.path.shift(); const i = DIRS.findIndex(d => h.x + d[0] === c && h.y + d[1] === r); if (i >= 0 && canGo(h.x, h.y, i)) return i; s.path = null; return -1; }
   s.path = null;
-  if (s.halt){ s.halt = false; return -1; }
-  if (s.qd >= 0 && canGo(h.x, h.y, s.qd)){ const i = s.qd; s.qd = -1; return i; }      // swiped direction — swipe early to turn at the next opening
-  if (h.dir < 0) return -1;
-  if (canGo(h.x, h.y, h.dir)) return h.dir;                                                // keep going straight
-  const back = (h.dir + 2) % 4, fw = [0, 1, 2, 3].filter(i => i !== back && canGo(h.x, h.y, i));
-  if (fw.length === 1) return fw[0];                                                       // bend → follow it
-  return -1;                                                                               // T-junction / dead end → wait for a swipe
+  return wantDir(h);
+ }
+ function wantDir(h){
+  if (s.kd >= 0) return canGo(h.x, h.y, s.kd) ? s.kd : -1;
+  if (!s.touch) return -1;
+  const vx = s.touch.x - CX(h.x), vy = s.touch.y - CY(h.y), ax = Math.abs(vx), ay = Math.abs(vy);
+  if (Math.max(ax, ay) < cs * .45) return -1;                                   // finger on the girl → stand
+  const dx = vx > 0 ? 1 : 3, dy = vy > 0 ? 2 : 0, first = ax >= ay ? dx : dy, second = ax >= ay ? dy : dx, sec = Math.min(ax, ay);
+  if (canGo(h.x, h.y, first)) return first;
+  if (sec > cs * .3 && canGo(h.x, h.y, second)) return second;
+  return -1;
  }
  function germChoice(m){
   const opts = [0,1,2,3].filter(i => canGo(m.x, m.y, i) && !s.gates.some(g => !g.dead && g.x === m.x + DIRS[i][0] && g.y === m.y + DIRS[i][1]));
@@ -3535,7 +3539,9 @@ function makeMaze(){
   s.gates.forEach(g => { if (g.glow) g.glow = Math.max(0, g.glow - dt * .5); if (g.shake) g.shake = Math.max(0, g.shake - dt); });
   const h = s.hero;
   if (s.state === "play" && !G.hold){
-   const moving = stepMover(h, 3.4, dt, heroChoice);
+   let moving = false;
+   if (s.touch || s.kd >= 0){ const w = wantDir({ x:Math.round(h.x), y:Math.round(h.y) }); if (h.dir >= 0 && w >= 0 && (h.dir + 2) % 4 === w){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = w; } moving = stepMover(h, 3.3, dt, heroChoice); }
+   else h.dir = -1;                                                                  // no finger → she stands still
    s.pose = s.poseT > 0 ? "dizzy" : moving && h.dir >= 0 ? "run" : "stand";
   }
   if (s.state === "play" && !(s.freezeG > 0)) for (const m of s.germs) stepMover(m, m.sp, dt, germChoice);
@@ -3626,9 +3632,7 @@ function makeMaze(){
    cx.restore();
    if (pose === "dizzy") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; img("ui_star", hx + Math.cos(a) * w * .35, hy - hh * 1.02 + Math.sin(a) * hh * .06, hh * .16); }
   }
-  { const h = s.hero; if (s.state === "play" && s.qd >= 0 && h.dir >= 0){ const i = s.qd, x = CX(h.x) + DIRS[i][0] * cs * .55, y = CY(h.y) + DIRS[i][1] * cs * .55 - cs * .55, an = Math.atan2(DIRS[i][1], DIRS[i][0]), z = cs * .2; cx.save(); cx.fillStyle = "#ffd23f"; cx.strokeStyle = "#5b3fd9"; cx.lineWidth = 3; cx.beginPath(); cx.arc(CX(h.x), CY(h.y) - cs * .55, cs * .24, 0, 7); cx.fillStyle = "rgba(91,63,217,.85)"; cx.fill(); cx.fillStyle = "#ffd23f"; const X0 = CX(h.x), Y0 = CY(h.y) - cs * .55; cx.beginPath(); cx.moveTo(X0 + Math.cos(an) * z, Y0 + Math.sin(an) * z); cx.lineTo(X0 + Math.cos(an + 2.4) * z, Y0 + Math.sin(an + 2.4) * z); cx.lineTo(X0 + Math.cos(an - 2.4) * z, Y0 + Math.sin(an - 2.4) * z); cx.closePath(); cx.fill(); cx.restore(); } }
-  { const h = s.hero; if (s.state === "play" && h.dir < 0 && !(s.path && s.path.length)){ const a = .55 + Math.sin(s.t * 5) * .3; cx.save(); cx.globalAlpha = a; cx.fillStyle = "#ffd23f"; cx.strokeStyle = "#5b3fd9"; cx.lineWidth = 2;
-   [0, 1, 2, 3].forEach(i => { if (!canGo(h.x, h.y, i)) return; const x = CX(h.x) + DIRS[i][0] * cs * .62, y = CY(h.y) + DIRS[i][1] * cs * .62, an = Math.atan2(DIRS[i][1], DIRS[i][0]), z = cs * .16; cx.beginPath(); cx.moveTo(x + Math.cos(an) * z, y + Math.sin(an) * z); cx.lineTo(x + Math.cos(an + 2.4) * z, y + Math.sin(an + 2.4) * z); cx.lineTo(x + Math.cos(an - 2.4) * z, y + Math.sin(an - 2.4) * z); cx.closePath(); cx.fill(); cx.stroke(); }); cx.restore(); } }
+  if (s.touch && s.state === "play"){ const h = s.hero; cx.save(); cx.setLineDash([6, 8]); cx.strokeStyle = "rgba(91,63,217,.6)"; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(CX(h.x), CY(h.y)); cx.lineTo(s.touch.x, s.touch.y); cx.stroke(); cx.setLineDash([]); cx.fillStyle = "rgba(255,210,63,.45)"; cx.strokeStyle = "#ffb300"; cx.beginPath(); cx.arc(s.touch.x, s.touch.y, cs * .32, 0, 7); cx.fill(); cx.stroke(); cx.restore(); }
   // path preview
   if (s.path && s.path.length){ cx.fillStyle = "rgba(255,210,63,.75)"; s.path.forEach(([c, r], i) => { cx.beginPath(); cx.arc(CX(c), CY(r), cs * .07, 0, 7); cx.fill(); }); }
   s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(CX(p.x), CY(p.y), p.r * cs, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
@@ -3638,26 +3642,18 @@ function makeMaze(){
 
  /* ---------- input: drag = direction + speed (longer drag = faster) · tap = walk there · tap the girl = stop/go ---------- */
  let sw = null; const SPMAX = 7.5;
- // swipe = walk that way; she follows bends by herself and waits at the next crossroads · swipe early to pre-pick a turn · tap the girl = stop · tap a spot = walk there
- const turn = i => { const h = s.hero; s.path = null; s.halt = false; s.qd = i; if (h.dir >= 0 && (h.dir + 2) % 4 === i){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = i; s.qd = -1; } };
- const down = e => { if (G.hold || s.state !== "play") return; const p = ptr(e); sw = { x:p.x, y:p.y, used:false, d:-1 }; };
- const move = e => { if (!sw) return; const p = ptr(e), dx = p.x - sw.x, dy = p.y - sw.y; if (Math.hypot(dx, dy) < 22) return;
-  const i = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0); sw.used = true;
-  if (i !== sw.d){ sw.d = i; turn(i); } sw.x = p.x; sw.y = p.y; };
- const up = e => { if (!sw) return;
-  if (!sw.used && s.state === "play"){ const h = s.hero;
-   if (Math.hypot(sw.x - CX(h.x), sw.y - CY(h.y)) < cs * .7){ s.halt = true; s.qd = -1; s.path = null; tone([400, 250], .06, "sine", .05); sw = null; return; }
-   const c = Math.floor((sw.x - ox) / cs), r = Math.floor((sw.y - oy) / cs);
-   if (c >= 0 && r >= 0 && c < s.C && r < s.R){ s.qd = -1; s.halt = false; s.path = pathTo(c, r); if (s.path && s.path.length) tone([520], .04, "triangle", .06); } }
-  sw = null; };
+ // full manual control: hold your finger where she should go — she walks toward it; lift your finger = she stops
+ const down = e => { if (G.hold || s.state !== "play") return; s.touch = ptr(e); };
+ const move = e => { if (s.touch) s.touch = ptr(e); };
+ const up = () => { s.touch = null; };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
- const ku = () => {};
- function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); turn(m); } if (e.key === " "){ e.preventDefault(); s.halt = true; s.qd = -1; s.path = null; } }
+ const ku = e => { const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m === s.kd) s.kd = -1; }; addEventListener("keyup", ku);
+ function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); s.kd = m; } }
  const rz = () => later(measure, 60); addEventListener("resize", rz);
  $("#aCtl").classList.add("hide");
  build(); ask(); pows();
  window.__mz = s;
- return { update, draw, key, resize(){ measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
+ return { update, draw, key, resize(){ measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("keyup", ku); removeEventListener("resize", rz); } };
 }
 
 /* =====================================================================
