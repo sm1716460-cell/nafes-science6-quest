@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795614296";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795614631";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -213,6 +213,7 @@ details.rev summary{cursor:pointer;color:var(--p);font-weight:800}
 .thead h2{font-size:clamp(22px,2.2vw,32px);color:#fff}
 @media (max-width:700px){.thead{position:static;gap:6px;padding:calc(10px + var(--safe-t)) 10px 10px}.thead img{height:36px}.thead .btn{padding:7px 11px;font-size:14px}.thead .sp{display:none}}
 .topbtn{white-space:nowrap}
+@media (max-width:700px){.mapbar .rl{display:none}.mapbar{gap:6px}.mapbar #bRace,.mapbar #bTop{width:52px;height:52px;padding:0;border-radius:50%;font-size:24px;flex:none;display:grid;place-items:center}}
 .btn.race{white-space:nowrap;padding:8px 14px;font-size:15px;background:linear-gradient(90deg,#ff4fa3,#8b5cff);color:#fff;box-shadow:0 4px 0 #5a1d7a,0 0 14px rgba(255,79,163,.45)}
 .tbody{padding:clamp(14px,2.5vw,36px);max-width:1500px;margin:0 auto}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
@@ -561,7 +562,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
   <button class="round" id="bOut" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button>
  </div>
  <div id="mapScroll"><div class="goalchip hide" id="goalChip"></div><div class="brandchip" id="brandChip"><img src="img/logo.webp" alt="Andalus International Schools logo"><div>Nafes Science Quest<small>Teacher Basma Ahmed</small></div></div><div id="map"></div></div>
- <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="btn race" id="bRace" title="Galaxy Race" aria-label="Galaxy Race">🚀 Galaxy Race</button><button class="btn yel topbtn" id="bTop" title="Top 5 scientists" aria-label="Top 5 scientists">🏆 Top 5</button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
+ <div class="mapbar"><button class="round gonly" id="bSpin" title="Daily spin" aria-label="Daily spin">🎡</button><button class="round gonly" id="bShop" title="Shop" aria-label="Shop">🛍️</button><button class="btn race" id="bRace" title="Galaxy Race" aria-label="Galaxy Race">🚀<span class="rl"> Galaxy Race</span></button><button class="btn yel topbtn" id="bTop" title="Top 5 scientists" aria-label="Top 5 scientists">🏆<span class="rl"> Top 5</span></button><button class="btn cor" id="bMist">🔍 My Mistakes <span id="mistN"></span></button><button class="round gonly" id="bAlbum" title="Sticker album" aria-label="Sticker album">📒</button><button class="round gonly" id="bPet" title="My pet" aria-label="My pet">🥚</button></div>
 </section>
 
 <!-- QUIZ -->
@@ -5213,7 +5214,7 @@ function makeRace3D(theme){
  G.hearts = 3; G.gems = 0; G.coinsRun = 0;
  const NL = 4, LW = 3.3, ROAD = NL * LW, HALF = ROAD / 2, laneX = i => -HALF + (i + .5) * LW;
  const BASE = 21 + hard * 3;
- const s = { t:0, z:0, x:0, tx:laneX(1), lane:1, speed:0, boost:0, slow:0, inv:0, spin:0, state:"run", nextQ:4.5, gate:null, objs:[], spawnZ:-40, started:false, auto:-1, msg:null, deadOpt:new Set(), parts:null, roll:0, cd:0 };
+ const s = { thr:0, cruise:BASE, t:0, z:0, x:0, tx:laneX(1), lane:1, speed:0, boost:0, slow:0, inv:0, spin:0, state:"run", nextQ:4.5, gate:null, objs:[], spawnZ:-40, started:false, auto:-1, msg:null, deadOpt:new Set(), parts:null, roll:0, cd:0 };
  const P = qPanel({ pick:k => { if (s.state !== "q" || !s.gate) return; s.started = true; s.auto = k; s.tx = s.gate.px(k); }, hint:rm => rm.forEach(k => { s.deadOpt.add(k); if (s.gate) s.gate.kill(k); }), go:() => cont(), goLabel:"Keep racing ➜" });
  let A = playArea({});
  const geo = () => { A = playArea(P); };
@@ -5374,8 +5375,12 @@ function makeRace3D(theme){
   if (!s.started){ s.speed = 0; return; }
   // reading zone: slow down in front of the question gate
   let zone = 1; if (s.gate && !s.gate.done){ const gd = s.z - s.gate.z; if (gd < 70) zone = Math.max(.33, (gd - 8) / 62); }
-  const tgt = s.state === "end" ? 6 : BASE * (s.boost > 0 ? 1.6 : s.slow > 0 ? .5 : 1) * (s.boost > 0 ? 1 : zone);
-  s.speed += (tgt - s.speed) * Math.min(1, dt * 2.4); s.z -= s.speed * dt;
+  // player speed control: ↑ faster, ↓ slower → stop → reverse
+  if (s.thr > 0) s.cruise = Math.min(BASE * 1.7, s.cruise + BASE * 1.1 * dt); else if (s.thr < 0) s.cruise = Math.max(-BASE * .4, s.cruise - BASE * 1.4 * dt);
+  let tgt = s.state === "end" ? 6 : s.cruise * (s.boost > 0 ? 1.4 : s.slow > 0 ? .5 : 1);
+  if (tgt > 0 && s.boost <= 0 && s.state !== "end") tgt = Math.min(tgt, BASE * 1.7 * zone);
+  if (s.z >= 0 && tgt < 0) tgt = 0;
+  s.speed += (tgt - s.speed) * Math.min(1, dt * 3); s.z = Math.min(0, s.z - s.speed * dt);
   if (s.state === "run"){ s.nextQ -= dt; if (s.nextQ <= 0) ask(); }
   if (s.gate && !s.gate.done && s.z <= s.gate.z){ const k = Math.max(0, Math.min(s.gate.n - 1, Math.floor((s.x + HALF) / s.gate.pw))); choose(k); }
   if (s.gate && !s.gate.done){ const k = Math.max(0, Math.min(s.gate.n - 1, Math.floor((s.x + HALF) / s.gate.pw))); if (k !== s.hk){ s.hk = k; P.el.querySelectorAll(".aopt").forEach((b, i) => b.classList.toggle("r3on", i === k)); } } else if (s.hk != null){ s.hk = null; P.el.querySelectorAll(".aopt").forEach(b => b.classList.remove("r3on")); }
@@ -5400,6 +5405,7 @@ function makeRace3D(theme){
 
  /* ---------- draw ---------- */
  const coarse = matchMedia("(pointer:coarse)").matches;
+ const PED = () => { const r = Math.max(26, Math.min(36, A.w * .06)); return [{ v:1, x:A.x1 - r - 12, y:A.y0 + A.h * .78 - r * 1.15, r, c:"⏫" }, { v:-1, x:A.x1 - r - 12, y:A.y0 + A.h * .78 + r * 1.15, r, c:"⏬" }]; };
  function draw(){
   geo(); cx.clearRect(0, 0, view.w, view.h);
   if (!ok3){ cx.fillStyle = "#1c0f55"; cx.fillRect(0, 0, view.w, view.h); pill6("🏎️ Getting the race track ready…", view.w / 2, view.h / 2, "#ffe9b0", 20); return; }
@@ -5410,7 +5416,7 @@ function makeRace3D(theme){
   // kart
   W.kart.position.set(s.x, Math.abs(Math.sin(s.t * 18)) * .03 * Math.min(1, s.speed / 10), s.z);
   const steer = (s.tx - s.x); W.body.rotation.y = -steer * .12 + s.spin * Math.PI * 2 * (s.spin > 0 ? 1 : 0); W.body.rotation.z = steer * .05;
-  W.wheels.forEach(wh => wh.rotation.x -= s.speed * (1 / 60) / .4); W.flames.forEach(f => { f.visible = s.boost > 0 || s.speed > BASE * .9; f.scale.z = (s.boost > 0 ? 1.6 : .7) + Math.random() * .4; f.material.color.set(s.boost > 0 ? 0x66d9ff : 0xffa726); });
+  W.wheels.forEach(wh => wh.rotation.x -= s.speed * (1 / 60) / .4); W.flames.forEach(f => f.parent && (f.visible = s.speed > 0)); W.flames.forEach(f => { f.visible = s.boost > 0 || s.speed > BASE * .9; f.scale.z = (s.boost > 0 ? 1.6 : .7) + Math.random() * .4; f.material.color.set(s.boost > 0 ? 0x66d9ff : 0xffa726); });
   W.shieldM.material.opacity = s.inv > 0 ? (s.inv % .2 > .1 ? .5 : .15) : 0;
   // world recycling around the kart
   const kz = s.z; W.roadM.position.z = kz - 300; W.ground.position.set(0, -.02, kz - 300); W.sky.position.z = kz; W.rMat.uniforms.glow.value = s.boost > 0 ? 1 : 0; W.sky.material.uniforms.t.value = s.t;
@@ -5429,16 +5435,18 @@ function makeRace3D(theme){
   const fs = Math.max(13, Math.min(19, A.w * .028)), nr = A.w < 560;
   const goal = !s.started ? "" : s.state === "q" ? (s.gate && s.z - s.gate.z > 70 ? "🤔 Read the question — the kart slows down at the gate" : nr ? "🏁 Drive into the RIGHT answer!" : "🏁 Steer into the gate with the RIGHT answer!") : s.state === "wrong" ? "😵 Tap to keep racing" : s.state === "run" ? SK.tip : "";
   const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 24, s.msg ? s.msg.c : "#ffe9b0", fs);
-  if (!s.started) pill6(coarse ? "👆 Tap LEFT or RIGHT to steer — tap to start!" : "⬅️ ➡️ Use the arrow keys to steer — press any arrow to start!", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
-  if (coarse && s.state !== "end"){ cx.globalAlpha = .55; [[A.x0 + 38, "◀"], [A.x1 - 38, "▶"]].forEach(([x, c]) => { cx.fillStyle = "rgba(31,40,56,.7)"; cx.beginPath(); cx.arc(x, A.y0 + A.h * .62, 28, 0, 7); cx.fill(); cx.fillStyle = "#fff"; cx.font = "900 24px sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c, x, A.y0 + A.h * .62); }); cx.globalAlpha = 1; }
+  if (!s.started) pill6(coarse ? "👆 Tap left/right to steer · ⏫⏬ to change speed" : "⬅️ ➡️ steer · ⬆️ faster · ⬇️ slower / reverse — press any arrow to start!", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
+  if (s.state !== "end") PED().forEach(p => { cx.fillStyle = s.thr === p.v ? "rgba(255,210,63,.85)" : "rgba(31,40,56,.72)"; rr6(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2, 14); cx.fill(); cx.strokeStyle = "#ffd23f"; cx.lineWidth = 2.5; cx.stroke(); cx.font = `${p.r}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(p.c, p.x, p.y + 1); });
+  if (coarse && s.state !== "end"){ cx.globalAlpha = .55; [[A.x0 + 38, "◀"], [A.x1 - 38, "▶"]].forEach(([x, c]) => { cx.fillStyle = "rgba(31,40,56,.7)"; cx.beginPath(); cx.arc(x, A.y0 + A.h * .5, 28, 0, 7); cx.fill(); cx.fillStyle = "#fff"; cx.font = "900 24px sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c, x, A.y0 + A.h * .5); }); cx.globalAlpha = 1; }
  }
 
  /* ---------- controls ---------- */
  const steerTo = d => { if (!ok3) return; s.started = true; s.auto = -1; const cur = Math.max(0, Math.min(NL - 1, Math.round((s.tx + HALF) / LW - .5))); s.lane = Math.max(0, Math.min(NL - 1, cur + d)); s.tx = laneX(s.lane); tone([520, 780], .05, "sine", .04); };
  let sx = null;
- const down = e => { if (G.hold) return; if (fb) return; if (s.state === "wrong") return cont(); sx = ptr(e).x; if (!s.started && ok3){ s.started = true; } };
- const up = e => { if (sx == null || fb) return; const x = ptr(e).x, dx = x - sx; sx = null; if (Math.abs(dx) > 30) steerTo(dx > 0 ? 1 : -1); else steerTo(x < A.x0 + A.w / 2 ? -1 : 1); };
- cv.addEventListener("pointerdown", down); addEventListener("pointerup", up);
+ const down = e => { if (G.hold) return; if (fb) return; const p = ptr(e); const pd = PED().find(q => Math.hypot(q.x - p.x, q.y - p.y) < q.r * 1.15); if (pd){ s.thr = pd.v; s.started = true; sx = null; return; } if (s.state === "wrong") return cont(); sx = p.x; if (!s.started && ok3){ s.started = true; } };
+ const up = e => { s.thr = 0; if (sx == null || fb) return; const x = ptr(e).x, dx = x - sx; sx = null; if (Math.abs(dx) > 30) steerTo(dx > 0 ? 1 : -1); else steerTo(x < A.x0 + A.w / 2 ? -1 : 1); };
+ const ku = e => { if (["ArrowUp", "w", "ArrowDown", "s"].includes(e.key)) s.thr = 0; };
+ cv.addEventListener("pointerdown", down); addEventListener("pointerup", up); addEventListener("keyup", ku);
  const rz = () => later(P.measure, 60); addEventListener("resize", rz);
  $("#aCtl").classList.add("hide"); window.__r3 = s; s.ck = () => { const it = Q.items[Q.i]; return it ? it.order.indexOf(it.q.a) : 0; }; s.qi = () => Q.i + "/" + Q.items.length;
  // load three.js, then build — or fall back to the 2D race
@@ -5446,9 +5454,9 @@ function makeRace3D(theme){
  return {
   update(dt){ if (fb) return fb.update(dt); const n = window.__r3TS || 1; for (let i = 0; i < n; i++) update(dt); },
   draw(dt){ if (fb) return fb.draw(dt); draw(dt); },
-  key(e){ if (fb) return fb.key && fb.key(e); if (e.key === "ArrowLeft" || e.key === "a"){ e.preventDefault(); steerTo(-1); } if (e.key === "ArrowRight" || e.key === "d"){ e.preventDefault(); steerTo(1); } if (e.key === " " && s.state === "wrong"){ e.preventDefault(); cont(); } },
+  key(e){ if (fb) return fb.key && fb.key(e); if (e.key === "ArrowUp" || e.key === "w"){ e.preventDefault(); s.thr = 1; s.started = true; } if (e.key === "ArrowDown" || e.key === "s"){ e.preventDefault(); s.thr = -1; s.started = true; } if (e.key === "ArrowLeft" || e.key === "a"){ e.preventDefault(); steerTo(-1); } if (e.key === "ArrowRight" || e.key === "d"){ e.preventDefault(); steerTo(1); } if (e.key === " " && s.state === "wrong"){ e.preventDefault(); cont(); } },
   resize(){ if (fb) return fb.resize && fb.resize(); P.measure(); geo(); },
-  cleanup(){ dead = true; if (fb && fb.cleanup) fb.cleanup(); cv.removeEventListener("pointerdown", down); removeEventListener("pointerup", up); removeEventListener("resize", rz);
+  cleanup(){ dead = true; if (fb && fb.cleanup) fb.cleanup(); cv.removeEventListener("pointerdown", down); removeEventListener("pointerup", up); removeEventListener("keyup", ku); removeEventListener("resize", rz);
    if (W){ W.scene.traverse(o => { if (o.geometry) o.geometry.dispose(); const ms = Array.isArray(o.material) ? o.material : o.material ? [o.material] : []; ms.forEach(m => { if (m.map && m.map.isCanvasTexture) m.map.dispose(); m.dispose && m.dispose(); }); }); if (W.cvs.parentNode) W.cvs.parentNode.removeChild(W.cvs); W = null; } }
  };
 }
@@ -9507,7 +9515,7 @@ const LV = {
  medium:{ n:"Medium", ic:"⚡", lanes:3, q:10, speed:32, base:150, rocks:1, gems:4, col:"#3ff0ff", ds:"3 answer gates · 10 questions · a few asteroids" },
  hard:  { n:"Hard",   ic:"🔥", lanes:4, q:12, speed:38, base:200, rocks:2, gems:5, col:"#ff4fa3", ds:"4 answer gates · 12 questions · fast + asteroids" } };
 const LW = 6.4, LETTER = ["A", "B", "C", "D"], LCOL = ["#8b5cff", "#2fb67a", "#f0723c", "#2f86e8"];
-let THREE = null, ADD = null, R = null, S = null, sel = { w:null, l:"easy" }, raf = 0;
+let gThr = 0, THREE = null, ADD = null, R = null, S = null, sel = { w:null, l:"easy" }, raf = 0;
 const $g = s => document.querySelector(s);
 const rnd = (a, b) => a + Math.random() * (b - a), pk = a => a[Math.random() * a.length | 0];
 const shuf = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -9539,7 +9547,7 @@ const CSS = `#gx{position:fixed;inset:0;z-index:9000;background:#05021a;font-fam
 #gx .x-good{color:#5dffb0}#gx .x-bad{color:#ff5a7a}#gx .x-gold{color:#ffd84a}
 @keyframes gxpop{0%{transform:scale(.4);opacity:0}12%{transform:scale(1.15);opacity:1}22%{transform:scale(1)}80%{opacity:1}100%{transform:translateY(-40px);opacity:0}}
 #gx .x-tch{position:absolute;bottom:50%;width:70px;height:70px;border-radius:50%;background:rgba(63,240,255,.18);border:2px solid rgba(63,240,255,.6)!important;font-size:28px;z-index:4;display:none}
-#gx .x-tch.x-l{left:10px}#gx .x-tch.x-r{right:10px}@media (pointer:coarse){#gx .x-tch{display:block}}
+#gx.x-hid{display:none!important}#gx .x-ped{position:absolute;right:12px;width:64px;height:64px;border-radius:18px;background:rgba(18,12,48,.7);border:2px solid rgba(255,216,74,.7)!important;font-size:26px;z-index:4;touch-action:none}#gx .x-ped.x-on{background:rgba(255,216,74,.45);transform:scale(.94)}#gx .x-up{bottom:calc(30% + 40px)}#gx .x-dn{bottom:30%;transform:translateY(32px)}#gx .x-dn.x-on{transform:translateY(32px) scale(.94)}#gx .x-tch.x-l{left:10px}#gx .x-tch.x-r{right:10px}@media (pointer:coarse){#gx .x-tch{display:block}}
 #gx .x-cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:150px;font-weight:900;text-shadow:0 0 30px #ff4fa3,0 0 60px #3ff0ff;z-index:5}
 #gx .x-cd span{animation:gxcd 1s ease forwards}@keyframes gxcd{0%{transform:scale(2.4);opacity:0}25%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.6);opacity:0}}
 #gx .x-scr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto;background:radial-gradient(ellipse at center,rgba(8,4,30,.35),rgba(5,2,26,.8));z-index:6}
@@ -9576,18 +9584,21 @@ function ui(){
  <div id="gxHud" class="x-hid"><div class="x-gtop"><div class="x-st"><i>Score</i><b id="gxScore">0</b></div><div class="x-st"><i>Time</i><b id="gxTime">0.0</b></div><div class="x-st"><i>Speed</i><b id="gxSpd">0</b></div><div class="x-st"><i>Question</i><b id="gxQn">1/8</b></div><div class="x-st"><i>Streak</i><b id="gxCombo">×0</b></div><button class="x-ib" id="gxMute">🔊</button><button class="x-ib" id="gxPause">⏸</button></div>
   <div class="x-gprog"><div id="gxProg"></div><span id="gxPs">🚀</span><em>🏁</em></div><div class="x-pops" id="gxPops"></div>
   <div class="x-gq" id="gxQ"><h3 id="gxQt"></h3><div class="x-ops" id="gxOps"></div></div>
-  <button class="x-tch x-l" id="gxL">◀</button><button class="x-tch x-r" id="gxR">▶</button></div>
+  <button class="x-tch x-l" id="gxL">◀</button><button class="x-tch x-r" id="gxR">▶</button><button class="x-ped x-up" id="gxUp" title="Faster (↑)">⏫</button><button class="x-ped x-dn" id="gxDn" title="Slower / reverse (↓)">⏬</button></div>
  <div class="x-cd x-hid" id="gxCd"></div>
  <div class="x-scr" id="gxMenu"></div><div class="x-scr x-hid" id="gxPauseS"></div><div class="x-scr x-hid" id="gxRes"></div>`;
  document.body.appendChild(d);
  $g("#gxMute").onclick = () => { A.setMuted(!A.muted); $g("#gxMute").textContent = A.muted ? "🔇" : "🔊"; };
  $g("#gxPause").onclick = () => pause(true);
  const lane = dir => { if (S && S.run) changeLane(dir); };
+ const ped = (id, v) => { const b = $g(id); const on = e => { e.preventDefault(); gThr = v; b.classList.add("x-on"); }, off = () => { if (gThr === v) gThr = 0; b.classList.remove("x-on"); }; b.addEventListener("pointerdown", on); ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, off)); };
+ ped("#gxUp", 1); ped("#gxDn", -1);
+ addEventListener("keyup", e => { if (["ArrowUp", "w", "W", "ArrowDown", "s", "S"].includes(e.key)) gThr = 0; });
  $g("#gxL").onpointerdown = e => { e.preventDefault(); lane(-1); }; $g("#gxR").onpointerdown = e => { e.preventDefault(); lane(1); };
  let sx = null; d.addEventListener("pointerdown", e => { if (e.target.closest("button,.x-scr")) return; sx = e.clientX; });
  d.addEventListener("pointerup", e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 30) lane(dx > 0 ? 1 : -1); else if (S && S.run){ lane(e.clientX < innerWidth / 2 ? -1 : 1); } });
  addEventListener("keydown", e => { if ($g("#gx").classList.contains("x-hid")) return;
-  if (S && S.run && !S.paused){ if (["ArrowLeft", "a", "A"].includes(e.key)){ e.preventDefault(); lane(-1); } if (["ArrowRight", "d", "D"].includes(e.key)){ e.preventDefault(); lane(1); } }
+  if (S && S.run && !S.paused){ if (["ArrowLeft", "a", "A"].includes(e.key)){ e.preventDefault(); lane(-1); } if (["ArrowRight", "d", "D"].includes(e.key)){ e.preventDefault(); lane(1); } if (["ArrowUp", "w", "W"].includes(e.key)){ e.preventDefault(); gThr = 1; } if (["ArrowDown", "s", "S"].includes(e.key)){ e.preventDefault(); gThr = -1; } }
   if (["p", "P", "Escape"].includes(e.key) && S && S.run) pause(!S.paused); });
  addEventListener("resize", () => R && resize());
 }
@@ -9780,7 +9791,7 @@ function menu(){
   <div class="x-lbl" id="gxWt">${escH(sel.w === "all" ? "Questions from every week" : ((W.find(w => w.n === sel.w) || {}).title || ""))}</div>
   <div class="x-lvs">${Object.entries(LV).map(([k, L]) => { const b = B[sel.w + "-" + k]; return `<button class="x-lv ${sel.l === k ? "x-on" : ""}" data-l="${k}" style="--c:${L.col}"><div class="x-a">${L.ic}</div><div class="x-b">${L.n}</div><div class="x-c">${L.ds}</div><div class="x-d">${b ? `🏅 Best: ${b.score} · ${"⭐".repeat(b.stars)}` : "No record yet"}</div></button>`; }).join("")}</div>
   <div class="x-row"><button class="x-gb" id="gxGo">Launch! 🚀</button><button class="x-gb x-gh" id="gxBack">🏠 Back to map</button></div>
-  <div class="x-hint">Controls: <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to change lanes · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
+  <div class="x-hint">Controls: <kbd>←</kbd> <kbd>→</kbd> change lanes · <kbd>↑</kbd> faster · <kbd>↓</kbd> slower / stop / reverse (or the ⏫ ⏬ buttons) · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
  $g("#gxMenu").onclick = e => { const w = e.target.closest("[data-w]"), l = e.target.closest("[data-l]");
   if (w){ sel.w = w.dataset.w === "all" ? "all" : +w.dataset.w; menu(); return; } if (l){ sel.l = l.dataset.l; menu(); return; }
   if (e.target.closest("#gxGo")) start(); if (e.target.closest("#gxBack")) close(); };
@@ -9803,7 +9814,7 @@ function start(){
   gates.push(Object.assign(makeGate(it, z, n), { it, z })); });
  const finZ = z - 140; makeFinish(finZ, n);
  const par = -finZ / L.speed;
- S = { L, Q, n, gates, gems, rocks, finZ, par, z:0, x:0, lane:Math.floor((n - 1) / 2), speed:0, boost:0, slow:0, inv:0, t:0, cd:3.2, run:true, paused:false, over:false,
+ gThr = 0; S = { cruise:L.speed, L, Q, n, gates, gems, rocks, finZ, par, z:0, x:0, lane:Math.floor((n - 1) / 2), speed:0, boost:0, slow:0, inv:0, t:0, cd:3.2, run:true, paused:false, over:false,
   score:0, qPts:0, gemPts:0, pen:0, correct:0, streak:0, bestStreak:0, gemN:0, rockN:0, qi:0, review:[], roll:0, shake:0 };
  R.ship.position.set(0, 1.2, 0); show(null); ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.add("x-hid"));
  $g("#gxHud").classList.remove("x-hid"); showQ(); hud(); countdown();
@@ -9858,8 +9869,12 @@ function loop(now){
   else if (S.run){
    S.t += dt; if (S.boost > 0) S.boost -= dt; if (S.slow > 0) S.slow -= dt; if (S.inv > 0) S.inv -= dt;
    const ng = S.gates[S.qi], gd = ng ? S.z - ng.z : 999, zone = gd < 75 ? Math.max(.38, (gd - 12) / 63) : 1; S.zone = zone < 1;
-   const tgt = L.speed * (S.boost > 0 ? 1.65 : S.slow > 0 ? .55 : 1) * (1 + Math.min(5, S.streak) * .03) * (S.boost > 0 ? 1 : zone);
-   S.speed += (tgt - S.speed) * Math.min(1, dt * 2.2); S.z -= S.speed * dt;
+   // player speed control: ↑ faster, ↓ slower → stop → reverse
+   if (gThr > 0) S.cruise = Math.min(L.speed * 1.7, S.cruise + L.speed * 1.1 * dt); else if (gThr < 0) S.cruise = Math.max(-L.speed * .4, S.cruise - L.speed * 1.4 * dt);
+   let tgt = S.cruise * (S.boost > 0 ? 1.4 : S.slow > 0 ? .55 : 1);
+   if (tgt > 0 && S.boost <= 0) tgt = Math.min(tgt, L.speed * 1.7 * zone);
+   if (S.z >= 0 && tgt < 0) tgt = 0;
+   S.speed += (tgt - S.speed) * Math.min(1, dt * 3); S.z = Math.min(0, S.z - S.speed * dt);
    const g = S.gates[S.qi]; if (g && S.z <= g.z) answer(g);
    for (const m of S.gems){ if (m.userData.got) continue; if (Math.abs(m.position.z - S.z) < 1.6 && Math.abs(m.position.x - S.x) < 2.2){ m.userData.got = 1; m.visible = false; S.gemN++; S.gemPts += 25; S.score += 25; A.gem(); R.fx.burst(m.position, 30, 10, [[2.5, 2, .4], [2, 1.6, .3]], .7); } }
    for (const m of S.rocks){ if (m.userData.hit) continue; if (Math.abs(m.position.z - S.z) < 2 && Math.abs(m.position.x - S.x) < 2.6){ m.userData.hit = 1; m.visible = false; if (S.inv <= 0){ S.rockN++; S.pen += 50; S.score = Math.max(0, S.score - 50); S.slow = 1.2; S.shake = .6; S.inv = 1; A.hit(); pop("☄️ CRASH!", "x-bad", "-50 · dodge the asteroids!"); } R.fx.burst(m.position, 60, 16, [[2, .9, .3], [1.4, .6, .8]], 1); } }
@@ -9869,7 +9884,7 @@ function loop(now){
   // ship motion
   const tx = laneX(S.lane, S.n); S.x += (tx - S.x) * Math.min(1, dt * 10); S.roll += (0 - S.roll) * Math.min(1, dt * 5);
   R.ship.position.set(S.x, 1.25 + Math.sin(now * .003) * .12, S.z); R.body.rotation.z = S.roll + (tx - S.x) * -.08; R.body.rotation.x = Math.sin(now * .002) * .03;
-  const nrm = Math.min(1, S.speed / 75); R.flames.forEach((f, i) => { f.scale.set(1, 1, .7 + nrm * 1.1 + (S.boost > 0 ? .8 : 0) + Math.random() * .2); }); A.engine(nrm, S.run && S.cd <= 0);
+  const nrm = Math.max(0, Math.min(1, S.speed / 75)); R.flames.forEach((f, i) => { f.scale.set(1, 1, .7 + nrm * 1.1 + (S.boost > 0 ? .8 : 0) + Math.random() * .2); }); A.engine(nrm, S.run && S.cd <= 0);
   R.shield.material.opacity = S.inv > 0 ? .35 * (S.inv % .2 > .1 ? 1 : .3) : 0;
   for (let k = 0; k < 2; k++) R.trail.emit(S.x + (k ? .5 : -.5), 1.2, S.z + 2.6, rnd(-.4, .4), rnd(-.2, .2), 12 + S.speed * .2, S.boost > 0 ? 2.4 : .5, S.boost > 0 ? 1 : 1.5, S.boost > 0 ? 1.4 : 2, .5);
   // gates animation
