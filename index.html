@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795622863";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795625587";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -4883,6 +4883,7 @@ function makeBlast(SK){
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.kills = 0;
  const s = { t:0, sx:.5, tx:.5, bul:[], ens:[], drops:[], qd:[], parts:[], state:"free", freeT:SK.ci ? 25 : 8, spawn:.5, eggs:[], wave:0, waveDone:null, wait:0, fire:0, inv:0, started:false, msg:null, autoK:-1, wp:"ion", lvl:1, shield:0, mag:0, flash:0 };
+ const PMAX = 10;
  const WP = {
   ion:{ n:"Ion Laser", ic:"🔵", c:"#29b6f6", g:"#e1f5fe", rate:.24, sp:1.5, desc:"Classic blue laser" },
   fire:{ n:"Fire Laser", ic:"🔥", c:"#ff3d00", g:"#ffe0b2", rate:.3, sp:1.65, pierce:1, desc:"Burns THROUGH every monster!" },
@@ -4918,16 +4919,16 @@ function makeBlast(SK){
  function shoot(aim){ const y = (SY() - SW() * .55 - A.y0) / A.h, W0 = WP[s.wp];
   if (aim && s.wait > 0){ s.msg = { t:"🤔 Read the question first — then fire!", life:1.4, c:"#ffe9b0" }; return; }
   if (aim){ s.bul.push({ x:s.sx, y, vx:0, aim:1, sp:1.6 }); tone([1400, 900], .03, "square", .03); return; }
-  const n = s.wp === "plasma" ? Math.min(s.lvl, 3) : s.lvl;
-  for (let i = 0; i < n; i++){ const o = i - (n - 1) / 2; s.bul.push({ x:s.sx + o * .022, y:y + Math.abs(o) * .015, vx:o * .1, w:s.wp, sp:W0.sp, hl:[] }); }
+  const n = Math.min(s.lvl, 5), ex = Math.max(0, s.lvl - 5);
+  for (let i = 0; i < n; i++){ const o = i - (n - 1) / 2; s.bul.push({ x:s.sx + o * .022, y:y + Math.abs(o) * .015, vx:o * .1, w:s.wp, sp:W0.sp * (1 + ex * .05), hl:[], ex, dm:ex >= 3 ? 1 : 0 }); }
   tone(s.wp === "plasma" ? [300, 160] : s.wp === "fire" ? [900, 500] : s.wp === "bolt" ? [1800, 1200] : s.wp === "ice" ? [2200, 1600] : [1400, 900], .03, s.wp === "ice" ? "sine" : "square", .022); }
  function gift(x, y){ const r = Math.random(); let g;
-  if (SK.ci){ if (G.kills === 3 || r < .45) g = { k:"wp", w:s.wp }; else if (r < .82) g = { k:"wp", w:pick(Object.keys(WP).filter(k => k !== s.wp)) }; else if (r < .93) g = { k:"shield" }; else g = { k:"mag" }; s.drops.push(Object.assign(g, { x, y, gift:1, ph:Math.random() * 6 })); return; }
+  if (true){ if (G.kills === 3 || r < .45) g = { k:"wp", w:s.wp }; else if (r < .82) g = { k:"wp", w:pick(Object.keys(WP).filter(k => k !== s.wp)) }; else if (r < .93) g = { k:"shield" }; else g = { k:"mag" }; s.drops.push(Object.assign(g, { x, y, gift:1, ph:Math.random() * 6 })); return; }
   if (G.kills === 3 || r < .4) g = { k:"up" }; else if (r < .75){ const ks = Object.keys(WP).filter(k => k !== s.wp); g = { k:"wp", w:pick(ks) }; } else if (r < .9) g = { k:"shield" }; else g = { k:"mag" };
   s.drops.push(Object.assign(g, { x, y, gift:1, ph:Math.random() * 6 })); }
  function takeGift(d){ sfx.star(); s.flash = .5; burst(X(s.sx), SY(), 18, ["#fff", d.k === "wp" ? WP[d.w].c : GIFT[d.k].c, "#ffd23f"]);
-  if (d.k === "up" || (d.k === "wp" && d.w === s.wp)){ if (s.lvl < 5){ s.lvl++; s.msg = { t:`⬆️ POWER UP! ${s.lvl} shots at once!`, life:2.2, c:"#b8f5a0" }; banner(`⬆️ x${s.lvl} POWER!`); } else { coins(5, X(s.sx), SY() - SW()); s.msg = { t:"💪 MAX POWER! +5 coins", life:2, c:"#b8f5a0" }; } }
-  else if (d.k === "wp"){ s.wp = d.w; const W0 = WP[d.w]; s.msg = { t:`${W0.ic} ${W0.n.toUpperCase()}! ${W0.desc}${SK.ci ? " — grab " + W0.ic + " again for MORE power!" : ""}`, life:2.6, c:W0.g }; banner(`${W0.ic} ${W0.n}!`); }
+  if (d.k === "up" || (d.k === "wp" && d.w === s.wp)){ if (s.lvl < PMAX){ s.lvl++; s.msg = { t:s.lvl <= 5 ? `⬆️ POWER ${s.lvl}! ${s.lvl} shots at once!` : `⬆️ POWER ${s.lvl}! Faster & stronger shots!`, life:2.2, c:"#b8f5a0" }; banner(s.lvl === PMAX ? "💪 MAX POWER!" : `⬆️ POWER ${s.lvl}!`); } else { coins(5, X(s.sx), SY() - SW()); s.msg = { t:"💪 MAX POWER! +5 coins", life:2, c:"#b8f5a0" }; } }
+  else if (d.k === "wp"){ s.wp = d.w; const W0 = WP[d.w]; s.msg = { t:`${W0.ic} ${W0.n.toUpperCase()} · POWER ${s.lvl} kept! Grab ${W0.ic} again for MORE power!`, life:2.6, c:W0.g }; banner(`${W0.ic} ${W0.n} · P${s.lvl}`); }
   else if (d.k === "shield"){ s.shield = 10; s.msg = { t:"🛡️ SHIELD! It blocks the next hit (10 s)", life:2.2, c:"#b2ebf2" }; }
   else { s.mag = 9; s.msg = { t:"🧲 COIN MAGNET! Coins fly to you!", life:2.2, c:"#ffe0b2" }; } }
  function ask(){ s.state = "pre"; P.ask(); s.ens.forEach(e => { if (!e.dead){ e.flee = 1; } }); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:.14 + .72 * (n > 1 ? k / (n - 1) : .5), y:-.12 - (k % 2) * .06, ty:.34 + (k % 2) * .1, dead:false, ph:k }); s.state = "q"; s.bul = []; s.eggs = []; s.wait = SK.ci ? readT() : 0; s.drops = s.drops.filter(d => !d.gift); }, 60); }
@@ -4944,19 +4945,19 @@ function makeBlast(SK){
   s.state = "free"; s.freeT = 8 + hard; geo(); if (SK.ci) wave();
  }
  function hurt(){ if (s.inv > 0) return; if (s.shield > 0){ s.shield = 0; s.inv = 1.2; tone([500, 900], .08, "sine", .08); s.msg = { t:"🛡️ Your shield saved you!", life:1.8, c:"#b2ebf2" }; return; }
-  G.hearts--; s.inv = 1.6; sfx.bad(); hud(); const lost = !SK.ci && s.lvl > 1; if (lost) s.lvl--; s.msg = { t:lost ? `💥 Ouch! Power down to x${s.lvl} — dodge the ${SK.mon}!` : `💥 Ouch! Dodge the ${SK.mon}!`, life:2, c:"#ffb4a8" }; if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; }); }
+  G.hearts--; s.inv = 1.6; sfx.bad(); hud(); const lost = s.lvl > 1; if (lost) s.lvl = 1; s.msg = { t:lost ? `💥 You got hit! Power back to 1 — collect gifts again! Dodge the ${SK.mon}!` : `💥 Ouch! Dodge the ${SK.mon}!`, life:2, c:"#ffb4a8" }; if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; }); }
  function update(dt){
   s.t += dt; geo(); const m = M(), sw = SW(), sy = SY();
   if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; } ["inv", "shield", "mag", "flash"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt); });
   s.sx += (s.tx - s.sx) * Math.min(1, dt * 10);
   if (s.autoK >= 0 && s.state === "q" && s.wait <= 0){ const d = s.qd[s.autoK]; if (d && Math.abs(s.sx - d.x) < .01 && d.y > .1){ s.autoK = -1; shoot(true); } }
   if (s.state === "q" && s.wait > 0) s.wait -= dt;
-  if (SK.ci && s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; }
+  if (SK.ci && s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate * (1 - Math.max(0, s.lvl - 5) * .08); }
    if (s.pat === 2){ s.swT -= dt; if (s.swT <= 0){ s.swT = rnd(1.1, 2) / (s.sp || 1); const c = s.ens.filter(e => !e.dead && !e.flee && !e.dive && e.ent >= 1); if (c.length){ const e = pick(c); e.dive = 1; e.dv = 0; e.x0 = e.x; e.dx = s.sx; tone([900, 400], .1, "sawtooth", .04); } } }
    if (s.metN > 0 && Math.random() < dt * 1.3){ s.metN--; s.ens.push({ met:1, im:"en9_rock", x:rnd(.08, .92), y:-.08, vx:rnd(-.05, .05), vy:rnd(.22, .32) * (s.sp || 1), hp:2, ph:Math.random() * 6, dead:false }); }
    if (!s.ens.some(e => !e.dead && !e.flee) && !(s.metN > 0)){ if (s.waveDone == null){ s.waveDone = 1.2; if (s.wave){ const bs = s.pat === 4; coins(bs ? 15 : 5, X(.5), A.y0 + A.h * .3); banner(bs ? "👑 BOSS DEFEATED!" : `🎉 LEVEL ${s.wave} CLEAR!`); FX.starRain(bs ? 30 : 12); if (bs) sfx.win(); } } s.waveDone -= dt; if (s.waveDone <= 0){ s.waveDone = null; if (Q.i < Q.items.length) ask(); } }
    else { s.freeT -= dt; if (s.freeT <= 0){ s.ens.forEach(e => e.flee = 1); s.msg = { t:"🐔 The chickens flew away!", life:1.6, c:"#ffe9b0" }; } } }
-  else if (s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; } s.spawn -= dt; if (s.spawn <= 0){ newEnemy(); s.spawn = rnd(.55, .95) - hard * .12; } s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length) ask(); }
+  else if (s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate * (1 - Math.max(0, s.lvl - 5) * .08); } s.spawn -= dt; if (s.spawn <= 0){ newEnemy(); s.spawn = rnd(.55, .95) - hard * .12; } s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length) ask(); }
   for (const b of s.bul){
    if (b.w === "bolt"){ let best = null, bd = 9; for (const e of s.ens){ if (e.dead || e.flee || e.y > b.y) continue; const d = Math.abs(e.x - b.x) + (b.y - e.y) * .5; if (d < bd){ bd = d; best = e; } } if (best) b.vx += clamp((best.x - b.x) * 9 - b.vx, -2, 2) * dt * 4; }
    b.y -= (b.sp || 1.5) * dt; if (b.vx) b.x += b.vx * dt; }
@@ -4977,7 +4978,7 @@ function makeBlast(SK){
    for (const b of s.bul){ if (b.hit || b.aim || b.hl.includes(e)) continue; const W0 = WP[b.w], rr = m * (W0.aoe ? .075 : .055) * (e.R || 1);
     if (Math.abs(b.x - e.x) * A.w < rr && Math.abs(b.y - e.y) * A.h < rr){
      if (W0.pierce) b.hl.push(e); else b.hit = 1;
-     hitE(e, W0.dmg || 1, W0.c); if (W0.frz) e.frz = 3;
+     hitE(e, (W0.dmg || 1) + (b.dm || 0), W0.c); if (W0.frz) e.frz = 3;
      if (W0.aoe){ s.parts.push({ ring:1, x:X(e.x), y:Y(e.y), vx:0, vy:0, life:.4, c:W0.c }); for (const o of s.ens) if (o !== e && !o.dead && !o.flee && Math.hypot((o.x - e.x) * A.w, (o.y - e.y) * A.h) < m * .17) hitE(o, 1, W0.c); }
      if (!W0.pierce) break; } }
    if (!e.dead && Math.abs(X(e.x) - X(s.sx)) < sw * .4 && Math.abs(Y(e.y) - sy) < sw * .45){ e.dead = true; burst(X(e.x), Y(e.y), 14, ["#ff9800", "#fff"]); hurt(); }
@@ -4995,7 +4996,7 @@ function makeBlast(SK){
   s.bul = s.bul.filter(b => !b.hit && b.y > -.1 && b.x > -.1 && b.x < 1.1);
   s.ens = s.ens.filter(e => !e.dead);
   s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; }); s.parts = s.parts.filter(p => p.life > 0);
-  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = SK.ci ? `<span>${WP[s.wp].ic} ${"▰".repeat(s.lvl)}${"▱".repeat(5 - s.lvl)}${s.lvl >= 5 ? " MAX" : ""}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>🐔 L${s.wave}</span><span>🍗 ${s.food || 0}</span><span>💎 ${G.gems}/3</span>` : `<span>${WP[s.wp].ic} x${s.lvl}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>👾 ${G.kills}</span><span>💎 ${G.gems}/3</span>`; }
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = SK.ci ? `<span>${WP[s.wp].ic} P${s.lvl} ${"▰".repeat(s.lvl)}${"▱".repeat(PMAX - s.lvl)}${s.lvl >= PMAX ? " MAX" : ""}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>🐔 L${s.wave}</span><span>🍗 ${s.food || 0}</span><span>💎 ${G.gems}/3</span>` : `<span>${WP[s.wp].ic} P${s.lvl} ${"▰".repeat(s.lvl)}${"▱".repeat(PMAX - s.lvl)}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>👾 ${G.kills}</span><span>💎 ${G.gems}/3</span>`; }
  }
  function draw(){
   geo(); const W = view.w, H = view.h, bg = P3(SK.bg), m = M(), sw = SW(), sy = SY();
@@ -5039,7 +5040,7 @@ function makeBlast(SK){
   cx.font = `${z * .55}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(ic, 0, -z * 1.05); cx.restore(); }
  function drawBul(b, m){ const x = X(b.x), y = Y(b.y); cx.save();
   if (b.aim){ cx.shadowColor = "#fff"; cx.shadowBlur = 14; cx.fillStyle = "#fff59d"; cx.fillRect(x - 4, y - m * .035, 8, m * .07); cx.restore(); return; }
-  const W0 = WP[b.w]; cx.shadowColor = W0.c; cx.shadowBlur = 14; cx.fillStyle = W0.c;
+  const W0 = WP[b.w]; if (b.ex){ cx.translate(x, y); cx.scale(1 + b.ex * .14, 1 + b.ex * .1); cx.translate(-x, -y); } cx.shadowColor = W0.c; cx.shadowBlur = 14 + (b.ex || 0) * 4; cx.fillStyle = W0.c;
   if (b.w === "fire"){ cx.beginPath(); cx.ellipse(x, y, m * .011, m * .045, Math.atan2(b.vx || 0, -1.6) * -1, 0, 7); cx.fill(); cx.fillStyle = "#ffeb3b"; cx.beginPath(); cx.ellipse(x, y + m * .01, m * .005, m * .025, 0, 0, 7); cx.fill(); }
   else if (b.w === "plasma"){ cx.beginPath(); cx.arc(x, y, m * .024, 0, 7); cx.fill(); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(x - m * .007, y - m * .007, m * .008, 0, 7); cx.fill(); }
   else if (b.w === "bolt"){ cx.strokeStyle = W0.c; cx.lineWidth = 4; const q = m * .012; cx.beginPath(); cx.moveTo(x, y - q * 3); cx.lineTo(x + q, y - q); cx.lineTo(x - q, y + q); cx.lineTo(x, y + q * 3); cx.stroke(); }
