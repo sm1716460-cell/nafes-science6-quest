@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795628014";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795628861";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9628,8 +9628,17 @@ window.__lab = { openLab, labHome, LAB };
 const P = n => "img/p3/" + n + ".webp";
 
 /* ---------- heroes ---------- */
-const HERO_NAMES = ["Ava", "Zoe", "Ruby", "Mia", "Lily", "Sky"];
+const HERO_NAMES = ["Ava", "Zoe", "Ruby", "Mia", "Lily", "Sky", "Adam", "Omar", "Zaid", "Saif"];
+for (let n = AVATARS.length + 1; n <= 10; n++) AVATARS.push({ n });
 AVATARS.forEach((a, i) => { a.name = HERO_NAMES[i] + " the Scientist"; });
+const GIRLS = [1, 2, 3, 4], BOYS = [7, 8, 9, 10];
+pickAvatar = function(first){
+ const p = prof(), girls = GIRLS.concat([5, 6].filter(n => p.avatar === n));
+ const card = n => `<button class="avpick ${p.avatar === n ? "on" : ""}" data-av="${n}"><img src="${P("h" + n + "_wave")}" alt=""><b>${AVATARS[n - 1].name}</b></button>`;
+ modal(`<div class="whead"><img src="img/m_wave.webp" alt=""><div><h2 class="h">${first ? "Choose your scientist!" : "Change your scientist"}</h2><p>Your hero for the whole adventure</p></div></div>
+  <h3 class="avsec">👧 Girls</h3><div class="avgrid av4">${girls.map(card).join("")}</div>
+  <h3 class="avsec">👦 Boys</h3><div class="avgrid av4">${BOYS.map(card).join("")}</div>`);
+};
 avatarHTML = function(width, extra = ""){
  const a = prof().avatar || 1;
  return `<span class="avw" style="width:${width}" ${extra}><img class="base" src="${P("h" + a + "_wave")}" alt="${esc(AVATARS[a-1].name)}"></span>`;
@@ -9689,6 +9698,10 @@ label.f{color:#6b4a22}
 .lnav button{background:rgba(47,59,82,.9);border:2px solid var(--brass)}.lnav button.on{background:#ffe9b0;color:#4a2c14}
 .lbub{background:#fff8e6;border:3px solid #9a6428}
 .lhome .wk{background:#fff8e6;border:4px solid #9a6428;box-shadow:0 0 0 3px #f0cb7a,0 10px 24px rgba(0,0,0,.4)}
+.avsec{margin:10px 4px 6px;color:var(--p);font-size:clamp(16px,2.2vw,20px)}
+.avgrid.av4{grid-template-columns:repeat(4,1fr)!important;gap:8px}
+.avgrid.av4 .avpick b{font-size:clamp(10px,1.4vw,14px)}
+@media (max-width:600px){.avgrid.av4{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px}.avgrid.av4 .avpick{padding:5px;border-radius:14px}.avgrid.av4 .avpick img{max-height:96px}.avgrid.av4 .avpick b{font-size:10px}}
 /* login heroes */
 #login .owl{display:none}
 .heroes{position:relative;width:clamp(220px,30vw,460px);height:clamp(220px,30vw,460px);flex:none}
