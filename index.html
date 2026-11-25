@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795621383";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795621750";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2058,12 +2058,13 @@ Object.assign(GAMES, {
  coast3d: { name:"Coaster Rush 3D", icon:"🎢" },
  surf3d: { name:"Surf Rush 3D", icon:"🏄" },
  fblast:  { name:"Robot Blaster", icon:"🤖" },
+ chicken: { name:"Chicken Blaster", icon:"🐔" },
  dive:    { name:"Core Dive", icon:"🌀" },
  defend:  { name:"Erosion Defense", icon:"🏰" },
  climb:   { name:"Volcano Climb", icon:"🌋" },
  stack:   { name:"Quake Stack", icon:"🏗️" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, dive:1, defend:1, climb:1, stack:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, chicken:1, dive:1, defend:1, climb:1, stack:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -2075,7 +2076,7 @@ gameFor = function(w, mi){
   if (w.n === 11) return ["jump", "climb", "stack", "jump", "climb", "stack"][mi % 6];
   if (w.n === 10) return ["jump", "dive", "defend", "jump", "dive", "defend"][mi % 6];
  if (w.n === 9) return ["jump", "blast", "fish", "jump", "blast", "fish"][mi % 6];
- if (w.n === 8) return ["jump", "spark", "conductor", "jump", "spark", "conductor"][mi % 6];
+ if (w.n === 8) return ["jump", "chicken", "conductor", "jump", "chicken", "conductor"][mi % 6];
  if (w.n === 7) return ["jump", "surf3d", "light", "jump", "surf3d", "light"][mi % 6];
  if (w.n === 6) return ["jump", "coast3d", "machine", "jump", "coast3d", "machine"][mi % 6];
  if (w.n === 5) return ["jump", "kart3d", "magnet", "jump", "kart3d", "magnet"][mi % 6];
@@ -4376,7 +4377,7 @@ function makePH(){
    WEEK 5 RACEWAY GAMES — Kart Rush (speed) · Magnet Grab (magnet)
    ===================================================================== */
 const g6css = document.createElement("style");
-g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light", "spark", "conductor", "sling", "fish", "blast", "kart3d", "coast3d", "surf3d", "fblast", "dive", "defend", "climb", "stack"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
+g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light", "spark", "conductor", "sling", "fish", "blast", "kart3d", "coast3d", "surf3d", "fblast", "chicken", "dive", "defend", "climb", "stack"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
  `@media (orientation:landscape){#arc[data-kind=${k}] .spanel{left:8px;transform:none;width:36vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}#arc[data-kind=${k}] .spanel .aopts{grid-template-columns:1fr}}@media (orientation:portrait){#arc[data-kind=${k}] .spanel{max-height:40%;overflow:auto}}`).join("");
 document.head.appendChild(g6css);
 function rr6(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
@@ -4878,10 +4879,10 @@ function makeFish(){
 function makeBlast(SK){
  SK = Object.assign({ bg:"w9_bg", ship:"k9_rocket", shipRot:-Math.PI / 2, shipK:1.15, flame:true, ens:["en9_rock", "en9_blob", "en9_ufo"], dz:true, tough:"en9_rock", target:"k9_asteroid", coin:"w9_coin", gem:"w9_gem", win:"🏆 ASTEROID ACE!", tname:"asteroid", mon:"space monsters" }, SK || {});
  const ENS = SK.ens;
- [SK.bg, SK.ship, SK.target, SK.coin, SK.gem, "ui_star", ...ENS, ...(SK.dz ? ENS.map(e => e + "_x") : [])].forEach(P3);
+ [SK.bg, SK.ship, SK.target, SK.coin, SK.gem, "ui_star", ...ENS, ...(SK.dz ? ENS.map(e => e + "_x") : [])].filter(Boolean).forEach(P3);
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.kills = 0;
- const s = { t:0, sx:.5, tx:.5, bul:[], ens:[], drops:[], qd:[], parts:[], state:"free", freeT:8, spawn:.5, fire:0, inv:0, started:false, msg:null, autoK:-1, wp:"ion", lvl:1, shield:0, mag:0, flash:0 };
+ const s = { t:0, sx:.5, tx:.5, bul:[], ens:[], drops:[], qd:[], parts:[], state:"free", freeT:SK.ci ? 25 : 8, spawn:.5, eggs:[], wave:0, waveDone:null, wait:0, fire:0, inv:0, started:false, msg:null, autoK:-1, wp:"ion", lvl:1, shield:0, mag:0, flash:0 };
  const WP = {
   ion:{ n:"Ion Laser", ic:"🔵", c:"#29b6f6", g:"#e1f5fe", rate:.24, sp:1.5, desc:"Classic blue laser" },
   fire:{ n:"Fire Laser", ic:"🔥", c:"#ff3d00", g:"#ffe0b2", rate:.3, sp:1.65, pierce:1, desc:"Burns THROUGH every monster!" },
@@ -4896,11 +4897,16 @@ function makeBlast(SK){
  const X = x => A.x0 + x * A.w, Y = y => A.y0 + y * A.h;
  function burst(x, y, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x, y, vx:rnd(-160, 160), vy:rnd(-160, 160), life:rnd(.35, .7), c:pick(cols), r:rnd(2.5, 5.5) }); }
  function hitE(e, dmg, col){ e.hp -= dmg; burst(X(e.x), Y(e.y), 6, [col, "#fff"]);
-  if (e.hp <= 0 && !e.dead){ e.dead = true; G.kills++; s.parts.push({ dz:e.im + (SK.dz ? "_x" : ""), x:X(e.x), y:Y(e.y), vx:0, vy:-40, life:.8, r:0 }); tone([600, 900], .05, "square", .05);
+  if (e.hp <= 0 && !e.dead){ e.dead = true; G.kills++; if (e.ci){ burst(X(e.x), Y(e.y), 14, ["#ffffff", "#fff8e1", "#ffe082", "#ef9a9a"]); tone([900, 500], .05, "square", .05); } else { s.parts.push({ dz:e.im + (SK.dz ? "_x" : ""), x:X(e.x), y:Y(e.y), vx:0, vy:-40, life:.8, r:0 }); tone([600, 900], .05, "square", .05); }
    if (G.kills === 3 || (Math.random() < .14 && s.drops.filter(d => d.gift).length < 2)) gift(e.x, e.y);
    else if (Math.random() < .55) s.drops.push({ x:e.x, y:e.y, k:G.kills % 8 === 0 ? "gem" : "coin" }); } }
+ function wave(){ s.wave++; const nr = A.w < 560, cols = nr ? 5 : 8, rows = Math.min(4, 2 + ((s.wave + 1) >> 1)), pat = s.wave % 3;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){ const kind = r === 0 && s.wave > 1 ? 2 : (r + c + s.wave) % 3 === 0 ? 1 : 0, gx = .12 + .76 * (cols > 1 ? c / (cols - 1) : .5), gy = .09 + r * .085;
+   s.ens.push({ ci:1, kind, gx, gy, x:pat === 1 ? -.25 : pat === 2 ? 1.25 : gx, y:pat === 0 ? -.25 - r * .08 : gy - .05, hp:kind === 2 ? 2 : 1, ph:Math.random() * 6, dl:(r * cols + c) * .045, ent:0, dead:false }); }
+  s.freeT = 25; banner(`🐔 WAVE ${s.wave}!`); tone([500, 700, 600], .07, "square", .04); }
  function newEnemy(){ const im = pick(ENS); s.ens.push({ im, x:rnd(.08, .92), y:-.08, vx:rnd(-.08, .08), vy:rnd(.1, .16) + hard * .04 + Math.min(.05, Q.i * .004), hp:im === SK.tough ? 2 : 1, ph:Math.random() * 6, dead:false }); }
  function shoot(aim){ const y = (SY() - SW() * .55 - A.y0) / A.h, W0 = WP[s.wp];
+  if (aim && s.wait > 0){ s.msg = { t:"🤔 Read the question first — then fire!", life:1.4, c:"#ffe9b0" }; return; }
   if (aim){ s.bul.push({ x:s.sx, y, vx:0, aim:1, sp:1.6 }); tone([1400, 900], .03, "square", .03); return; }
   const n = s.wp === "plasma" ? Math.min(s.lvl, 3) : s.lvl;
   for (let i = 0; i < n; i++){ const o = i - (n - 1) / 2; s.bul.push({ x:s.sx + o * .022, y:y + Math.abs(o) * .015, vx:o * .1, w:s.wp, sp:W0.sp, hl:[] }); }
@@ -4913,7 +4919,7 @@ function makeBlast(SK){
   else if (d.k === "wp"){ s.wp = d.w; const W0 = WP[d.w]; s.msg = { t:`${W0.ic} ${W0.n.toUpperCase()}! ${W0.desc}`, life:2.6, c:W0.g }; banner(`${W0.ic} ${W0.n}!`); }
   else if (d.k === "shield"){ s.shield = 10; s.msg = { t:"🛡️ SHIELD! It blocks the next hit (10 s)", life:2.2, c:"#b2ebf2" }; }
   else { s.mag = 9; s.msg = { t:"🧲 COIN MAGNET! Coins fly to you!", life:2.2, c:"#ffe0b2" }; } }
- function ask(){ s.state = "pre"; P.ask(); s.ens.forEach(e => { if (!e.dead){ e.flee = 1; } }); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:.14 + .72 * (n > 1 ? k / (n - 1) : .5), y:-.12 - (k % 2) * .06, ty:.34 + (k % 2) * .1, dead:false, ph:k }); s.state = "q"; s.bul = []; s.drops = s.drops.filter(d => !d.gift); }, 60); }
+ function ask(){ s.state = "pre"; P.ask(); s.ens.forEach(e => { if (!e.dead){ e.flee = 1; } }); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:.14 + .72 * (n > 1 ? k / (n - 1) : .5), y:-.12 - (k % 2) * .06, ty:.34 + (k % 2) * .1, dead:false, ph:k }); s.state = "q"; s.bul = []; s.eggs = []; s.wait = SK.ci ? readT() : 0; s.drops = s.drops.filter(d => !d.gift); }, 60); }
  function choose(k){
   if (s.state !== "q" || Q.answered) return; const d = s.qd[k]; if (!d || d.dead) return;
   const r = grade(k); P.mark(k, r); s.autoK = -1; burst(X(d.x), Y(d.y), r.ok ? 30 : 14, r.ok ? ["#ffd23f", "#fff", "#7c4dff", "#4fc3f7"] : ["#ff5252", "#fff"]);
@@ -4924,7 +4930,7 @@ function makeBlast(SK){
  function next(){
   Q.i++; hud(); s.qd = [];
   if (Q.i >= Q.items.length){ s.state = "end"; FX.starRain(34); sfx.win(); banner(SK.win); later(arcDone, 2200); return; }
-  s.state = "free"; s.freeT = 8 + hard; geo();
+  s.state = "free"; s.freeT = 8 + hard; geo(); if (SK.ci) wave();
  }
  function hurt(){ if (s.inv > 0) return; if (s.shield > 0){ s.shield = 0; s.inv = 1.2; tone([500, 900], .08, "sine", .08); s.msg = { t:"🛡️ Your shield saved you!", life:1.8, c:"#b2ebf2" }; return; }
   G.hearts--; s.inv = 1.6; sfx.bad(); hud(); const lost = s.lvl > 1; if (lost) s.lvl--; s.msg = { t:lost ? `💥 Ouch! Power down to x${s.lvl} — dodge the ${SK.mon}!` : `💥 Ouch! Dodge the ${SK.mon}!`, life:2, c:"#ffb4a8" }; if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; }); }
@@ -4932,8 +4938,12 @@ function makeBlast(SK){
   s.t += dt; geo(); const m = M(), sw = SW(), sy = SY();
   if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; } ["inv", "shield", "mag", "flash"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt); });
   s.sx += (s.tx - s.sx) * Math.min(1, dt * 10);
-  if (s.autoK >= 0 && s.state === "q"){ const d = s.qd[s.autoK]; if (d && Math.abs(s.sx - d.x) < .01 && d.y > .1){ s.autoK = -1; shoot(true); } }
-  if (s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; } s.spawn -= dt; if (s.spawn <= 0){ newEnemy(); s.spawn = rnd(.55, .95) - hard * .12; } s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length) ask(); }
+  if (s.autoK >= 0 && s.state === "q" && s.wait <= 0){ const d = s.qd[s.autoK]; if (d && Math.abs(s.sx - d.x) < .01 && d.y > .1){ s.autoK = -1; shoot(true); } }
+  if (s.state === "q" && s.wait > 0) s.wait -= dt;
+  if (SK.ci && s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; }
+   if (!s.ens.some(e => !e.dead && !e.flee)){ if (s.waveDone == null){ s.waveDone = 1.2; if (s.wave){ coins(5, X(.5), A.y0 + A.h * .3); banner("🎉 WAVE CLEARED!"); FX.starRain(12); } } s.waveDone -= dt; if (s.waveDone <= 0){ s.waveDone = null; if (Q.i < Q.items.length) ask(); } }
+   else { s.freeT -= dt; if (s.freeT <= 0){ s.ens.forEach(e => e.flee = 1); s.msg = { t:"🐔 The chickens flew away!", life:1.6, c:"#ffe9b0" }; } } }
+  else if (s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; } s.spawn -= dt; if (s.spawn <= 0){ newEnemy(); s.spawn = rnd(.55, .95) - hard * .12; } s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length) ask(); }
   for (const b of s.bul){
    if (b.w === "bolt"){ let best = null, bd = 9; for (const e of s.ens){ if (e.dead || e.flee || e.y > b.y) continue; const d = Math.abs(e.x - b.x) + (b.y - e.y) * .5; if (d < bd){ bd = d; best = e; } } if (best) b.vx += clamp((best.x - b.x) * 9 - b.vx, -2, 2) * dt * 4; }
    b.y -= (b.sp || 1.5) * dt; if (b.vx) b.x += b.vx * dt; }
@@ -4941,7 +4951,10 @@ function makeBlast(SK){
   for (const e of s.ens){ if (e.dead) continue;
    if (e.flee){ e.y -= .6 * dt; if (e.y < -.2) e.dead = true; continue; }
    if (e.frz > 0) e.frz -= dt; const sl = e.frz > 0 ? .35 : 1;
-   e.x += (e.vx + Math.sin(s.t * 2 + e.ph) * .05) * dt * sl; e.y += e.vy * dt * sl; if (e.x < .05 || e.x > .95) e.vx *= -1;
+   if (e.ci){ if (e.dl > 0) e.dl -= dt; else { e.ent = Math.min(1, e.ent + dt * .9); const tx = e.gx + Math.sin(s.t * .7) * .07, ty = e.gy + Math.sin(s.t * 2 + e.ph) * .012, k = Math.min(1, dt * (e.ent < 1 ? 2.4 : 8)) * sl; e.x += (tx - e.x) * k; e.y += (ty - e.y) * k;
+     if (e.ent > .7 && s.started && s.state === "free" && Math.random() < dt * (.045 + hard * .03 + s.wave * .005) * sl) s.eggs.push({ x:e.x, y:e.y + .04, vy:.3 + hard * .06 + (e.kind === 1 ? .08 : 0) }); } }
+   else {
+   e.x += (e.vx + Math.sin(s.t * 2 + e.ph) * .05) * dt * sl; e.y += e.vy * dt * sl; if (e.x < .05 || e.x > .95) e.vx *= -1; }
    for (const b of s.bul){ if (b.hit || b.aim || b.hl.includes(e)) continue; const W0 = WP[b.w], rr = m * (W0.aoe ? .075 : .055);
     if (Math.abs(b.x - e.x) * A.w < rr && Math.abs(b.y - e.y) * A.h < rr){
      if (W0.pierce) b.hl.push(e); else b.hit = 1;
@@ -4950,6 +4963,8 @@ function makeBlast(SK){
      if (!W0.pierce) break; } }
    if (!e.dead && Math.abs(X(e.x) - X(s.sx)) < sw * .4 && Math.abs(Y(e.y) - sy) < sw * .45){ e.dead = true; burst(X(e.x), Y(e.y), 14, ["#ff9800", "#fff"]); hurt(); }
    if (e.y > 1.1) e.dead = true; }
+  for (const g of s.eggs){ g.y += g.vy * dt; if (Math.abs(X(g.x) - X(s.sx)) < sw * .33 && Math.abs(Y(g.y) - sy) < sw * .4){ g.dead = 1; burst(X(g.x), Y(g.y), 12, ["#fff", "#ffeb3b"]); hurt(); } else if (g.y > .99){ g.dead = 1; s.parts.push({ splat:1, x:X(g.x), y:A.y1 - 6, vx:0, vy:0, life:1.2 }); } }
+  s.eggs = s.eggs.filter(g => !g.dead);
   for (const d of s.drops){ d.y += (d.gift ? .2 : .28) * dt; if (d.gift) d.x += Math.sin(s.t * 3 + d.ph) * .03 * dt; if (s.mag > 0 && !d.gift){ d.x += (s.sx - d.x) * Math.min(1, dt * 4); d.y += (((SY() - A.y0) / A.h) - d.y) * Math.min(1, dt * 3); } if (Math.abs(X(d.x) - X(s.sx)) < sw * .5 && Math.abs(Y(d.y) - sy) < sw * .5){ d.got = 1;
     if (d.gift) takeGift(d);
     else if (d.k === "coin"){ const c1 = coin1(); G.coins += c1; G.extra += c1; hud(); tone([1300, 1700], .03, "square", .04); }
@@ -4968,12 +4983,14 @@ function makeBlast(SK){
   cx.fillStyle = "#1a1446"; cx.fillRect(0, 0, W, H); if (ready(bg)) cover(bg, 0, 0, W, H, 0);
   cx.fillStyle = "rgba(10,6,40,.45)"; cx.fillRect(0, 0, W, H);
   cx.fillStyle = "rgba(255,255,255,.7)"; for (let i = 0; i < 40; i++){ const x = (i * 97.3) % W, y = ((i * 53.1 + s.t * (40 + i % 4 * 30)) % H); cx.fillRect(x, y, 2, 2 + i % 3 * 3); }
-  for (const e of s.ens){ drawImg(e.im, X(e.x), Y(e.y), m * .12, { rot:e.frz > 0 ? 0 : Math.sin(s.t * 3 + e.ph) * .12, a:e.flee ? .6 : 1 });
+  for (const e of s.ens){ if (e.ci) drawChick(X(e.x), Y(e.y), m * .11 * (e.kind === 2 ? 1.12 : 1), e.kind, e.frz > 0 ? 0 : s.t + e.ph, e.flee ? .6 : 1); else drawImg(e.im, X(e.x), Y(e.y), m * .12, { rot:e.frz > 0 ? 0 : Math.sin(s.t * 3 + e.ph) * .12, a:e.flee ? .6 : 1 });
    if (e.frz > 0){ cx.save(); cx.globalAlpha = .45; cx.fillStyle = "#b2ebf2"; cx.beginPath(); cx.arc(X(e.x), Y(e.y), m * .07, 0, 7); cx.fill(); cx.globalAlpha = 1; cx.font = `${m * .04}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("❄️", X(e.x) + m * .05, Y(e.y) - m * .05); cx.restore(); } }
   for (const p of s.parts) if (p.dz){ drawImg(p.dz, p.x, p.y, m * .11, { a:Math.max(0, p.life), rot:(1 - p.life) * 3 }); }
-  for (const d of s.drops){ if (d.gift){ drawGift(d, m); continue; } drawImg(d.k === "gem" ? SK.gem : SK.coin, X(d.x), Y(d.y), m * (d.k === "gem" ? .08 : .05), { sx:d.k === "coin" ? .35 + .65 * Math.abs(Math.cos(s.t * 4 + d.x * 9)) : 1 }); }
+  for (const p of s.parts) if (p.splat){ cx.globalAlpha = Math.min(1, p.life); cx.fillStyle = "#fff"; cx.beginPath(); cx.ellipse(p.x, p.y, m * .035, m * .012, 0, 0, 7); cx.fill(); cx.fillStyle = "#ffc107"; cx.beginPath(); cx.arc(p.x, p.y - 2, m * .011, 0, 7); cx.fill(); cx.globalAlpha = 1; }
+  for (const g of s.eggs){ const x = X(g.x), y = Y(g.y); cx.fillStyle = "#fffdf5"; cx.strokeStyle = "#8d6e63"; cx.lineWidth = 1.5; cx.beginPath(); cx.ellipse(x, y, m * .016, m * .022, 0, 0, 7); cx.fill(); cx.stroke(); }
+  for (const d of s.drops){ if (d.gift){ drawGift(d, m); continue; } if (SK.ci && d.k === "coin"){ cx.save(); cx.font = `${m * .055}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.translate(X(d.x), Y(d.y)); cx.rotate(s.t * 3 + d.x * 9); cx.fillText("🍗", 0, 0); cx.restore(); continue; } drawImg(d.k === "gem" ? SK.gem : SK.coin, X(d.x), Y(d.y), m * (d.k === "gem" ? .08 : .05), { sx:d.k === "coin" ? .35 + .65 * Math.abs(Math.cos(s.t * 4 + d.x * 9)) : 1 }); }
   for (const d of s.qd){ if (d.boom || (d.dead && s.state === "cheer")) continue; const x = X(d.x), y = Y(d.y) + Math.sin(s.t * 2 + d.ph) * 4, a = d.dead ? .3 : 1;
-   drawImg(SK.target, x, y, m * .19, { rot:Math.sin(s.t + d.ph) * .2, a }); letterBadge(x, y, Math.max(15, m * .045), d.k, a);
+   if (SK.ci){ drawChick(x, y - m * .02, m * .16, 3, s.t + d.ph, a); letterBadge(x, y + m * .03, Math.max(15, m * .045), d.k, a); } else { drawImg(SK.target, x, y, m * .19, { rot:Math.sin(s.t + d.ph) * .2, a }); letterBadge(x, y, Math.max(15, m * .045), d.k, a); }
    if (d.dead){ cx.strokeStyle = "#ff5252"; cx.lineWidth = 5; const q = m * .04; cx.beginPath(); cx.moveTo(x - q, y - q); cx.lineTo(x + q, y + q); cx.moveTo(x + q, y - q); cx.lineTo(x - q, y + q); cx.stroke(); } }
   for (const b of s.bul) drawBul(b, m);
   s.parts.forEach(p => { if (!p.ring) return; cx.save(); cx.globalAlpha = Math.max(0, p.life * 2.2); cx.strokeStyle = p.c; cx.lineWidth = 5; cx.beginPath(); cx.arc(p.x, p.y, m * .17 * (1 - p.life * 1.6 + .4), 0, 7); cx.stroke(); cx.restore(); });
@@ -4987,8 +5004,8 @@ function makeBlast(SK){
   cx.restore();
 
   if (s.state === "wrong") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; drawImg("ui_star", X(s.sx) + Math.cos(a) * sw * .4, sy - sw * .5 + Math.sin(a) * 6, m * .035); }
-  s.parts.forEach(p => { if (p.dz || p.ring) return; cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
-  const nr = A.w < 560, goal = s.state === "free" ? (nr ? "👆 Drag to move — blast the monsters!" : `👆 Drag to move — your laser fires by itself. Blast the ${SK.mon}!`) : s.state === "q" ? (nr ? "🎯 Move under the right letter & TAP!" : `🎯 Move under the ${SK.tname} with the right answer & TAP to fire!`) : s.state === "wrong" ? "😵 Tap to keep blasting" : "";
+  s.parts.forEach(p => { if (p.dz || p.ring || p.splat) return; cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+  const nr = A.w < 560, goal = s.state === "free" ? (SK.ci ? (nr ? "👆 Drag to move — blast the chickens! 🥚 Dodge the eggs!" : "👆 Drag to move — your laser fires by itself. Blast the chickens & dodge the eggs! 🥚") : nr ? "👆 Drag to move — blast the monsters!" : `👆 Drag to move — your laser fires by itself. Blast the ${SK.mon}!`) : s.state === "q" && s.wait > 0 ? `🤔 Read the question… ${Math.ceil(s.wait)}` : s.state === "q" ? (nr ? "🎯 Move under the right letter & TAP!" : `🎯 Move under the ${SK.tname} with the right answer & TAP to fire!`) : s.state === "wrong" ? "😵 Tap to keep blasting" : "";
   const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 26, s.msg ? s.msg.c : "#ffe9b0", Math.max(13, Math.min(19, A.w * .028)));
   if (!s.started) pill6("👆 Touch & drag to start!", A.x0 + A.w / 2, A.y0 + A.h * .55, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
  }
@@ -5015,9 +5032,31 @@ function makeBlast(SK){
  const up = () => { if (!drag) return; drag = false; if (s.state === "q") shoot(true); };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
  const rz = () => later(P.measure, 60); addEventListener("resize", rz);
- $("#aCtl").classList.add("hide"); window.__bl = s;
+ $("#aCtl").classList.add("hide"); window.__bl = s; if (SK.ci) wave();
  return { update, draw, key(e){ if (e.key === "ArrowLeft"){ s.started = true; s.tx = clamp(s.tx - .08, .06, .94); } if (e.key === "ArrowRight"){ s.started = true; s.tx = clamp(s.tx + .08, .06, .94); } if (e.key === " " || e.key === "ArrowUp"){ e.preventDefault(); if (s.state === "wrong") cont(); else if (s.state === "q" && !e.repeat) shoot(true); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
 }
+
+/* cartoon chicken (Chicken-Invaders style): 0 white · 1 electric · 2 battery (2 hits) · 3 golden answer hen */
+function drawChick(x, y, z, k, t, a){
+ const C = [["#ffffff", "#e0e0e0"], ["#ffe066", "#ffb300"], ["#ce93d8", "#9c27b0"], ["#ffd54f", "#ff8f00"]][k], f = Math.sin(t * 14) * .55, lw = Math.max(1.5, z * .035);
+ cx.save(); cx.translate(x, y); cx.globalAlpha = a == null ? 1 : a; cx.lineJoin = "round";
+ if (k === 3){ cx.shadowColor = "#ffd23f"; cx.shadowBlur = 22; }
+ cx.strokeStyle = "#4e342e"; cx.lineWidth = lw;
+ for (const sd of [-1, 1]){ cx.save(); cx.translate(sd * z * .3, -z * .02); cx.rotate(sd * (.35 + f)); cx.fillStyle = C[1]; cx.beginPath(); cx.ellipse(sd * z * .2, 0, z * .27, z * .13, 0, 0, 7); cx.fill(); cx.stroke(); cx.restore(); }
+ cx.strokeStyle = "#ff8f00"; cx.lineWidth = z * .05; for (const sd of [-1, 1]){ cx.beginPath(); cx.moveTo(sd * z * .12, z * .36); cx.lineTo(sd * z * .15, z * .5); cx.lineTo(sd * z * .22, z * .53); cx.stroke(); }
+ cx.fillStyle = C[0]; cx.strokeStyle = "#4e342e"; cx.lineWidth = lw; cx.beginPath(); cx.ellipse(0, z * .1, z * .37, z * .33, 0, 0, 7); cx.fill(); cx.stroke(); cx.shadowBlur = 0;
+ cx.beginPath(); cx.arc(0, -z * .28, z * .23, 0, 7); cx.fill(); cx.stroke();
+ cx.fillStyle = "#e53935"; for (const i of [-1, 0, 1]){ cx.beginPath(); cx.arc(i * z * .08, -z * .52 + Math.abs(i) * z * .035, z * .072, 0, 7); cx.fill(); }
+ for (const sd of [-1, 1]){ cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(sd * z * .09, -z * .31, z * .075, 0, 7); cx.fill(); cx.fillStyle = "#1a1a1a"; cx.beginPath(); cx.arc(sd * z * .085, -z * .3, z * .042, 0, 7); cx.fill(); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(sd * z * .075, -z * .315, z * .014, 0, 7); cx.fill(); }
+ if (k === 2){ cx.strokeStyle = "#4e342e"; cx.lineWidth = lw * 1.2; for (const sd of [-1, 1]){ cx.beginPath(); cx.moveTo(sd * z * .17, -z * .43); cx.lineTo(sd * z * .03, -z * .37); cx.stroke(); } }
+ cx.fillStyle = "#ff9800"; cx.beginPath(); cx.moveTo(-z * .075, -z * .23); cx.lineTo(z * .075, -z * .23); cx.lineTo(0, -z * .12); cx.closePath(); cx.fill();
+ cx.fillStyle = "#e53935"; cx.beginPath(); cx.ellipse(z * .02, -z * .1, z * .03, z * .05, 0, 0, 7); cx.fill();
+ cx.fillStyle = "rgba(255,138,128,.55)"; for (const sd of [-1, 1]){ cx.beginPath(); cx.arc(sd * z * .16, -z * .22, z * .04, 0, 7); cx.fill(); }
+ if (k === 1 || k === 2){ cx.font = `${z * .24}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(k === 1 ? "⚡" : "🔋", 0, z * .14); }
+ cx.restore(); }
+
+/* Week 8 Chicken Blaster — waves of chickens in formation, eggs to dodge, gifts upgrade the weapon */
+const makeChicken = () => makeBlast({ ci:1, bg:"w8_bg", ship:"k9_rocket", ens:[], target:null, dz:false, coin:"w8_coin", gem:"w8_gem", win:"🏆 CHICKEN CHAMPION!", tname:"golden hen", mon:"eggs" });
 
 /* Week 3 Matter Factory blaster */
 const makeFactoryBlast = () => makeBlast({ bg:"w3_bg", ship:"d3_robot", shipRot:0, shipK:1.05, flame:false, ens:["en3_slime", "en3_spark", "en3_steam"], dz:false, tough:"en3_slime", target:"w3_box", coin:"w3_coin", gem:"w3_gem", win:"🏆 FACTORY HERO!", tname:"crate", mon:"slime & steam monsters" });
@@ -5722,7 +5761,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "chicken" ? makeChicken() : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
