@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795633913";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795634228";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -4367,7 +4367,7 @@ function makePH(){
  }
  let drag = false;
  const toX = e => clamp((ptr(e).x - A.x0) / A.w, .06, .94);
- const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); if (s.mBtn){ const p = ptr(e); if (Math.hypot(p.x - s.mBtn.x, p.y - s.mBtn.y) < s.mBtn.r * 1.3) return missile(); } s.started = true; drag = true; s.tx = toX(e); };
+ const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); s.started = true; drag = true; s.tx = toX(e); };
  const move = e => { if (drag) s.tx = toX(e); };
  const up = () => { drag = false; };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
@@ -4897,7 +4897,7 @@ function makeBlast(SK){
  let A = playArea({});
  const P = qPanel({ pick:k => { const d = s.qd[k]; if (d && !d.dead && s.state === "q"){ s.started = true; s.autoK = k; s.tx = d.x; } }, hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont(), goLabel:"Keep blasting ➜" });
  const geo = () => { A = playArea(P); };
- const M = () => Math.min(A.w, A.h), SW = () => Math.min(A.w * .17, A.h * .16), SY = () => A.y1 - SW() * .75;
+ const M = () => Math.min(A.w, A.h), SW = () => Math.min(A.w * .17, A.h * .16), SYB = () => A.y1 - SW() * .75, SYT = () => A.y0 + A.h * .5, SY = () => s.yf == null ? SYB() : clamp(A.y0 + s.yf * A.h, SYT(), SYB());
  const X = x => A.x0 + x * A.w, Y = y => A.y0 + y * A.h;
  function burst(x, y, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x, y, vx:rnd(-160, 160), vy:rnd(-160, 160), life:rnd(.35, .7), c:pick(cols), r:rnd(2.5, 5.5) }); }
  function hitE(e, dmg, col){ e.hp -= dmg; burst(X(e.x), Y(e.y), 6, [col, "#fff"]);
@@ -4952,7 +4952,7 @@ function makeBlast(SK){
  function update(dt){
   s.t += dt; geo(); const m = M(), sw = SW(), sy = SY();
   if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; } ["inv", "shield", "mag", "flash"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt); });
-  s.sx += (s.tx - s.sx) * Math.min(1, dt * 10);
+  s.sx += (s.tx - s.sx) * Math.min(1, dt * 10); if (s.ty != null){ if (s.yf == null) s.yf = (SYB() - A.y0) / A.h; s.yf += (s.ty - s.yf) * Math.min(1, dt * 10); s.yf = clamp(s.yf, (SYT() - A.y0) / A.h, (SYB() - A.y0) / A.h); }
   if (s.autoK >= 0 && s.state === "q" && s.wait <= 0){ const d = s.qd[s.autoK]; if (d && Math.abs(s.sx - d.x) < .01 && d.y > .1){ s.autoK = -1; shoot(true); } }
   if (s.state === "q" && s.wait > 0) s.wait -= dt;
   if (SK.ci && s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate * (1 - Math.max(0, s.lvl - 5) * .08); }
@@ -5052,13 +5052,14 @@ function makeBlast(SK){
   cx.restore(); }
  let drag = false;
  const toX = e => clamp((ptr(e).x - A.x0) / A.w, .06, .94);
- const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); s.started = true; drag = true; s.autoK = -1; s.tx = toX(e); };
- const move = e => { if (drag) s.tx = toX(e); };
+ const toY = e => (ptr(e).y - A.y0 - (e.pointerType === "touch" ? SW() * .7 : 0)) / A.h;
+ const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); if (s.mBtn){ const p = ptr(e); if (Math.hypot(p.x - s.mBtn.x, p.y - s.mBtn.y) < s.mBtn.r * 1.3) return missile(); } s.started = true; drag = true; s.autoK = -1; s.tx = toX(e); s.ty = toY(e); };
+ const move = e => { if (drag){ s.tx = toX(e); s.ty = toY(e); } };
  const up = () => { if (!drag) return; drag = false; if (s.state === "q") shoot(true); };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
  const rz = () => later(P.measure, 60); addEventListener("resize", rz);
  $("#aCtl").classList.add("hide"); window.__bl = s; if (SK.ci) wave();
- return { update, draw, key(e){ if (e.key === "ArrowLeft"){ s.started = true; s.tx = clamp(s.tx - .08, .06, .94); } if (e.key === "ArrowRight"){ s.started = true; s.tx = clamp(s.tx + .08, .06, .94); } if (e.key === "m" || e.key === "M") missile(); if (e.key === " " || e.key === "ArrowUp"){ e.preventDefault(); if (s.state === "wrong") cont(); else if (s.state === "q" && !e.repeat) shoot(true); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
+ return { update, draw, key(e){ if (e.key === "ArrowDown" || (e.key === "ArrowUp" && s.state !== "q")){ e.preventDefault(); s.started = true; const cur = s.ty != null ? s.ty : (SYB() - A.y0) / A.h; s.ty = cur + (e.key === "ArrowUp" ? -.07 : .07); return; } if (e.key === "ArrowLeft"){ s.started = true; s.tx = clamp(s.tx - .08, .06, .94); } if (e.key === "ArrowRight"){ s.started = true; s.tx = clamp(s.tx + .08, .06, .94); } if (e.key === "m" || e.key === "M") missile(); if (e.key === " " || e.key === "ArrowUp"){ e.preventDefault(); if (s.state === "wrong") cont(); else if (s.state === "q" && !e.repeat) shoot(true); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
 }
 
 /* cartoon chicken (Chicken-Invaders style): 0 white · 1 electric · 2 battery (2 hits) · 3 golden answer hen */
