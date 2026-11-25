@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795620432";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795620507";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9789,7 +9789,7 @@ const CSS = `#gx{position:fixed;inset:0;z-index:9000;background:#05021a;font-fam
 #gx .x-lbl{font-weight:900;color:#cfe9ff;margin:8px 0 6px;text-align:center}
 #gx .x-wks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 #gx .x-wk{padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18)!important;font-weight:800;font-size:14px}
-#gx .x-wk.x-on{border-color:#ffd84a!important;background:rgba(255,216,74,.2);box-shadow:0 0 14px rgba(255,216,74,.5)}
+#gx .x-wk.x-done{border-color:#ff9800!important;background:rgba(255,152,0,.22)}#gx .x-wk.x-perf{border-color:#3ff07a!important;background:rgba(63,240,122,.2)}#gx .x-wk.x-on{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 16px rgba(255,255,255,.6);transform:scale(1.06)}#gx .x-legend{display:flex;gap:14px;justify-content:center;font-size:13px;opacity:.85;margin-top:6px}#gx .x-dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid;vertical-align:-1px}#gx .x-dot.x-done{border-color:#ff9800;background:rgba(255,152,0,.4)}#gx .x-dot.x-perf{border-color:#3ff07a;background:rgba(63,240,122,.4)}
 #gx .x-lvs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
 #gx .x-lv{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15)!important;border-radius:18px;padding:10px 8px;text-align:center;transition:all .2s}
 #gx .x-lv.x-on{border-color:var(--c)!important;box-shadow:0 0 22px var(--c),0 0 8px var(--c) inset;background:rgba(255,255,255,.1)}
@@ -10021,11 +10021,13 @@ function makeFinish(z, n){ const T = THREE, g = new T.Group(); g.position.z = z;
 
 /* ---------- screens ---------- */
 function best(){ try { const p = prof(); return p.race || {}; } catch(e){ return {}; } }
+function wkState(B, n){ let done = false, perf = false; for (const l of Object.keys(LV)){ const r = B[n + "-" + l]; if (r){ done = true; if (r.acc >= 100) perf = true; } } return perf ? "x-perf" : done ? "x-done" : ""; }
 function menu(){
  S = null; show("#gxMenu"); $g("#gxHud").classList.add("x-hid");
  const W = weeks(); if (sel.w == null) sel.w = W.length ? W[0].n : "all"; const B = best();
  $g("#gxMenu").innerHTML = `<div class="x-pnl"><div class="x-ttl">🚀 Galaxy Race</div><div class="x-sub">Fly your ship through the galaxy and crash into the RIGHT answer to blast forward!</div>
-  <div class="x-lbl">📅 Choose a week</div><div class="x-wks">${W.map(w => `<button class="x-wk ${sel.w === w.n ? "x-on" : ""}" data-w="${w.n}">Week ${w.n}</button>`).join("")}<button class="x-wk ${sel.w === "all" ? "x-on" : ""}" data-w="all">🌌 All weeks</button></div>
+  <div class="x-lbl">📅 Choose a week</div><div class="x-wks">${[...W.map(w => w.n), "all"].map(n => { const st = wkState(B, n); return `<button class="x-wk ${sel.w === n ? "x-on" : ""} ${st}" data-w="${n}">${st === "x-perf" ? "⭐ " : st === "x-done" ? "✅ " : ""}${n === "all" ? "🌌 All weeks" : "Week " + n}</button>`; }).join("")}</div>
+  <div class="x-legend"><span><i class="x-dot x-done"></i> finished</span><span><i class="x-dot x-perf"></i> all answers right ⭐</span></div>
   <div class="x-lbl" id="gxWt">${escH(sel.w === "all" ? "Questions from every week" : ((W.find(w => w.n === sel.w) || {}).title || ""))}</div>
   <div class="x-lvs">${Object.entries(LV).map(([k, L]) => { const b = B[sel.w + "-" + k]; return `<button class="x-lv ${sel.l === k ? "x-on" : ""}" data-l="${k}" style="--c:${L.col}"><div class="x-a">${L.ic}</div><div class="x-b">${L.n}</div><div class="x-c">${L.ds}</div><div class="x-d">${b ? `🏅 Best: ${b.score} · ${"⭐".repeat(b.stars)}` : "No record yet"}</div></button>`; }).join("")}</div>
   <div class="x-row"><button class="x-gb" id="gxGo">Launch! 🚀</button><button class="x-gb x-gh" id="gxBack">🏠 Back to map</button></div>
