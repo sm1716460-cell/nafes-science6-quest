@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795608273";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795613211";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9228,9 +9228,9 @@ const k2 = document.createElement("style"); k2.textContent = "@keyframes heroyay
    ===================================================================== */
 (() => {
 const LV = {
- easy:  { n:"Easy",   ic:"🌱", lanes:2, q:8,  speed:30, base:100, rocks:0, gems:4, col:"#5dffb0", ds:"2 answer gates · 8 questions · calm speed" },
- medium:{ n:"Medium", ic:"⚡", lanes:3, q:10, speed:38, base:150, rocks:1, gems:4, col:"#3ff0ff", ds:"3 answer gates · 10 questions · a few asteroids" },
- hard:  { n:"Hard",   ic:"🔥", lanes:4, q:12, speed:46, base:200, rocks:2, gems:5, col:"#ff4fa3", ds:"4 answer gates · 12 questions · fast + asteroids" } };
+ easy:  { n:"Easy",   ic:"🌱", lanes:2, q:8,  speed:26, base:100, rocks:0, gems:4, col:"#5dffb0", ds:"2 answer gates · 8 questions · calm speed" },
+ medium:{ n:"Medium", ic:"⚡", lanes:3, q:10, speed:32, base:150, rocks:1, gems:4, col:"#3ff0ff", ds:"3 answer gates · 10 questions · a few asteroids" },
+ hard:  { n:"Hard",   ic:"🔥", lanes:4, q:12, speed:38, base:200, rocks:2, gems:5, col:"#ff4fa3", ds:"4 answer gates · 12 questions · fast + asteroids" } };
 const LW = 6.4, LETTER = ["A", "B", "C", "D"], LCOL = ["#8b5cff", "#2fb67a", "#f0723c", "#2f86e8"];
 let THREE = null, ADD = null, R = null, S = null, sel = { w:null, l:"easy" }, raf = 0;
 const $g = s => document.querySelector(s);
@@ -9476,12 +9476,12 @@ const laneX = (i, n) => (i - (n - 1) / 2) * LW;
 function clearObjs(){ R.objs.traverse(o => { if (o.material && o.material.map && o.material.map !== R.dot && o.material.map !== R.spark) o.material.map.dispose(); if (o.geometry && o.geometry !== R.gemGeo) o.geometry.dispose(); }); R.scene.remove(R.objs); R.objs = new THREE.Group(); R.scene.add(R.objs); }
 function makeGate(it, z, n){
  const T = THREE, g = new T.Group(); g.position.z = z; g.userData = { panels:[] };
- for (let i = 0; i < n; i++){ const p = new T.Group(); p.position.set(laneX(i, n), 2.7, 0);
-  const pw = LW - .6, plane = new T.Mesh(new T.PlaneGeometry(pw, pw / 2), new T.MeshBasicMaterial({ map:panelTex(it.opts[i], i), transparent:true, toneMapped:false, side:T.DoubleSide })); p.add(plane);
+ for (let i = 0; i < n; i++){ const p = new T.Group(); p.position.set(laneX(i, n), 3.1, 0);
+  const pw = LW - .35, plane = new T.Mesh(new T.PlaneGeometry(pw, pw / 2), new T.MeshBasicMaterial({ map:panelTex(it.opts[i], i), transparent:true, toneMapped:false, side:T.DoubleSide })); p.add(plane);
   const fm = R.glow(.5, 2, 2.6), fw = pw + .2, fh = pw / 2 + .1; [[fw + .16, .12, 0, fh / 2], [fw + .16, .12, 0, -fh / 2], [.12, fh, fw / 2, 0], [.12, fh, -fw / 2, 0]].forEach(([w, h, x, y]) => { const b = new T.Mesh(new T.BoxGeometry(w, h, .08), fm); b.position.set(x, y, 0); p.add(b); });
   p.userData = { plane, fm, ph:Math.random() * 6 }; g.add(p); g.userData.panels.push(p); }
- const bar = new T.Mesh(new T.BoxGeometry(n * LW + 1, .18, .18), R.glow(2.6, .6, 1.8)); bar.position.y = 5.4; g.add(bar);
- for (const s of [-1, 1]){ const post = R.mesh(new T.CylinderGeometry(.22, .3, 5.6, 8), R.toon(0x3a2d80)); post.position.set(s * (n * LW / 2 + .5), 2.8, 0); g.add(post); }
+ const bar = new T.Mesh(new T.BoxGeometry(n * LW + 1, .18, .18), R.glow(2.6, .6, 1.8)); bar.position.y = 5.9; g.add(bar);
+ for (const s of [-1, 1]){ const post = R.mesh(new T.CylinderGeometry(.22, .3, 6.1, 8), R.toon(0x3a2d80)); post.position.set(s * (n * LW / 2 + .5), 3.05, 0); g.add(post); }
  R.objs.add(g); return g; }
 function makeGem(x, z){ const T = THREE, m = R.mesh(R.gemGeo, R.toon(0xffd84a, { emissive:0x7a4a00 })); m.position.set(x, 1.4, z); const h = new T.Sprite(new T.SpriteMaterial({ map:R.spark, color:0xffe27a, transparent:true, blending:T.AdditiveBlending, depthWrite:false })); h.scale.setScalar(2.4); m.add(h); m.userData = {}; R.objs.add(m); return m; }
 function makeRock(x, z){ const T = THREE, g = new T.IcosahedronGeometry(1.7, 1), p = g.attributes.position, mp = {};
@@ -9582,7 +9582,8 @@ function loop(now){
   if (S.cd > 0){ S.cd -= dt; }
   else if (S.run){
    S.t += dt; if (S.boost > 0) S.boost -= dt; if (S.slow > 0) S.slow -= dt; if (S.inv > 0) S.inv -= dt;
-   const tgt = L.speed * (S.boost > 0 ? 1.65 : S.slow > 0 ? .55 : 1) * (1 + Math.min(5, S.streak) * .03);
+   const ng = S.gates[S.qi], gd = ng ? S.z - ng.z : 999, zone = gd < 75 ? Math.max(.38, (gd - 12) / 63) : 1; S.zone = zone < 1;
+   const tgt = L.speed * (S.boost > 0 ? 1.65 : S.slow > 0 ? .55 : 1) * (1 + Math.min(5, S.streak) * .03) * (S.boost > 0 ? 1 : zone);
    S.speed += (tgt - S.speed) * Math.min(1, dt * 2.2); S.z -= S.speed * dt;
    const g = S.gates[S.qi]; if (g && S.z <= g.z) answer(g);
    for (const m of S.gems){ if (m.userData.got) continue; if (Math.abs(m.position.z - S.z) < 1.6 && Math.abs(m.position.x - S.x) < 2.2){ m.userData.got = 1; m.visible = false; S.gemN++; S.gemPts += 25; S.score += 25; A.gem(); R.fx.burst(m.position, 30, 10, [[2.5, 2, .4], [2, 1.6, .3]], .7); } }
@@ -9597,7 +9598,7 @@ function loop(now){
   R.shield.material.opacity = S.inv > 0 ? .35 * (S.inv % .2 > .1 ? 1 : .3) : 0;
   for (let k = 0; k < 2; k++) R.trail.emit(S.x + (k ? .5 : -.5), 1.2, S.z + 2.6, rnd(-.4, .4), rnd(-.2, .2), 12 + S.speed * .2, S.boost > 0 ? 2.4 : .5, S.boost > 0 ? 1 : 1.5, S.boost > 0 ? 1.4 : 2, .5);
   // gates animation
-  for (const g of S.gates){ const d = g.z - S.z; g.visible = d < 40 && d > -380; g.userData.panels.forEach((p, i) => { p.position.y = 2.7 + Math.sin(now * .002 + p.userData.ph) * .12; if (S.gates[S.qi] === g) p.scale.setScalar(i === S.lane ? 1.08 : 1); }); }
+  for (const g of S.gates){ const d = g.z - S.z; g.visible = d < 40 && d > -380; g.userData.panels.forEach((p, i) => { p.position.y = 3.1 + Math.sin(now * .002 + p.userData.ph) * .1; if (S.gates[S.qi] === g) p.scale.setScalar(i === S.lane ? 1.08 : 1); }); }
   S.gems.forEach(m => { m.rotation.y += dt * 2.2; m.position.y = 1.4 + Math.sin(now * .004 + m.position.z) * .25; });
   S.rocks.forEach(m => { m.rotation.x += m.userData.rs.x * dt; m.rotation.y += m.userData.rs.y * dt; });
   // world recycling
@@ -9612,7 +9613,7 @@ function loop(now){
   // camera: fit the whole track width (portrait phones too)
   const trackHalf = S.n * LW / 2 + 1.5, hf = 2 * Math.atan(Math.tan(R.cam.fov * Math.PI / 360) * R.cam.aspect), dist = Math.max(11, trackHalf / Math.tan(hf / 2) * .9);
   const sh = S.shake > 0 ? (S.shake -= dt, S.shake * .6) : 0;
-  R.cam.position.set(S.x * .45 + rnd(-sh, sh), 4.6 + dist * .42, S.z + dist); R.cam.lookAt(S.x * .3, 0, S.z - 11);
+  R.cam.position.set(S.x * .5 + rnd(-sh, sh), 2.6 + dist * .17, S.z + dist * .85); R.cam.lookAt(S.x * .4, 2.2, S.z - 30);
   R.cam.fov += ((S.boost > 0 ? 76 : 66) - R.cam.fov) * Math.min(1, dt * 3); R.cam.updateProjectionMatrix();
  }
  if (!window.__gxNR){ if (R.comp) R.comp.render(); else R.ren.render(R.scene, R.cam); }
