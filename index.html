@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795633561";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795633913";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9862,7 +9862,7 @@ const k2 = document.createElement("style"); k2.textContent = "@keyframes heroyay
  if (!can) return;
  const fsEl = () => D.fullscreenElement || D.webkitFullscreenElement;
  const st = D.createElement("style");
- st.textContent = `#fsFab{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:2147483000;width:34px;height:52px;border:2px solid #6e451a;border-left:0;border-radius:0 14px 14px 0;
+ st.textContent = `#fsFab{position:fixed;left:0;top:66%;transform:translateY(-50%);z-index:2147483000;width:30px;height:46px;border:2px solid #6e451a;border-left:0;border-radius:0 14px 14px 0;
   background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;box-shadow:0 0 0 2px #d9a84e,0 4px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;opacity:.85;touch-action:manipulation}
   #fsFab:hover{opacity:1}#fsFab svg{width:20px;height:20px}#fsFab.off{display:none}`;
  D.head.appendChild(st);
@@ -9902,7 +9902,9 @@ const CSS = `#gx{position:fixed;inset:0;z-index:9000;background:#05021a;font-fam
 #gx canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #gx .x-hid{display:none!important}
 #gx button{font-family:inherit;cursor:pointer;border:none;color:#fff}
-#gx .x-gtop{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
+#gx .x-gtop{position:absolute;top:8px;left:62px;right:8px;display:flex;justify-content:center;gap:6px;z-index:3}
+#gx .x-back{position:absolute;top:8px;left:8px;height:46px;width:46px;z-index:4;font-size:22px;font-weight:900;color:#fff}#gx .x-hrt b{font-size:17px;letter-spacing:-2px}#gx .x-hrt.x-hit{animation:xhrt .5s 2}@keyframes xhrt{50%{transform:scale(1.25);background:rgba(255,60,90,.6)}}
+#gx .x-rq{display:flex;flex-direction:column;gap:8px;margin-top:10px}#gx .x-rq button{font-size:17px;font-weight:800;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:2px solid rgba(140,220,255,.4)!important;color:#fff;text-align:left}#gx .x-rq button.x-ok2{background:#1f9d55}#gx .x-rq button.x-no2{background:#c0392b}
 #gx .x-st{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35);border-radius:14px;padding:2px 12px;min-width:70px;text-align:center;backdrop-filter:blur(6px)}
 #gx .x-st i{display:block;font-style:normal;font-size:11px;opacity:.75;line-height:1.2}#gx .x-st b{display:block;font-size:21px;line-height:1.15;font-variant-numeric:tabular-nums}
 #gx .x-ib{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35)!important;border-radius:14px;width:44px;font-size:19px}
@@ -9950,14 +9952,14 @@ const CSS = `#gx{position:fixed;inset:0;z-index:9000;background:#05021a;font-fam
 #gx table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}#gx th,#gx td{padding:6px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,.12)}#gx th{color:#3ff0ff}
 #gx .x-ok{color:#5dffb0}#gx .x-no{color:#ff6b88}#gx summary{cursor:pointer;font-weight:800;color:#3ff0ff}
 #gx .x-load{font-size:22px;font-weight:900;text-align:center}
-@media (max-width:640px){#gx .x-lvs{grid-template-columns:1fr}#gx .x-rg{grid-template-columns:repeat(2,1fr)}#gx .x-st{min-width:50px;padding:2px 7px}#gx .x-st b{font-size:16px}#gx .x-gtop{gap:3px}#gx .x-ib{width:36px}#gx .x-gq .x-ops{flex-wrap:wrap}#gx .x-op{flex:1 1 45%}#gx .x-gprog{top:58px}}`;
+@media (max-width:640px){#gx .x-lvs{grid-template-columns:1fr}#gx .x-rg{grid-template-columns:repeat(2,1fr)}#gx .x-st{min-width:50px;padding:2px 7px}#gx .x-st b{font-size:16px}#gx .x-gtop{gap:3px;left:52px;right:4px}#gx .x-tm{display:none}#gx .x-back{width:40px;height:40px;left:6px;font-size:19px}#gx .x-hrt b{font-size:13px}#gx .x-ib{width:36px}#gx .x-gq .x-ops{flex-wrap:wrap}#gx .x-op{flex:1 1 45%}#gx .x-gprog{top:58px}}`;
 
 function ui(){
  if ($g("#gx")) return;
  const st = document.createElement("style"); st.textContent = CSS; document.head.appendChild(st);
  const d = document.createElement("div"); d.id = "gx"; d.className = "x-hid";
  d.innerHTML = `<canvas id="gxC"></canvas>
- <div id="gxHud" class="x-hid"><div class="x-gtop"><div class="x-st"><i>Score</i><b id="gxScore">0</b></div><div class="x-st"><i>Time</i><b id="gxTime">0.0</b></div><div class="x-st"><i>Speed</i><b id="gxSpd">0</b></div><div class="x-st"><i>Question</i><b id="gxQn">1/8</b></div><div class="x-st"><i>Streak</i><b id="gxCombo">×0</b></div><button class="x-ib" id="gxMute">🔊</button><button class="x-ib" id="gxPause">⏸</button></div>
+ <div id="gxHud" class="x-hid"><button class="x-ib x-back" id="gxBack" title="Back" aria-label="Back">⬅</button><div class="x-gtop"><div class="x-st x-hrt"><i>Hearts</i><b id="gxHearts">❤️❤️❤️</b></div><div class="x-st"><i>Score</i><b id="gxScore">0</b></div><div class="x-st x-tm"><i>Time</i><b id="gxTime">0.0</b></div><div class="x-st x-tm"><i>Speed</i><b id="gxSpd">0</b></div><div class="x-st"><i>Question</i><b id="gxQn">1/8</b></div><div class="x-st"><i>Streak</i><b id="gxCombo">×0</b></div><button class="x-ib" id="gxMute">🔊</button><button class="x-ib" id="gxPause">⏸</button></div>
   <div class="x-gprog"><div id="gxProg"></div><span id="gxPs">🚀</span><em>🏁</em></div><div class="x-pops" id="gxPops"></div>
   <div class="x-gq" id="gxQ"><h3 id="gxQt"></h3><div class="x-ops" id="gxOps"></div></div>
   <button class="x-tch x-l" id="gxL">◀</button><button class="x-tch x-r" id="gxR">▶</button><div class="x-gauge" id="gxGauge"><i>⏫</i><div><b id="gxGz"></b><u id="gxGf"></u></div><i>⏬</i></div></div>
@@ -9966,6 +9968,7 @@ function ui(){
  document.body.appendChild(d);
  $g("#gxMute").onclick = () => { A.setMuted(!A.muted); $g("#gxMute").textContent = A.muted ? "🔇" : "🔊"; };
  $g("#gxPause").onclick = () => pause(true);
+ $g("#gxBack").onclick = () => quitRace();
  const lane = dir => { if (S && S.run) changeLane(dir); };
  const ped = (id, v) => { const b = $g(id); const on = e => { e.preventDefault(); gThr = v; b.classList.add("x-on"); }, off = () => { if (gThr === v) gThr = 0; b.classList.remove("x-on"); }; b.addEventListener("pointerdown", on); ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, off)); };
  addEventListener("keyup", e => { if (["ArrowUp", "w", "W", "ArrowDown", "s", "S"].includes(e.key)) gThr = 0; });
@@ -10199,7 +10202,7 @@ function start(){
  const finZ = z - 140; makeFinish(finZ, n);
  const par = -finZ / L.speed;
  gThr = 0; S = { cruise:L.speed, L, Q, n, gates, gems, rocks, finZ, par, z:0, x:0, lane:Math.floor((n - 1) / 2), speed:0, boost:0, slow:0, inv:0, t:0, cd:3.2, run:true, paused:false, over:false,
-  score:0, qPts:0, gemPts:0, pen:0, correct:0, streak:0, bestStreak:0, gemN:0, rockN:0, qi:0, review:[], roll:0, shake:0 };
+  score:0, qPts:0, gemPts:0, pen:0, correct:0, streak:0, bestStreak:0, gemN:0, rockN:0, qi:0, review:[], roll:0, shake:0, hearts:3, miss:0, used:new Set(Q.map(it => it.q)) };
  R.ship.position.set(0, 1.2, 0); show(null); ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.add("x-hid"));
  $g("#gxHud").classList.remove("x-hid"); showQ(); hud(); countdown();
  cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(loop);
@@ -10210,11 +10213,11 @@ function showQ(){ const g = S.gates[S.qi]; if (!g){ $g("#gxQ").classList.add("x-
  $g("#gxOps").innerHTML = it.opts.map((o, i) => `<div class="x-op ${i === S.lane ? "x-on" : ""}"><u style="background:${LCOL[i]}">${LETTER[i]}</u><span>${escH(o)}</span></div>`).join("");
  const q = $g("#gxQ"); q.classList.remove("x-swap"); void q.offsetWidth; q.classList.add("x-swap"); }
 function gauge(){ const L = S.L.speed, f = (S.cruise + L * .4) / (L * 2.1), z0 = .4 / 2.1, gf = $g("#gxGf"); if (!gf) return; $g("#gxGz").style.bottom = z0 * 100 + "%"; gf.style.bottom = Math.min(f, z0) * 100 + "%"; gf.style.height = Math.abs(f - z0) * 100 + "%"; gf.style.background = S.cruise >= 0 ? "#7CFC9A" : "#ff8a80"; $g("#gxGauge").classList.toggle("x-on", !!S.drag); }
-function hud(){ gauge(); $g("#gxScore").textContent = Math.round(S.score); $g("#gxTime").textContent = S.t.toFixed(1); $g("#gxSpd").textContent = Math.round(S.speed * 3.6); $g("#gxQn").textContent = `${Math.min(S.qi + 1, S.Q.length)}/${S.Q.length}`; $g("#gxCombo").textContent = "×" + S.streak;
+function hud(){ gauge(); $g("#gxScore").textContent = Math.round(S.score); $g("#gxTime").textContent = S.t.toFixed(1); $g("#gxSpd").textContent = Math.round(S.speed * 3.6); $g("#gxQn").textContent = `${Math.min(S.qi + 1, S.Q.length)}/${S.Q.length}`; $g("#gxCombo").textContent = "×" + S.streak; $g("#gxHearts").textContent = "❤️".repeat(Math.max(0, S.hearts)) + "🤍".repeat(Math.max(0, 3 - S.hearts));
  const f = Math.min(1, S.z / S.finZ); $g("#gxProg").style.width = f * 100 + "%"; $g("#gxPs").style.left = f * 100 + "%"; }
 function pop(big, cls, mid){ const p = $g("#gxPops"); p.innerHTML = `<div class="x-pop x-big ${cls}">${big}</div>${mid ? `<div class="x-pop x-mid ${cls}">${mid}</div>` : ""}`; }
 function changeLane(d){ if (!S || S.over || S.paused) return; const nl = Math.max(0, Math.min(S.n - 1, S.lane + d)); if (nl === S.lane) return; S.lane = nl; S.roll = -d * .5; A.lane(); document.querySelectorAll("#gxOps .x-op").forEach((o, i) => o.classList.toggle("x-on", i === S.lane)); }
-function pause(on){ if (!S || S.over) return; S.paused = on; A.music(!on); A.engine(0, !on);
+function pause(on){ if (!S || S.over || S.reviving) return; S.paused = on; A.music(!on); A.engine(0, !on);
  if (on){ $g("#gxPauseS").innerHTML = `<div class="x-pnl" style="width:min(420px,100%);text-align:center"><div class="x-ttl" style="font-size:40px">⏸ Paused</div><div class="x-row" style="flex-direction:column;margin-top:12px"><button class="x-gb" id="gxRes1">Continue</button><button class="x-gb x-alt" id="gxRe">Restart</button><button class="x-gb x-gh" id="gxQuit">Choose another race</button></div></div>`; show("#gxPauseS");
   $g("#gxRes1").onclick = () => pause(false); $g("#gxRe").onclick = () => start(); $g("#gxQuit").onclick = () => { cancelAnimationFrame(raf); A.music(false); A.engine(0, false); menu(); }; }
  else { $g("#gxPauseS").classList.add("x-hid"); last = performance.now(); } }
@@ -10224,9 +10227,26 @@ function answer(g){
  if (ok){ S.correct++; S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak); const pts = S.L.base + Math.min(5, S.streak - 1) * 25 + Math.round(Math.max(0, S.speed - S.L.speed) * 2); S.score += pts; S.qPts += pts; S.boost = 2.6;
   P.userData.fm.color.setRGB(.4, 3, 1); R.fx.burst(wp, 90, 26, [[.4, 2.5, 1.2], [2, 2, .6], [.6, 2, 2.6]], 1.2); A.ok(); pop(pick2(["AMAZING! ⭐", "BOOST! 🚀", "SUPER! 💫", "BRILLIANT! 🌟"]), "x-good", `+${pts}${S.streak > 1 ? ` · streak ×${S.streak}` : ""}`); }
  else { S.streak = 0; S.slow = 1.6; S.shake = .4; P.userData.fm.color.setRGB(3, .3, .5); R.fx.burst(wp, 50, 18, [[2.5, .4, .5], [2, 1, .3]], 1); A.bad();
-  pop("Oops! ❌", "x-bad", `The answer is ${LETTER[it.ans]}) ${it.right}`); }
+  pop("Oops! ❌", "x-bad", `The answer is ${LETTER[it.ans]}) ${it.right}`); S.miss++; if (S.miss % 2 === 0) loseHeart("💔 2 mistakes = −1 heart"); }
  S.qi++; showQ(); }
 const pick2 = a => a[Math.random() * a.length | 0];
+function quitRace(){ if (!S) return close(); cancelAnimationFrame(raf); A.music(false); A.engine(0, false); S = null; $g("#gxHud").classList.add("x-hid"); $g("#gxCd").classList.add("x-hid"); menu(); }
+function loseHeart(msg){ if (!S || S.over) return; S.hearts--; const h = $g("#gxHearts").parentElement; h.classList.remove("x-hit"); void h.offsetWidth; h.classList.add("x-hit"); hud();
+ if (msg) setTimeout(() => S && !S.over && pop(msg, "x-bad"), 900);
+ if (S.hearts <= 0) setTimeout(revive, 400); }
+function revive(){ if (!S || S.over) return; S.paused = true; S.reviving = true; A.music(false); A.engine(0, false);
+ let pool = qsFor(sel.w).filter(q => !S.used.has(q)); if (!pool.length) pool = qsFor(sel.w); const q = pick2(pool); S.used.add(q);
+ const ids = shuf(q.o.map((t, i) => i)), el = $g("#gxPauseS");
+ el.innerHTML = `<div class="x-pnl" style="width:min(560px,100%)"><div class="x-ttl" style="font-size:34px">💔 Out of hearts!</div><div class="x-sub">Answer this bonus question to get a ❤️ back and keep racing!</div>
+  <h3 style="margin:12px 0 4px">${escH(q.q)}</h3><div class="x-rq">${ids.map((i, k) => `<button data-i="${i}">${LETTER[k]}) ${escH(q.o[i])}</button>`).join("")}</div></div>`;
+ show("#gxPauseS");
+ el.querySelectorAll("[data-i]").forEach(b => b.onclick = () => { const ok = +b.dataset.i === q.a; el.querySelectorAll("[data-i]").forEach(x => { x.disabled = true; if (+x.dataset.i === q.a) x.classList.add("x-ok2"); }); if (!ok) b.classList.add("x-no2");
+  if (ok){ A.ok(); setTimeout(() => { if (!S) return; S.hearts = 1; S.inv = 2; S.reviving = false; hud(); el.classList.add("x-hid"); S.paused = false; last = performance.now(); A.music(true); pop("❤️ +1 heart!", "x-good", "Keep racing!"); }, 1100); }
+  else { A.bad(); setTimeout(() => gameOver(), 1400); } }); }
+function gameOver(){ if (!S) return; S.over = true; S.run = false; $g("#gxQ").classList.add("x-hid");
+ const el = $g("#gxPauseS"); el.innerHTML = `<div class="x-pnl" style="width:min(460px,100%);text-align:center"><div class="x-ttl" style="font-size:38px">💥 Game over</div><div class="x-sub">You answered ${S.correct} question${S.correct === 1 ? "" : "s"} right. Try again — you can do it! 💪</div>
+  <div class="x-row" style="flex-direction:column;margin-top:12px"><button class="x-gb" id="gxGo1">Try again 🔁</button><button class="x-gb x-alt" id="gxGo2">Choose another race</button><button class="x-gb x-gh" id="gxGo3">🏠 Back to map</button></div></div>`;
+ show("#gxPauseS"); $g("#gxGo1").onclick = () => start(); $g("#gxGo2").onclick = () => quitRace(); $g("#gxGo3").onclick = () => close(); }
 function finish(){
  S.over = true; S.run = false; A.music(false); A.engine(0, false); A.win(); $g("#gxQ").classList.add("x-hid");
  const n = S.Q.length, acc = S.correct / n, tb = Math.max(0, Math.round((S.par * 1.1 - S.t) * 15)) * (acc >= .5 ? 1 : 0), total = Math.max(0, Math.round(S.qPts + S.gemPts + tb - S.pen));
@@ -10262,7 +10282,7 @@ function loop(now){
    S.speed += (tgt - S.speed) * Math.min(1, dt * 3); S.z = Math.min(0, S.z - S.speed * dt);
    const g = S.gates[S.qi]; if (g && S.z <= g.z) answer(g);
    for (const m of S.gems){ if (m.userData.got) continue; if (Math.abs(m.position.z - S.z) < 1.6 && Math.abs(m.position.x - S.x) < 2.2){ m.userData.got = 1; m.visible = false; S.gemN++; S.gemPts += 25; S.score += 25; A.gem(); R.fx.burst(m.position, 30, 10, [[2.5, 2, .4], [2, 1.6, .3]], .7); } }
-   for (const m of S.rocks){ if (m.userData.hit) continue; if (Math.abs(m.position.z - S.z) < 2 && Math.abs(m.position.x - S.x) < 2.6){ m.userData.hit = 1; m.visible = false; if (S.inv <= 0){ S.rockN++; S.pen += 50; S.score = Math.max(0, S.score - 50); S.slow = 1.2; S.shake = .6; S.inv = 1; A.hit(); pop("☄️ CRASH!", "x-bad", "-50 · dodge the asteroids!"); } R.fx.burst(m.position, 60, 16, [[2, .9, .3], [1.4, .6, .8]], 1); } }
+   for (const m of S.rocks){ if (m.userData.hit) continue; if (Math.abs(m.position.z - S.z) < 2 && Math.abs(m.position.x - S.x) < 2.6){ m.userData.hit = 1; m.visible = false; if (S.inv <= 0){ S.rockN++; S.pen += 50; S.score = Math.max(0, S.score - 50); S.slow = 1.2; S.shake = .6; S.inv = 1; A.hit(); pop("☄️ CRASH!", "x-bad", "-50 · −1 ❤️ · dodge the asteroids!"); loseHeart(); } R.fx.burst(m.position, 60, 16, [[2, .9, .3], [1.4, .6, .8]], 1); } }
    if (S.z <= S.finZ) finish();
    if (((S.t * 10) | 0) !== (((S.t - dt) * 10) | 0) || S.drag) hud();
   }
