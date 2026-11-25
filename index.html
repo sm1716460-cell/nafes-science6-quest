@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795621750";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795622695";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2072,7 +2072,7 @@ gameFor = function(w, mi){
  if (w.type === "review") return "boss";
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
- if (w.n === 1) return ["jump", "maze", "slice", "jump", "maze", "kitchen"][mi % 6];
+ if (w.n === 1) return ["jump", "maze", "slice", "chicken", "maze", "kitchen"][mi % 6];
   if (w.n === 11) return ["jump", "climb", "stack", "jump", "climb", "stack"][mi % 6];
   if (w.n === 10) return ["jump", "dive", "defend", "jump", "dive", "defend"][mi % 6];
  if (w.n === 9) return ["jump", "blast", "fish", "jump", "blast", "fish"][mi % 6];
@@ -4364,7 +4364,7 @@ function makePH(){
  }
  let drag = false;
  const toX = e => clamp((ptr(e).x - A.x0) / A.w, .06, .94);
- const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); s.started = true; drag = true; s.tx = toX(e); };
+ const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); if (s.mBtn){ const p = ptr(e); if (Math.hypot(p.x - s.mBtn.x, p.y - s.mBtn.y) < s.mBtn.r * 1.3) return missile(); } s.started = true; drag = true; s.tx = toX(e); };
  const move = e => { if (drag) s.tx = toX(e); };
  const up = () => { drag = false; };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
@@ -4897,13 +4897,23 @@ function makeBlast(SK){
  const X = x => A.x0 + x * A.w, Y = y => A.y0 + y * A.h;
  function burst(x, y, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x, y, vx:rnd(-160, 160), vy:rnd(-160, 160), life:rnd(.35, .7), c:pick(cols), r:rnd(2.5, 5.5) }); }
  function hitE(e, dmg, col){ e.hp -= dmg; burst(X(e.x), Y(e.y), 6, [col, "#fff"]);
-  if (e.hp <= 0 && !e.dead){ e.dead = true; G.kills++; if (e.ci){ burst(X(e.x), Y(e.y), 14, ["#ffffff", "#fff8e1", "#ffe082", "#ef9a9a"]); tone([900, 500], .05, "square", .05); } else { s.parts.push({ dz:e.im + (SK.dz ? "_x" : ""), x:X(e.x), y:Y(e.y), vx:0, vy:-40, life:.8, r:0 }); tone([600, 900], .05, "square", .05); }
-   if (G.kills === 3 || (Math.random() < .14 && s.drops.filter(d => d.gift).length < 2)) gift(e.x, e.y);
+  if (e.hp <= 0 && !e.dead){ e.dead = true; G.kills++; if (e.ci){ burst(X(e.x), Y(e.y), e.boss ? 70 : 14, ["#ffffff", "#fff8e1", "#ffe082", "#ef9a9a"]); tone([900, 500], .05, "square", .05); } else { s.parts.push({ dz:e.im + (SK.dz ? "_x" : ""), x:X(e.x), y:Y(e.y), vx:0, vy:-40, life:.8, r:0 }); tone([600, 900], .05, "square", .05); }
+   if (e.boss){ gift(e.x - .08, e.y); gift(e.x + .08, e.y); for (let q = 0; q < 6; q++) s.drops.push({ x:e.x + rnd(-.15, .15), y:e.y + rnd(-.05, .05), k:"coin" }); }
+   else if (G.kills === 3 || (Math.random() < .14 && s.drops.filter(d => d.gift).length < 2)) gift(e.x, e.y);
    else if (Math.random() < .55) s.drops.push({ x:e.x, y:e.y, k:G.kills % 8 === 0 ? "gem" : "coin" }); } }
- function wave(){ s.wave++; const nr = A.w < 560, cols = nr ? 5 : 8, rows = Math.min(4, 2 + ((s.wave + 1) >> 1)), pat = s.wave % 3;
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){ const kind = r === 0 && s.wave > 1 ? 2 : (r + c + s.wave) % 3 === 0 ? 1 : 0, gx = .12 + .76 * (cols > 1 ? c / (cols - 1) : .5), gy = .09 + r * .085;
-   s.ens.push({ ci:1, kind, gx, gy, x:pat === 1 ? -.25 : pat === 2 ? 1.25 : gx, y:pat === 0 ? -.25 - r * .08 : gy - .05, hp:kind === 2 ? 2 : 1, ph:Math.random() * 6, dl:(r * cols + c) * .045, ent:0, dead:false }); }
-  s.freeT = 25; banner(`🐔 WAVE ${s.wave}!`); tone([500, 700, 600], .07, "square", .04); }
+ const LVN = ["🐔 Chicken Squad", "🌀 Chicken Whirl", "🦅 Dive Bombers", "☄️ Meteor Storm", "👑 BOSS: Mega Hen"];
+ function wave(){ s.wave++; const nr = A.w < 560, pat = (s.wave - 1) % 5, cyc = Math.floor((s.wave - 1) / 5); s.sp = 1 + cyc * .22; s.pat = pat; s.metN = 0; s.swT = 2;
+  const add = o => s.ens.push(Object.assign({ ci:1, kind:0, hp:1, ph:Math.random() * 6, dl:0, ent:0, dead:false, R:1 }, o));
+  if (pat === 4){ add({ kind:4, gx:.5, gy:.2, x:.5, y:-.4, hp:40 + cyc * 15 + s.lvl * 8, R:2.6, boss:1, ebT:1.5 }); s.bossMax = s.ens[s.ens.length - 1].hp; }
+  else if (pat === 1){ const n = nr ? 12 : 16; for (let i = 0; i < n; i++){ const ring = i % 2; add({ kind:ring ? 1 : (i % 5 === 0 && s.wave > 1 ? 2 : 0), hp:i % 5 === 0 && s.wave > 1 && !ring ? 2 : 1, ca:i / n * Math.PI * 2, cr:ring ? .2 : .34, x:.5, y:-.3, dl:i * .08 }); } }
+  else { const cols = nr ? 5 : 8, rows = pat === 3 ? 1 : Math.min(4, 2 + ((s.wave + 1) >> 1)), dir = s.wave % 3;
+   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){ const kind = r === 0 && s.wave > 1 ? 2 : (r + c + s.wave) % 3 === 0 ? 1 : 0, gx = .12 + .76 * (cols > 1 ? c / (cols - 1) : .5), gy = .09 + r * clamp(Math.min(A.w, A.h) * .12 / A.h, .085, .12);
+    add({ kind, gx, gy, x:dir === 1 ? -.25 : dir === 2 ? 1.25 : gx, y:dir === 0 ? -.25 - r * .08 : gy - .05, hp:kind === 2 ? 2 : 1, dl:(r * cols + c) * .045 }); }
+   if (pat === 3) s.metN = 12 + cyc * 4; }
+  s.freeT = pat === 4 ? 45 : 28; s.lvlT = 2.2; banner(`LEVEL ${s.wave} · ${LVN[pat]}`); tone([500, 700, 900], .08, "square", .05);
+  s.msg = { t:pat === 4 ? "👑 The MEGA HEN is here! Blast her many times!" : pat === 3 ? "☄️ Meteors! Shoot them or dodge them!" : pat === 2 ? "🦅 Watch out — chickens DIVE at you!" : pat === 1 ? "🌀 The chickens fly in circles!" : "🐔 Blast the chicken squad!", life:2.6, c:"#ffe9b0" }; }
+ function missile(){ if (!(s.miss > 0) || s.state !== "free") return; s.miss--; s.flash = 1; FX.starRain(16); banner("🚀 MEGA MISSILE!"); tone([200, 900, 300], .15, "sawtooth", .1);
+  for (const e of s.ens) if (!e.dead && !e.flee){ if (e.boss) hitE(e, 10, "#ff9800"); else { e.hp = 1; hitE(e, 1, "#ff9800"); } } s.eggs = []; }
  function newEnemy(){ const im = pick(ENS); s.ens.push({ im, x:rnd(.08, .92), y:-.08, vx:rnd(-.08, .08), vy:rnd(.1, .16) + hard * .04 + Math.min(.05, Q.i * .004), hp:im === SK.tough ? 2 : 1, ph:Math.random() * 6, dead:false }); }
  function shoot(aim){ const y = (SY() - SW() * .55 - A.y0) / A.h, W0 = WP[s.wp];
   if (aim && s.wait > 0){ s.msg = { t:"🤔 Read the question first — then fire!", life:1.4, c:"#ffe9b0" }; return; }
@@ -4912,11 +4922,12 @@ function makeBlast(SK){
   for (let i = 0; i < n; i++){ const o = i - (n - 1) / 2; s.bul.push({ x:s.sx + o * .022, y:y + Math.abs(o) * .015, vx:o * .1, w:s.wp, sp:W0.sp, hl:[] }); }
   tone(s.wp === "plasma" ? [300, 160] : s.wp === "fire" ? [900, 500] : s.wp === "bolt" ? [1800, 1200] : s.wp === "ice" ? [2200, 1600] : [1400, 900], .03, s.wp === "ice" ? "sine" : "square", .022); }
  function gift(x, y){ const r = Math.random(); let g;
+  if (SK.ci){ if (G.kills === 3 || r < .45) g = { k:"wp", w:s.wp }; else if (r < .82) g = { k:"wp", w:pick(Object.keys(WP).filter(k => k !== s.wp)) }; else if (r < .93) g = { k:"shield" }; else g = { k:"mag" }; s.drops.push(Object.assign(g, { x, y, gift:1, ph:Math.random() * 6 })); return; }
   if (G.kills === 3 || r < .4) g = { k:"up" }; else if (r < .75){ const ks = Object.keys(WP).filter(k => k !== s.wp); g = { k:"wp", w:pick(ks) }; } else if (r < .9) g = { k:"shield" }; else g = { k:"mag" };
   s.drops.push(Object.assign(g, { x, y, gift:1, ph:Math.random() * 6 })); }
  function takeGift(d){ sfx.star(); s.flash = .5; burst(X(s.sx), SY(), 18, ["#fff", d.k === "wp" ? WP[d.w].c : GIFT[d.k].c, "#ffd23f"]);
   if (d.k === "up" || (d.k === "wp" && d.w === s.wp)){ if (s.lvl < 5){ s.lvl++; s.msg = { t:`⬆️ POWER UP! ${s.lvl} shots at once!`, life:2.2, c:"#b8f5a0" }; banner(`⬆️ x${s.lvl} POWER!`); } else { coins(5, X(s.sx), SY() - SW()); s.msg = { t:"💪 MAX POWER! +5 coins", life:2, c:"#b8f5a0" }; } }
-  else if (d.k === "wp"){ s.wp = d.w; const W0 = WP[d.w]; s.msg = { t:`${W0.ic} ${W0.n.toUpperCase()}! ${W0.desc}`, life:2.6, c:W0.g }; banner(`${W0.ic} ${W0.n}!`); }
+  else if (d.k === "wp"){ s.wp = d.w; const W0 = WP[d.w]; s.msg = { t:`${W0.ic} ${W0.n.toUpperCase()}! ${W0.desc}${SK.ci ? " — grab " + W0.ic + " again for MORE power!" : ""}`, life:2.6, c:W0.g }; banner(`${W0.ic} ${W0.n}!`); }
   else if (d.k === "shield"){ s.shield = 10; s.msg = { t:"🛡️ SHIELD! It blocks the next hit (10 s)", life:2.2, c:"#b2ebf2" }; }
   else { s.mag = 9; s.msg = { t:"🧲 COIN MAGNET! Coins fly to you!", life:2.2, c:"#ffe0b2" }; } }
  function ask(){ s.state = "pre"; P.ask(); s.ens.forEach(e => { if (!e.dead){ e.flee = 1; } }); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:.14 + .72 * (n > 1 ? k / (n - 1) : .5), y:-.12 - (k % 2) * .06, ty:.34 + (k % 2) * .1, dead:false, ph:k }); s.state = "q"; s.bul = []; s.eggs = []; s.wait = SK.ci ? readT() : 0; s.drops = s.drops.filter(d => !d.gift); }, 60); }
@@ -4933,7 +4944,7 @@ function makeBlast(SK){
   s.state = "free"; s.freeT = 8 + hard; geo(); if (SK.ci) wave();
  }
  function hurt(){ if (s.inv > 0) return; if (s.shield > 0){ s.shield = 0; s.inv = 1.2; tone([500, 900], .08, "sine", .08); s.msg = { t:"🛡️ Your shield saved you!", life:1.8, c:"#b2ebf2" }; return; }
-  G.hearts--; s.inv = 1.6; sfx.bad(); hud(); const lost = s.lvl > 1; if (lost) s.lvl--; s.msg = { t:lost ? `💥 Ouch! Power down to x${s.lvl} — dodge the ${SK.mon}!` : `💥 Ouch! Dodge the ${SK.mon}!`, life:2, c:"#ffb4a8" }; if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; }); }
+  G.hearts--; s.inv = 1.6; sfx.bad(); hud(); const lost = !SK.ci && s.lvl > 1; if (lost) s.lvl--; s.msg = { t:lost ? `💥 Ouch! Power down to x${s.lvl} — dodge the ${SK.mon}!` : `💥 Ouch! Dodge the ${SK.mon}!`, life:2, c:"#ffb4a8" }; if (G.hearts <= 0) outOfHearts(() => { s.inv = 2.5; }); }
  function update(dt){
   s.t += dt; geo(); const m = M(), sw = SW(), sy = SY();
   if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; } ["inv", "shield", "mag", "flash"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt); });
@@ -4941,7 +4952,9 @@ function makeBlast(SK){
   if (s.autoK >= 0 && s.state === "q" && s.wait <= 0){ const d = s.qd[s.autoK]; if (d && Math.abs(s.sx - d.x) < .01 && d.y > .1){ s.autoK = -1; shoot(true); } }
   if (s.state === "q" && s.wait > 0) s.wait -= dt;
   if (SK.ci && s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; }
-   if (!s.ens.some(e => !e.dead && !e.flee)){ if (s.waveDone == null){ s.waveDone = 1.2; if (s.wave){ coins(5, X(.5), A.y0 + A.h * .3); banner("🎉 WAVE CLEARED!"); FX.starRain(12); } } s.waveDone -= dt; if (s.waveDone <= 0){ s.waveDone = null; if (Q.i < Q.items.length) ask(); } }
+   if (s.pat === 2){ s.swT -= dt; if (s.swT <= 0){ s.swT = rnd(1.1, 2) / (s.sp || 1); const c = s.ens.filter(e => !e.dead && !e.flee && !e.dive && e.ent >= 1); if (c.length){ const e = pick(c); e.dive = 1; e.dv = 0; e.x0 = e.x; e.dx = s.sx; tone([900, 400], .1, "sawtooth", .04); } } }
+   if (s.metN > 0 && Math.random() < dt * 1.3){ s.metN--; s.ens.push({ met:1, im:"en9_rock", x:rnd(.08, .92), y:-.08, vx:rnd(-.05, .05), vy:rnd(.22, .32) * (s.sp || 1), hp:2, ph:Math.random() * 6, dead:false }); }
+   if (!s.ens.some(e => !e.dead && !e.flee) && !(s.metN > 0)){ if (s.waveDone == null){ s.waveDone = 1.2; if (s.wave){ const bs = s.pat === 4; coins(bs ? 15 : 5, X(.5), A.y0 + A.h * .3); banner(bs ? "👑 BOSS DEFEATED!" : `🎉 LEVEL ${s.wave} CLEAR!`); FX.starRain(bs ? 30 : 12); if (bs) sfx.win(); } } s.waveDone -= dt; if (s.waveDone <= 0){ s.waveDone = null; if (Q.i < Q.items.length) ask(); } }
    else { s.freeT -= dt; if (s.freeT <= 0){ s.ens.forEach(e => e.flee = 1); s.msg = { t:"🐔 The chickens flew away!", life:1.6, c:"#ffe9b0" }; } } }
   else if (s.state === "free" && s.started){ s.fire -= dt; if (s.fire <= 0){ shoot(); s.fire = WP[s.wp].rate; } s.spawn -= dt; if (s.spawn <= 0){ newEnemy(); s.spawn = rnd(.55, .95) - hard * .12; } s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length) ask(); }
   for (const b of s.bul){
@@ -4951,11 +4964,17 @@ function makeBlast(SK){
   for (const e of s.ens){ if (e.dead) continue;
    if (e.flee){ e.y -= .6 * dt; if (e.y < -.2) e.dead = true; continue; }
    if (e.frz > 0) e.frz -= dt; const sl = e.frz > 0 ? .35 : 1;
-   if (e.ci){ if (e.dl > 0) e.dl -= dt; else { e.ent = Math.min(1, e.ent + dt * .9); const tx = e.gx + Math.sin(s.t * .7) * .07, ty = e.gy + Math.sin(s.t * 2 + e.ph) * .012, k = Math.min(1, dt * (e.ent < 1 ? 2.4 : 8)) * sl; e.x += (tx - e.x) * k; e.y += (ty - e.y) * k;
-     if (e.ent > .7 && s.started && s.state === "free" && Math.random() < dt * (.045 + hard * .03 + s.wave * .005) * sl) s.eggs.push({ x:e.x, y:e.y + .04, vy:.3 + hard * .06 + (e.kind === 1 ? .08 : 0) }); } }
+   if (e.ci){ if (e.dl > 0) e.dl -= dt; else { e.ent = Math.min(1, e.ent + dt * .9); let tx, ty; const sp = s.sp || 1;
+     if (e.boss){ tx = .5 + Math.sin(s.t * .55 * sp) * .32; ty = .2 + Math.sin(s.t * 1.1) * .04; }
+     else if (e.ca != null){ e.ca += dt * .55 * sp * sl; tx = .5 + Math.cos(e.ca) * e.cr; ty = .27 + Math.sin(e.ca) * e.cr * .55; }
+     else { tx = e.gx + Math.sin(s.t * .7 * sp) * .07; ty = e.gy + Math.sin(s.t * 2 + e.ph) * .012; }
+     if (e.dive){ e.dv += dt * sp; const p = e.dv / 2.4; if (p >= 1){ e.dive = 0; } else { tx = e.x0 + (e.dx - e.x0) * Math.sin(p * Math.PI) * 1; ty = e.gy + Math.sin(p * Math.PI) * (.9 - e.gy); e.x = tx; e.y = ty; } }
+     const k = Math.min(1, dt * (e.ent < 1 ? 2.4 : 8)) * sl; if (!e.dive){ e.x += (tx - e.x) * k; e.y += (ty - e.y) * k; }
+     if (e.boss && e.ent > .7 && s.started && s.state === "free"){ e.ebT -= dt * sp; if (e.ebT <= 0){ e.ebT = 1.6 - Math.min(.6, (1 - e.hp / s.bossMax) * .8); for (const vx of [-.12, 0, .12]) s.eggs.push({ x:e.x, y:e.y + .08, vy:.32, vx }); tone([300, 200], .06, "triangle", .05); } }
+     if (!e.boss && !e.met && e.ent > .7 && s.started && s.state === "free" && Math.random() < dt * (.045 + hard * .03 + Math.min(.04, s.wave * .004)) * sl * (s.pat === 3 ? .5 : 1)) s.eggs.push({ x:e.x, y:e.y + .04, vy:.3 + hard * .06 + (e.kind === 1 ? .08 : 0) }); } }
    else {
    e.x += (e.vx + Math.sin(s.t * 2 + e.ph) * .05) * dt * sl; e.y += e.vy * dt * sl; if (e.x < .05 || e.x > .95) e.vx *= -1; }
-   for (const b of s.bul){ if (b.hit || b.aim || b.hl.includes(e)) continue; const W0 = WP[b.w], rr = m * (W0.aoe ? .075 : .055);
+   for (const b of s.bul){ if (b.hit || b.aim || b.hl.includes(e)) continue; const W0 = WP[b.w], rr = m * (W0.aoe ? .075 : .055) * (e.R || 1);
     if (Math.abs(b.x - e.x) * A.w < rr && Math.abs(b.y - e.y) * A.h < rr){
      if (W0.pierce) b.hl.push(e); else b.hit = 1;
      hitE(e, W0.dmg || 1, W0.c); if (W0.frz) e.frz = 3;
@@ -4963,11 +4982,11 @@ function makeBlast(SK){
      if (!W0.pierce) break; } }
    if (!e.dead && Math.abs(X(e.x) - X(s.sx)) < sw * .4 && Math.abs(Y(e.y) - sy) < sw * .45){ e.dead = true; burst(X(e.x), Y(e.y), 14, ["#ff9800", "#fff"]); hurt(); }
    if (e.y > 1.1) e.dead = true; }
-  for (const g of s.eggs){ g.y += g.vy * dt; if (Math.abs(X(g.x) - X(s.sx)) < sw * .33 && Math.abs(Y(g.y) - sy) < sw * .4){ g.dead = 1; burst(X(g.x), Y(g.y), 12, ["#fff", "#ffeb3b"]); hurt(); } else if (g.y > .99){ g.dead = 1; s.parts.push({ splat:1, x:X(g.x), y:A.y1 - 6, vx:0, vy:0, life:1.2 }); } }
+  for (const g of s.eggs){ g.y += g.vy * dt; if (g.vx) g.x += g.vx * dt; if (Math.abs(X(g.x) - X(s.sx)) < sw * .33 && Math.abs(Y(g.y) - sy) < sw * .4){ g.dead = 1; burst(X(g.x), Y(g.y), 12, ["#fff", "#ffeb3b"]); hurt(); } else if (g.y > .99){ g.dead = 1; s.parts.push({ splat:1, x:X(g.x), y:A.y1 - 6, vx:0, vy:0, life:1.2 }); } }
   s.eggs = s.eggs.filter(g => !g.dead);
   for (const d of s.drops){ d.y += (d.gift ? .2 : .28) * dt; if (d.gift) d.x += Math.sin(s.t * 3 + d.ph) * .03 * dt; if (s.mag > 0 && !d.gift){ d.x += (s.sx - d.x) * Math.min(1, dt * 4); d.y += (((SY() - A.y0) / A.h) - d.y) * Math.min(1, dt * 3); } if (Math.abs(X(d.x) - X(s.sx)) < sw * .5 && Math.abs(Y(d.y) - sy) < sw * .5){ d.got = 1;
     if (d.gift) takeGift(d);
-    else if (d.k === "coin"){ const c1 = coin1(); G.coins += c1; G.extra += c1; hud(); tone([1300, 1700], .03, "square", .04); }
+    else if (d.k === "coin"){ const c1 = coin1(); G.coins += c1; G.extra += c1; hud(); tone([1300, 1700], .03, "square", .04); if (SK.ci){ s.food = (s.food || 0) + 1; if (s.food % 30 === 0){ s.miss = (s.miss || 0) + 1; banner("🚀 MISSILE READY!"); s.msg = { t:"🍗 30 drumsticks! Tap the 🚀 button to blast EVERYTHING!", life:3, c:"#ffe0b2" }; } if (s.food % 50 === 0 && G.hearts < 3){ G.hearts++; hud(); s.msg = { t:"🍗 50 drumsticks! +1 ❤️", life:2.4, c:"#b8f5a0" }; } } }
     else { if (G.gems < 3) G.gems++; coins(10, X(s.sx), sy - sw); s.msg = { t:`💎 Gem ${G.gems}/3! +10 coins`, life:2, c:"#b8f5a0" }; sfx.star(); } } }
   s.drops = s.drops.filter(d => !d.got && d.y < 1.1);
   if (s.state === "q" || s.state === "pre" || s.state === "wrong" || s.state === "cheer"){
@@ -4976,14 +4995,14 @@ function makeBlast(SK){
   s.bul = s.bul.filter(b => !b.hit && b.y > -.1 && b.x > -.1 && b.x < 1.1);
   s.ens = s.ens.filter(e => !e.dead);
   s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; }); s.parts = s.parts.filter(p => p.life > 0);
-  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>${WP[s.wp].ic} x${s.lvl}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>👾 ${G.kills}</span><span>💎 ${G.gems}/3</span>`; }
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = SK.ci ? `<span>${WP[s.wp].ic} ${"▰".repeat(s.lvl)}${"▱".repeat(5 - s.lvl)}${s.lvl >= 5 ? " MAX" : ""}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>🐔 L${s.wave}</span><span>🍗 ${s.food || 0}</span><span>💎 ${G.gems}/3</span>` : `<span>${WP[s.wp].ic} x${s.lvl}</span>${s.shield > 0 ? "<span>🛡️</span>" : ""}<span>👾 ${G.kills}</span><span>💎 ${G.gems}/3</span>`; }
  }
  function draw(){
   geo(); const W = view.w, H = view.h, bg = P3(SK.bg), m = M(), sw = SW(), sy = SY();
   cx.fillStyle = "#1a1446"; cx.fillRect(0, 0, W, H); if (ready(bg)) cover(bg, 0, 0, W, H, 0);
   cx.fillStyle = "rgba(10,6,40,.45)"; cx.fillRect(0, 0, W, H);
   cx.fillStyle = "rgba(255,255,255,.7)"; for (let i = 0; i < 40; i++){ const x = (i * 97.3) % W, y = ((i * 53.1 + s.t * (40 + i % 4 * 30)) % H); cx.fillRect(x, y, 2, 2 + i % 3 * 3); }
-  for (const e of s.ens){ if (e.ci) drawChick(X(e.x), Y(e.y), m * .11 * (e.kind === 2 ? 1.12 : 1), e.kind, e.frz > 0 ? 0 : s.t + e.ph, e.flee ? .6 : 1); else drawImg(e.im, X(e.x), Y(e.y), m * .12, { rot:e.frz > 0 ? 0 : Math.sin(s.t * 3 + e.ph) * .12, a:e.flee ? .6 : 1 });
+  for (const e of s.ens){ if (e.ci) drawChick(X(e.x), Y(e.y), m * (e.boss ? .3 : .11 * (e.kind === 2 ? 1.12 : 1)), e.kind, e.frz > 0 ? 0 : s.t + e.ph, e.flee ? .6 : 1); else if (e.met) drawImg(e.im, X(e.x), Y(e.y), m * .1, { rot:s.t * 2 + e.ph }); else drawImg(e.im, X(e.x), Y(e.y), m * .12, { rot:e.frz > 0 ? 0 : Math.sin(s.t * 3 + e.ph) * .12, a:e.flee ? .6 : 1 });
    if (e.frz > 0){ cx.save(); cx.globalAlpha = .45; cx.fillStyle = "#b2ebf2"; cx.beginPath(); cx.arc(X(e.x), Y(e.y), m * .07, 0, 7); cx.fill(); cx.globalAlpha = 1; cx.font = `${m * .04}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("❄️", X(e.x) + m * .05, Y(e.y) - m * .05); cx.restore(); } }
   for (const p of s.parts) if (p.dz){ drawImg(p.dz, p.x, p.y, m * .11, { a:Math.max(0, p.life), rot:(1 - p.life) * 3 }); }
   for (const p of s.parts) if (p.splat){ cx.globalAlpha = Math.min(1, p.life); cx.fillStyle = "#fff"; cx.beginPath(); cx.ellipse(p.x, p.y, m * .035, m * .012, 0, 0, 7); cx.fill(); cx.fillStyle = "#ffc107"; cx.beginPath(); cx.arc(p.x, p.y - 2, m * .011, 0, 7); cx.fill(); cx.globalAlpha = 1; }
@@ -4993,6 +5012,8 @@ function makeBlast(SK){
    if (SK.ci){ drawChick(x, y - m * .02, m * .16, 3, s.t + d.ph, a); letterBadge(x, y + m * .03, Math.max(15, m * .045), d.k, a); } else { drawImg(SK.target, x, y, m * .19, { rot:Math.sin(s.t + d.ph) * .2, a }); letterBadge(x, y, Math.max(15, m * .045), d.k, a); }
    if (d.dead){ cx.strokeStyle = "#ff5252"; cx.lineWidth = 5; const q = m * .04; cx.beginPath(); cx.moveTo(x - q, y - q); cx.lineTo(x + q, y + q); cx.moveTo(x + q, y - q); cx.lineTo(x - q, y + q); cx.stroke(); } }
   for (const b of s.bul) drawBul(b, m);
+  if (SK.ci){ const bo = s.ens.find(e => e.boss && !e.dead); if (bo){ const bw = Math.min(A.w * .6, 420), bx = A.x0 + (A.w - bw) / 2, by = A.y0 + 48; cx.fillStyle = "rgba(0,0,0,.55)"; rr6(bx - 4, by - 4, bw + 8, 22, 10); cx.fill(); cx.fillStyle = "#e53935"; rr6(bx, by, bw * Math.max(0, bo.hp / s.bossMax), 14, 7); cx.fill(); cx.fillStyle = "#fff"; cx.font = "bold 12px sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("👑 MEGA HEN", bx + bw / 2, by + 7); }
+   if (s.miss > 0){ const r = Math.max(26, m * .06), bx = A.x0 + r + 12, by = A.y1 - r - 50; s.mBtn = { x:bx, y:by, r }; cx.save(); cx.shadowColor = "#ff9800"; cx.shadowBlur = 18 + Math.sin(s.t * 6) * 8; cx.fillStyle = "#ff7043"; cx.beginPath(); cx.arc(bx, by, r, 0, 7); cx.fill(); cx.restore(); cx.font = `${r}px sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("🚀", bx, by); cx.font = `bold ${r * .5}px sans-serif`; cx.fillStyle = "#fff"; cx.fillText("x" + s.miss, bx + r * .8, by - r * .8); } else s.mBtn = null; }
   s.parts.forEach(p => { if (!p.ring) return; cx.save(); cx.globalAlpha = Math.max(0, p.life * 2.2); cx.strokeStyle = p.c; cx.lineWidth = 5; cx.beginPath(); cx.arc(p.x, p.y, m * .17 * (1 - p.life * 1.6 + .4), 0, 7); cx.stroke(); cx.restore(); });
   if (s.state === "q"){ cx.save(); cx.setLineDash([6, 10]); cx.strokeStyle = "rgba(255,255,255,.4)"; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(X(s.sx), sy - sw * .6); cx.lineTo(X(s.sx), A.y0 + A.h * .2); cx.stroke(); cx.restore(); }
   cx.save(); if (s.inv > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .5;
@@ -5033,12 +5054,12 @@ function makeBlast(SK){
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
  const rz = () => later(P.measure, 60); addEventListener("resize", rz);
  $("#aCtl").classList.add("hide"); window.__bl = s; if (SK.ci) wave();
- return { update, draw, key(e){ if (e.key === "ArrowLeft"){ s.started = true; s.tx = clamp(s.tx - .08, .06, .94); } if (e.key === "ArrowRight"){ s.started = true; s.tx = clamp(s.tx + .08, .06, .94); } if (e.key === " " || e.key === "ArrowUp"){ e.preventDefault(); if (s.state === "wrong") cont(); else if (s.state === "q" && !e.repeat) shoot(true); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
+ return { update, draw, key(e){ if (e.key === "ArrowLeft"){ s.started = true; s.tx = clamp(s.tx - .08, .06, .94); } if (e.key === "ArrowRight"){ s.started = true; s.tx = clamp(s.tx + .08, .06, .94); } if (e.key === "m" || e.key === "M") missile(); if (e.key === " " || e.key === "ArrowUp"){ e.preventDefault(); if (s.state === "wrong") cont(); else if (s.state === "q" && !e.repeat) shoot(true); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
 }
 
 /* cartoon chicken (Chicken-Invaders style): 0 white · 1 electric · 2 battery (2 hits) · 3 golden answer hen */
 function drawChick(x, y, z, k, t, a){
- const C = [["#ffffff", "#e0e0e0"], ["#ffe066", "#ffb300"], ["#ce93d8", "#9c27b0"], ["#ffd54f", "#ff8f00"]][k], f = Math.sin(t * 14) * .55, lw = Math.max(1.5, z * .035);
+ const C = [["#ffffff", "#e0e0e0"], ["#ffe066", "#ffb300"], ["#ce93d8", "#9c27b0"], ["#ffd54f", "#ff8f00"], ["#ef5350", "#b71c1c"]][k], f = Math.sin(t * 14) * .55, lw = Math.max(1.5, z * .035);
  cx.save(); cx.translate(x, y); cx.globalAlpha = a == null ? 1 : a; cx.lineJoin = "round";
  if (k === 3){ cx.shadowColor = "#ffd23f"; cx.shadowBlur = 22; }
  cx.strokeStyle = "#4e342e"; cx.lineWidth = lw;
@@ -5048,7 +5069,8 @@ function drawChick(x, y, z, k, t, a){
  cx.beginPath(); cx.arc(0, -z * .28, z * .23, 0, 7); cx.fill(); cx.stroke();
  cx.fillStyle = "#e53935"; for (const i of [-1, 0, 1]){ cx.beginPath(); cx.arc(i * z * .08, -z * .52 + Math.abs(i) * z * .035, z * .072, 0, 7); cx.fill(); }
  for (const sd of [-1, 1]){ cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(sd * z * .09, -z * .31, z * .075, 0, 7); cx.fill(); cx.fillStyle = "#1a1a1a"; cx.beginPath(); cx.arc(sd * z * .085, -z * .3, z * .042, 0, 7); cx.fill(); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(sd * z * .075, -z * .315, z * .014, 0, 7); cx.fill(); }
- if (k === 2){ cx.strokeStyle = "#4e342e"; cx.lineWidth = lw * 1.2; for (const sd of [-1, 1]){ cx.beginPath(); cx.moveTo(sd * z * .17, -z * .43); cx.lineTo(sd * z * .03, -z * .37); cx.stroke(); } }
+ if (k === 4){ cx.fillStyle = "#ffd600"; cx.strokeStyle = "#8d6e00"; cx.lineWidth = lw * .7; cx.beginPath(); cx.moveTo(-z * .2, -z * .56); cx.lineTo(-z * .22, -z * .78); cx.lineTo(-z * .1, -z * .66); cx.lineTo(0, -z * .84); cx.lineTo(z * .1, -z * .66); cx.lineTo(z * .22, -z * .78); cx.lineTo(z * .2, -z * .56); cx.closePath(); cx.fill(); cx.stroke(); }
+ if (k === 2 || k === 4){ cx.strokeStyle = "#4e342e"; cx.lineWidth = lw * 1.2; for (const sd of [-1, 1]){ cx.beginPath(); cx.moveTo(sd * z * .17, -z * .43); cx.lineTo(sd * z * .03, -z * .37); cx.stroke(); } }
  cx.fillStyle = "#ff9800"; cx.beginPath(); cx.moveTo(-z * .075, -z * .23); cx.lineTo(z * .075, -z * .23); cx.lineTo(0, -z * .12); cx.closePath(); cx.fill();
  cx.fillStyle = "#e53935"; cx.beginPath(); cx.ellipse(z * .02, -z * .1, z * .03, z * .05, 0, 0, 7); cx.fill();
  cx.fillStyle = "rgba(255,138,128,.55)"; for (const sd of [-1, 1]){ cx.beginPath(); cx.arc(sd * z * .16, -z * .22, z * .04, 0, 7); cx.fill(); }
@@ -5056,7 +5078,7 @@ function drawChick(x, y, z, k, t, a){
  cx.restore(); }
 
 /* Week 8 Chicken Blaster — waves of chickens in formation, eggs to dodge, gifts upgrade the weapon */
-const makeChicken = () => makeBlast({ ci:1, bg:"w8_bg", ship:"k9_rocket", ens:[], target:null, dz:false, coin:"w8_coin", gem:"w8_gem", win:"🏆 CHICKEN CHAMPION!", tname:"golden hen", mon:"eggs" });
+const makeChicken = () => makeBlast({ ci:1, bg:`w${Q.w && Q.w.n || 8}_bg`, ship:"k9_rocket", ens:["en9_rock"], target:null, dz:false, coin:"w8_coin", gem:"w8_gem", win:"🏆 CHICKEN CHAMPION!", tname:"golden hen", mon:"eggs" });
 
 /* Week 3 Matter Factory blaster */
 const makeFactoryBlast = () => makeBlast({ bg:"w3_bg", ship:"d3_robot", shipRot:0, shipK:1.05, flame:false, ens:["en3_slime", "en3_spark", "en3_steam"], dz:false, tough:"en3_slime", target:"w3_box", coin:"w3_coin", gem:"w3_gem", win:"🏆 FACTORY HERO!", tname:"crate", mon:"slime & steam monsters" });
