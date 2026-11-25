@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795606418";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795606943";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9241,77 +9241,77 @@ const escH = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", 
 /* ---------- styles + overlay ---------- */
 const CSS = `#gx{position:fixed;inset:0;z-index:9000;background:#05021a;font-family:'Baloo 2','Nunito',system-ui,sans-serif;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none}
 #gx canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#gx .hid{display:none!important}
+#gx .x-hid{display:none!important}
 #gx button{font-family:inherit;cursor:pointer;border:none;color:#fff}
-#gx .gtop{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
-#gx .st{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35);border-radius:14px;padding:2px 12px;min-width:70px;text-align:center;backdrop-filter:blur(6px)}
-#gx .st i{display:block;font-style:normal;font-size:11px;opacity:.75;line-height:1.2}#gx .st b{display:block;font-size:21px;line-height:1.15;font-variant-numeric:tabular-nums}
-#gx .ib{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35)!important;border-radius:14px;width:44px;font-size:19px}
+#gx .x-gtop{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
+#gx .x-st{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35);border-radius:14px;padding:2px 12px;min-width:70px;text-align:center;backdrop-filter:blur(6px)}
+#gx .x-st i{display:block;font-style:normal;font-size:11px;opacity:.75;line-height:1.2}#gx .x-st b{display:block;font-size:21px;line-height:1.15;font-variant-numeric:tabular-nums}
+#gx .x-ib{background:rgba(18,12,48,.66);border:1px solid rgba(140,220,255,.35)!important;border-radius:14px;width:44px;font-size:19px}
 #gx #gxScore{color:#ffd84a;text-shadow:0 0 10px rgba(255,216,74,.7)}#gx #gxCombo{color:#ff4fa3;text-shadow:0 0 10px rgba(255,79,163,.8)}
-#gx .gprog{position:absolute;top:66px;left:50%;transform:translateX(-50%);width:min(520px,78vw);height:9px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(140,220,255,.35);z-index:3}
-#gx .gprog div{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(90deg,#3ff0ff,#ff4fa3)}
-#gx .gprog span{position:absolute;top:50%;transform:translate(-50%,-50%) rotate(45deg);font-size:18px}#gx .gprog em{position:absolute;right:-24px;top:50%;transform:translateY(-50%);font-style:normal}
-#gx .gq{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:min(860px,96vw);background:linear-gradient(180deg,rgba(30,16,80,.82),rgba(10,6,40,.88));border:1px solid rgba(255,79,163,.55);border-radius:20px;padding:8px 14px 10px;text-align:center;box-shadow:0 0 30px rgba(255,79,163,.25);backdrop-filter:blur(8px);z-index:3}
-#gx .gq h3{margin:0;font-size:clamp(15px,2.3vw,21px);line-height:1.3;color:#eaf6ff}
-#gx .gq .ops{display:flex;gap:8px;justify-content:center;margin-top:6px}
-#gx .op{flex:1;min-width:0;padding:5px 8px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);font-size:clamp(12px,1.7vw,16px);font-weight:700;line-height:1.2;display:flex;align-items:center;gap:6px;text-align:left;transition:all .15s}
-#gx .op u{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-weight:900;font-size:14px}
-#gx .op.on{border-color:#3ff0ff;background:rgba(63,240,255,.22);box-shadow:0 0 16px rgba(63,240,255,.6);transform:translateY(-3px)}
-#gx .gq.swap{animation:gxin .45s ease}@keyframes gxin{from{transform:translateX(-50%) translateY(30px);opacity:0}to{transform:translateX(-50%);opacity:1}}
-#gx .pops{position:absolute;top:28%;left:50%;transform:translateX(-50%);width:92vw;text-align:center;z-index:4;pointer-events:none}
-#gx .pop{font-weight:900;animation:gxpop 1.9s ease forwards;text-shadow:0 0 18px currentColor,0 3px 0 #000}
-#gx .pop.big{font-size:clamp(34px,7vw,58px)}#gx .pop.mid{font-size:clamp(15px,2.6vw,22px);margin-top:4px;color:#fff!important;text-shadow:0 2px 6px #000}
-#gx .good{color:#5dffb0}#gx .bad{color:#ff5a7a}#gx .gold{color:#ffd84a}
+#gx .x-gprog{position:absolute;top:66px;left:50%;transform:translateX(-50%);width:min(520px,78vw);height:9px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(140,220,255,.35);z-index:3}
+#gx .x-gprog div{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(90deg,#3ff0ff,#ff4fa3)}
+#gx .x-gprog span{position:absolute;top:50%;transform:translate(-50%,-50%) rotate(45deg);font-size:18px}#gx .x-gprog em{position:absolute;right:-24px;top:50%;transform:translateY(-50%);font-style:normal}
+#gx .x-gq{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:min(860px,96vw);background:linear-gradient(180deg,rgba(30,16,80,.82),rgba(10,6,40,.88));border:1px solid rgba(255,79,163,.55);border-radius:20px;padding:8px 14px 10px;text-align:center;box-shadow:0 0 30px rgba(255,79,163,.25);backdrop-filter:blur(8px);z-index:3}
+#gx .x-gq h3{margin:0;font-size:clamp(15px,2.3vw,21px);line-height:1.3;color:#eaf6ff}
+#gx .x-gq .x-ops{display:flex;gap:8px;justify-content:center;margin-top:6px}
+#gx .x-op{flex:1;min-width:0;padding:5px 8px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);font-size:clamp(12px,1.7vw,16px);font-weight:700;line-height:1.2;display:flex;align-items:center;gap:6px;text-align:left;transition:all .15s}
+#gx .x-op u{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-weight:900;font-size:14px}
+#gx .x-op.x-on{border-color:#3ff0ff;background:rgba(63,240,255,.22);box-shadow:0 0 16px rgba(63,240,255,.6);transform:translateY(-3px)}
+#gx .x-gq.x-swap{animation:gxin .45s ease}@keyframes gxin{from{transform:translateX(-50%) translateY(30px);opacity:0}to{transform:translateX(-50%);opacity:1}}
+#gx .x-pops{position:absolute;top:28%;left:50%;transform:translateX(-50%);width:92vw;text-align:center;z-index:4;pointer-events:none}
+#gx .x-pop{font-weight:900;animation:gxpop 1.9s ease forwards;text-shadow:0 0 18px currentColor,0 3px 0 #000}
+#gx .x-pop.x-big{font-size:clamp(34px,7vw,58px)}#gx .x-pop.x-mid{font-size:clamp(15px,2.6vw,22px);margin-top:4px;color:#fff!important;text-shadow:0 2px 6px #000}
+#gx .x-good{color:#5dffb0}#gx .x-bad{color:#ff5a7a}#gx .x-gold{color:#ffd84a}
 @keyframes gxpop{0%{transform:scale(.4);opacity:0}12%{transform:scale(1.15);opacity:1}22%{transform:scale(1)}80%{opacity:1}100%{transform:translateY(-40px);opacity:0}}
-#gx .tch{position:absolute;bottom:50%;width:70px;height:70px;border-radius:50%;background:rgba(63,240,255,.18);border:2px solid rgba(63,240,255,.6)!important;font-size:28px;z-index:4;display:none}
-#gx .tch.l{left:10px}#gx .tch.r{right:10px}@media (pointer:coarse){#gx .tch{display:block}}
-#gx .cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:150px;font-weight:900;text-shadow:0 0 30px #ff4fa3,0 0 60px #3ff0ff;z-index:5}
-#gx .cd span{animation:gxcd 1s ease forwards}@keyframes gxcd{0%{transform:scale(2.4);opacity:0}25%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.6);opacity:0}}
-#gx .scr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto;background:radial-gradient(ellipse at center,rgba(8,4,30,.35),rgba(5,2,26,.8));z-index:6}
-#gx .pnl{width:min(920px,100%);max-height:100%;overflow:auto;background:linear-gradient(160deg,rgba(40,20,100,.78),rgba(10,6,40,.9));border:1px solid rgba(140,220,255,.4);border-radius:26px;padding:18px 22px;box-shadow:0 0 50px rgba(139,92,255,.35);backdrop-filter:blur(10px)}
-#gx .ttl{font-size:clamp(30px,6vw,56px);font-weight:900;text-align:center;line-height:1.1;background:linear-gradient(90deg,#3ff0ff,#fff 40%,#ff4fa3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(255,79,163,.55))}
-#gx .sub{text-align:center;color:#bfe6ff;margin:2px 0 10px;font-size:16px}
-#gx .lbl{font-weight:900;color:#cfe9ff;margin:8px 0 6px;text-align:center}
-#gx .wks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-#gx .wk{padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18)!important;font-weight:800;font-size:14px}
-#gx .wk.on{border-color:#ffd84a!important;background:rgba(255,216,74,.2);box-shadow:0 0 14px rgba(255,216,74,.5)}
-#gx .lvs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
-#gx .lv{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15)!important;border-radius:18px;padding:10px 8px;text-align:center;transition:all .2s}
-#gx .lv.on{border-color:var(--c)!important;box-shadow:0 0 22px var(--c),0 0 8px var(--c) inset;background:rgba(255,255,255,.1)}
-#gx .lv .a{font-size:30px}#gx .lv .b{font-size:22px;font-weight:900;color:var(--c)}#gx .lv .c{font-size:13px;opacity:.85;line-height:1.4}#gx .lv .d{font-size:12px;color:#ffd84a;margin-top:4px}
-#gx .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
-#gx .gb{font-size:19px;font-weight:900;padding:11px 26px;border-radius:18px;background:linear-gradient(90deg,#ff4fa3,#8b5cff);box-shadow:0 6px 0 #5a1d7a,0 0 24px rgba(255,79,163,.5)}
-#gx .gb:active{transform:translateY(4px);box-shadow:0 2px 0 #5a1d7a}#gx .gb.alt{background:linear-gradient(90deg,#1f8fff,#25d0e6);box-shadow:0 6px 0 #0d4d84}#gx .gb.gh{background:rgba(255,255,255,.12);box-shadow:0 6px 0 rgba(0,0,0,.4)}
-#gx .hint{text-align:center;font-size:13px;opacity:.85;margin-top:10px;line-height:1.7}
+#gx .x-tch{position:absolute;bottom:50%;width:70px;height:70px;border-radius:50%;background:rgba(63,240,255,.18);border:2px solid rgba(63,240,255,.6)!important;font-size:28px;z-index:4;display:none}
+#gx .x-tch.x-l{left:10px}#gx .x-tch.x-r{right:10px}@media (pointer:coarse){#gx .x-tch{display:block}}
+#gx .x-cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:150px;font-weight:900;text-shadow:0 0 30px #ff4fa3,0 0 60px #3ff0ff;z-index:5}
+#gx .x-cd span{animation:gxcd 1s ease forwards}@keyframes gxcd{0%{transform:scale(2.4);opacity:0}25%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.6);opacity:0}}
+#gx .x-scr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto;background:radial-gradient(ellipse at center,rgba(8,4,30,.35),rgba(5,2,26,.8));z-index:6}
+#gx .x-pnl{width:min(920px,100%);max-height:100%;overflow:auto;background:linear-gradient(160deg,rgba(40,20,100,.78),rgba(10,6,40,.9));border:1px solid rgba(140,220,255,.4);border-radius:26px;padding:18px 22px;box-shadow:0 0 50px rgba(139,92,255,.35);backdrop-filter:blur(10px)}
+#gx .x-ttl{font-size:clamp(30px,6vw,56px);font-weight:900;text-align:center;line-height:1.1;background:linear-gradient(90deg,#3ff0ff,#fff 40%,#ff4fa3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(255,79,163,.55))}
+#gx .x-sub{text-align:center;color:#bfe6ff;margin:2px 0 10px;font-size:16px}
+#gx .x-lbl{font-weight:900;color:#cfe9ff;margin:8px 0 6px;text-align:center}
+#gx .x-wks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+#gx .x-wk{padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18)!important;font-weight:800;font-size:14px}
+#gx .x-wk.x-on{border-color:#ffd84a!important;background:rgba(255,216,74,.2);box-shadow:0 0 14px rgba(255,216,74,.5)}
+#gx .x-lvs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+#gx .x-lv{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15)!important;border-radius:18px;padding:10px 8px;text-align:center;transition:all .2s}
+#gx .x-lv.x-on{border-color:var(--c)!important;box-shadow:0 0 22px var(--c),0 0 8px var(--c) inset;background:rgba(255,255,255,.1)}
+#gx .x-lv .x-a{font-size:30px}#gx .x-lv .x-b{font-size:22px;font-weight:900;color:var(--c)}#gx .x-lv .x-c{font-size:13px;opacity:.85;line-height:1.4}#gx .x-lv .x-d{font-size:12px;color:#ffd84a;margin-top:4px}
+#gx .x-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+#gx .x-gb{font-size:19px;font-weight:900;padding:11px 26px;border-radius:18px;background:linear-gradient(90deg,#ff4fa3,#8b5cff);box-shadow:0 6px 0 #5a1d7a,0 0 24px rgba(255,79,163,.5)}
+#gx .x-gb:active{transform:translateY(4px);box-shadow:0 2px 0 #5a1d7a}#gx .x-gb.x-alt{background:linear-gradient(90deg,#1f8fff,#25d0e6);box-shadow:0 6px 0 #0d4d84}#gx .x-gb.x-gh{background:rgba(255,255,255,.12);box-shadow:0 6px 0 rgba(0,0,0,.4)}
+#gx .x-hint{text-align:center;font-size:13px;opacity:.85;margin-top:10px;line-height:1.7}
 #gx kbd{background:rgba(255,255,255,.15);border-radius:6px;padding:0 6px;border:1px solid rgba(255,255,255,.3);font-family:inherit}
-#gx .big{font-size:60px;font-weight:900;text-align:center;color:#ffd84a;text-shadow:0 0 24px rgba(255,216,74,.7);line-height:1}
-#gx .strs{font-size:44px;text-align:center;letter-spacing:8px}#gx .strs .off{filter:grayscale(1) brightness(.4)}
-#gx .rg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}#gx .rc{background:rgba(255,255,255,.07);border:1px solid rgba(140,220,255,.35);border-radius:14px;padding:8px;text-align:center}
-#gx .rc b{display:block;font-size:26px}#gx .rc i{font-style:normal;font-size:12px;opacity:.8}
+#gx .x-big{font-size:60px;font-weight:900;text-align:center;color:#ffd84a;text-shadow:0 0 24px rgba(255,216,74,.7);line-height:1}
+#gx .x-strs{font-size:44px;text-align:center;letter-spacing:8px}#gx .x-strs .x-off{filter:grayscale(1) brightness(.4)}
+#gx .x-rg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}#gx .x-rc{background:rgba(255,255,255,.07);border:1px solid rgba(140,220,255,.35);border-radius:14px;padding:8px;text-align:center}
+#gx .x-rc b{display:block;font-size:26px}#gx .x-rc i{font-style:normal;font-size:12px;opacity:.8}
 #gx table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}#gx th,#gx td{padding:6px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,.12)}#gx th{color:#3ff0ff}
-#gx .ok{color:#5dffb0}#gx .no{color:#ff6b88}#gx summary{cursor:pointer;font-weight:800;color:#3ff0ff}
-#gx .load{font-size:22px;font-weight:900;text-align:center}
-@media (max-width:640px){#gx .lvs{grid-template-columns:1fr}#gx .rg{grid-template-columns:repeat(2,1fr)}#gx .st{min-width:50px;padding:2px 7px}#gx .st b{font-size:16px}#gx .gtop{gap:3px}#gx .ib{width:36px}#gx .gq .ops{flex-wrap:wrap}#gx .op{flex:1 1 45%}#gx .gprog{top:58px}}`;
+#gx .x-ok{color:#5dffb0}#gx .x-no{color:#ff6b88}#gx summary{cursor:pointer;font-weight:800;color:#3ff0ff}
+#gx .x-load{font-size:22px;font-weight:900;text-align:center}
+@media (max-width:640px){#gx .x-lvs{grid-template-columns:1fr}#gx .x-rg{grid-template-columns:repeat(2,1fr)}#gx .x-st{min-width:50px;padding:2px 7px}#gx .x-st b{font-size:16px}#gx .x-gtop{gap:3px}#gx .x-ib{width:36px}#gx .x-gq .x-ops{flex-wrap:wrap}#gx .x-op{flex:1 1 45%}#gx .x-gprog{top:58px}}`;
 
 function ui(){
  if ($g("#gx")) return;
  const st = document.createElement("style"); st.textContent = CSS; document.head.appendChild(st);
- const d = document.createElement("div"); d.id = "gx"; d.className = "hid";
+ const d = document.createElement("div"); d.id = "gx"; d.className = "x-hid";
  d.innerHTML = `<canvas id="gxC"></canvas>
- <div id="gxHud" class="hid"><div class="gtop"><div class="st"><i>Score</i><b id="gxScore">0</b></div><div class="st"><i>Time</i><b id="gxTime">0.0</b></div><div class="st"><i>Speed</i><b id="gxSpd">0</b></div><div class="st"><i>Question</i><b id="gxQn">1/8</b></div><div class="st"><i>Streak</i><b id="gxCombo">×0</b></div><button class="ib" id="gxMute">🔊</button><button class="ib" id="gxPause">⏸</button></div>
-  <div class="gprog"><div id="gxProg"></div><span id="gxPs">🚀</span><em>🏁</em></div><div class="pops" id="gxPops"></div>
-  <div class="gq" id="gxQ"><h3 id="gxQt"></h3><div class="ops" id="gxOps"></div></div>
-  <button class="tch l" id="gxL">◀</button><button class="tch r" id="gxR">▶</button></div>
- <div class="cd hid" id="gxCd"></div>
- <div class="scr" id="gxMenu"></div><div class="scr hid" id="gxPauseS"></div><div class="scr hid" id="gxRes"></div>`;
+ <div id="gxHud" class="x-hid"><div class="x-gtop"><div class="x-st"><i>Score</i><b id="gxScore">0</b></div><div class="x-st"><i>Time</i><b id="gxTime">0.0</b></div><div class="x-st"><i>Speed</i><b id="gxSpd">0</b></div><div class="x-st"><i>Question</i><b id="gxQn">1/8</b></div><div class="x-st"><i>Streak</i><b id="gxCombo">×0</b></div><button class="x-ib" id="gxMute">🔊</button><button class="x-ib" id="gxPause">⏸</button></div>
+  <div class="x-gprog"><div id="gxProg"></div><span id="gxPs">🚀</span><em>🏁</em></div><div class="x-pops" id="gxPops"></div>
+  <div class="x-gq" id="gxQ"><h3 id="gxQt"></h3><div class="x-ops" id="gxOps"></div></div>
+  <button class="x-tch x-l" id="gxL">◀</button><button class="x-tch x-r" id="gxR">▶</button></div>
+ <div class="x-cd x-hid" id="gxCd"></div>
+ <div class="x-scr" id="gxMenu"></div><div class="x-scr x-hid" id="gxPauseS"></div><div class="x-scr x-hid" id="gxRes"></div>`;
  document.body.appendChild(d);
  $g("#gxMute").onclick = () => { A.setMuted(!A.muted); $g("#gxMute").textContent = A.muted ? "🔇" : "🔊"; };
  $g("#gxPause").onclick = () => pause(true);
  const lane = dir => { if (S && S.run) changeLane(dir); };
  $g("#gxL").onpointerdown = e => { e.preventDefault(); lane(-1); }; $g("#gxR").onpointerdown = e => { e.preventDefault(); lane(1); };
- let sx = null; d.addEventListener("pointerdown", e => { if (e.target.closest("button,.scr")) return; sx = e.clientX; });
+ let sx = null; d.addEventListener("pointerdown", e => { if (e.target.closest("button,.x-scr")) return; sx = e.clientX; });
  d.addEventListener("pointerup", e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 30) lane(dx > 0 ? 1 : -1); else if (S && S.run){ lane(e.clientX < innerWidth / 2 ? -1 : 1); } });
- addEventListener("keydown", e => { if ($g("#gx").classList.contains("hid")) return;
+ addEventListener("keydown", e => { if ($g("#gx").classList.contains("x-hid")) return;
   if (S && S.run && !S.paused){ if (["ArrowLeft", "a", "A"].includes(e.key)){ e.preventDefault(); lane(-1); } if (["ArrowRight", "d", "D"].includes(e.key)){ e.preventDefault(); lane(1); } }
   if (["p", "P", "Escape"].includes(e.key) && S && S.run) pause(!S.paused); });
  addEventListener("resize", () => R && resize());
@@ -9498,24 +9498,24 @@ function makeFinish(z, n){ const T = THREE, g = new T.Group(); g.position.z = z;
 /* ---------- screens ---------- */
 function best(){ try { const p = prof(); return p.race || {}; } catch(e){ return {}; } }
 function menu(){
- S = null; show("#gxMenu"); $g("#gxHud").classList.add("hid");
+ S = null; show("#gxMenu"); $g("#gxHud").classList.add("x-hid");
  const W = weeks(); if (sel.w == null) sel.w = W.length ? W[0].n : "all"; const B = best();
- $g("#gxMenu").innerHTML = `<div class="pnl"><div class="ttl">🚀 Galaxy Race</div><div class="sub">Fly your ship through the galaxy and crash into the RIGHT answer to blast forward!</div>
-  <div class="lbl">📅 Choose a week</div><div class="wks">${W.map(w => `<button class="wk ${sel.w === w.n ? "on" : ""}" data-w="${w.n}">Week ${w.n}</button>`).join("")}<button class="wk ${sel.w === "all" ? "on" : ""}" data-w="all">🌌 All weeks</button></div>
-  <div class="lbl" id="gxWt">${escH(sel.w === "all" ? "Questions from every week" : ((W.find(w => w.n === sel.w) || {}).title || ""))}</div>
-  <div class="lvs">${Object.entries(LV).map(([k, L]) => { const b = B[sel.w + "-" + k]; return `<button class="lv ${sel.l === k ? "on" : ""}" data-l="${k}" style="--c:${L.col}"><div class="a">${L.ic}</div><div class="b">${L.n}</div><div class="c">${L.ds}</div><div class="d">${b ? `🏅 Best: ${b.score} · ${"⭐".repeat(b.stars)}` : "No record yet"}</div></button>`; }).join("")}</div>
-  <div class="row"><button class="gb" id="gxGo">Launch! 🚀</button><button class="gb gh" id="gxBack">🏠 Back to map</button></div>
-  <div class="hint">Controls: <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to change lanes · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
+ $g("#gxMenu").innerHTML = `<div class="x-pnl"><div class="x-ttl">🚀 Galaxy Race</div><div class="x-sub">Fly your ship through the galaxy and crash into the RIGHT answer to blast forward!</div>
+  <div class="x-lbl">📅 Choose a week</div><div class="x-wks">${W.map(w => `<button class="x-wk ${sel.w === w.n ? "x-on" : ""}" data-w="${w.n}">Week ${w.n}</button>`).join("")}<button class="x-wk ${sel.w === "all" ? "x-on" : ""}" data-w="all">🌌 All weeks</button></div>
+  <div class="x-lbl" id="gxWt">${escH(sel.w === "all" ? "Questions from every week" : ((W.find(w => w.n === sel.w) || {}).title || ""))}</div>
+  <div class="x-lvs">${Object.entries(LV).map(([k, L]) => { const b = B[sel.w + "-" + k]; return `<button class="x-lv ${sel.l === k ? "x-on" : ""}" data-l="${k}" style="--c:${L.col}"><div class="x-a">${L.ic}</div><div class="x-b">${L.n}</div><div class="x-c">${L.ds}</div><div class="x-d">${b ? `🏅 Best: ${b.score} · ${"⭐".repeat(b.stars)}` : "No record yet"}</div></button>`; }).join("")}</div>
+  <div class="x-row"><button class="x-gb" id="gxGo">Launch! 🚀</button><button class="x-gb x-gh" id="gxBack">🏠 Back to map</button></div>
+  <div class="x-hint">Controls: <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to change lanes · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
  $g("#gxMenu").onclick = e => { const w = e.target.closest("[data-w]"), l = e.target.closest("[data-l]");
   if (w){ sel.w = w.dataset.w === "all" ? "all" : +w.dataset.w; menu(); return; } if (l){ sel.l = l.dataset.l; menu(); return; }
   if (e.target.closest("#gxGo")) start(); if (e.target.closest("#gxBack")) close(); };
 }
-function show(id){ ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.toggle("hid", s !== id)); }
+function show(id){ ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.toggle("x-hid", s !== id)); }
 
 /* ---------- game ---------- */
 function start(){
  A.init(); const L = LV[sel.l], Q = build(sel.l);
- if (!Q.length){ $g("#gxMenu .sub").textContent = "No questions found for this week."; return; }
+ if (!Q.length){ $g("#gxMenu .x-sub").textContent = "No questions found for this week."; return; }
  clearObjs(); R.trail.clear(); R.fx.clear();
  const n = L.lanes, trackW = n * LW + 3;
  R.floor.scale.x = trackW; R.floorMat.uniforms.halfW.value = trackW / 2; R.floorMat.uniforms.lanes.value = n;
@@ -9530,45 +9530,45 @@ function start(){
  const par = -finZ / L.speed;
  S = { L, Q, n, gates, gems, rocks, finZ, par, z:0, x:0, lane:Math.floor((n - 1) / 2), speed:0, boost:0, slow:0, inv:0, t:0, cd:3.2, run:true, paused:false, over:false,
   score:0, qPts:0, gemPts:0, pen:0, correct:0, streak:0, bestStreak:0, gemN:0, rockN:0, qi:0, review:[], roll:0, shake:0 };
- R.ship.position.set(0, 1.2, 0); show(null); ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.add("hid"));
- $g("#gxHud").classList.remove("hid"); showQ(); hud(); countdown();
+ R.ship.position.set(0, 1.2, 0); show(null); ["#gxMenu", "#gxPauseS", "#gxRes"].forEach(s => $g(s).classList.add("x-hid"));
+ $g("#gxHud").classList.remove("x-hid"); showQ(); hud(); countdown();
  cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(loop);
 }
-function countdown(){ const cd = $g("#gxCd"); cd.classList.remove("hid"); let k = 3; const step = () => { if (!S) return; cd.innerHTML = `<span>${k > 0 ? k : "GO!"}</span>`; A.beep(k <= 0); if (k-- > 0) setTimeout(step, 900); else { setTimeout(() => cd.classList.add("hid"), 700); A.music(true); } }; step(); }
-function showQ(){ const g = S.gates[S.qi]; if (!g){ $g("#gxQ").classList.add("hid"); return; } $g("#gxQ").classList.remove("hid");
+function countdown(){ const cd = $g("#gxCd"); cd.classList.remove("x-hid"); let k = 3; const step = () => { if (!S) return; cd.innerHTML = `<span>${k > 0 ? k : "GO!"}</span>`; A.beep(k <= 0); if (k-- > 0) setTimeout(step, 900); else { setTimeout(() => cd.classList.add("x-hid"), 700); A.music(true); } }; step(); }
+function showQ(){ const g = S.gates[S.qi]; if (!g){ $g("#gxQ").classList.add("x-hid"); return; } $g("#gxQ").classList.remove("x-hid");
  const it = g.it; $g("#gxQt").textContent = it.text;
- $g("#gxOps").innerHTML = it.opts.map((o, i) => `<div class="op ${i === S.lane ? "on" : ""}"><u style="background:${LCOL[i]}">${LETTER[i]}</u><span>${escH(o)}</span></div>`).join("");
- const q = $g("#gxQ"); q.classList.remove("swap"); void q.offsetWidth; q.classList.add("swap"); }
+ $g("#gxOps").innerHTML = it.opts.map((o, i) => `<div class="x-op ${i === S.lane ? "x-on" : ""}"><u style="background:${LCOL[i]}">${LETTER[i]}</u><span>${escH(o)}</span></div>`).join("");
+ const q = $g("#gxQ"); q.classList.remove("x-swap"); void q.offsetWidth; q.classList.add("x-swap"); }
 function hud(){ $g("#gxScore").textContent = Math.round(S.score); $g("#gxTime").textContent = S.t.toFixed(1); $g("#gxSpd").textContent = Math.round(S.speed * 3.6); $g("#gxQn").textContent = `${Math.min(S.qi + 1, S.Q.length)}/${S.Q.length}`; $g("#gxCombo").textContent = "×" + S.streak;
  const f = Math.min(1, S.z / S.finZ); $g("#gxProg").style.width = f * 100 + "%"; $g("#gxPs").style.left = f * 100 + "%"; }
-function pop(big, cls, mid){ const p = $g("#gxPops"); p.innerHTML = `<div class="pop big ${cls}">${big}</div>${mid ? `<div class="pop mid ${cls}">${mid}</div>` : ""}`; }
-function changeLane(d){ if (!S || S.over || S.paused) return; const nl = Math.max(0, Math.min(S.n - 1, S.lane + d)); if (nl === S.lane) return; S.lane = nl; S.roll = -d * .5; A.lane(); document.querySelectorAll("#gxOps .op").forEach((o, i) => o.classList.toggle("on", i === S.lane)); }
+function pop(big, cls, mid){ const p = $g("#gxPops"); p.innerHTML = `<div class="x-pop x-big ${cls}">${big}</div>${mid ? `<div class="x-pop x-mid ${cls}">${mid}</div>` : ""}`; }
+function changeLane(d){ if (!S || S.over || S.paused) return; const nl = Math.max(0, Math.min(S.n - 1, S.lane + d)); if (nl === S.lane) return; S.lane = nl; S.roll = -d * .5; A.lane(); document.querySelectorAll("#gxOps .x-op").forEach((o, i) => o.classList.toggle("x-on", i === S.lane)); }
 function pause(on){ if (!S || S.over) return; S.paused = on; A.music(!on); A.engine(0, !on);
- if (on){ $g("#gxPauseS").innerHTML = `<div class="pnl" style="width:min(420px,100%);text-align:center"><div class="ttl" style="font-size:40px">⏸ Paused</div><div class="row" style="flex-direction:column;margin-top:12px"><button class="gb" id="gxRes1">Continue</button><button class="gb alt" id="gxRe">Restart</button><button class="gb gh" id="gxQuit">Choose another race</button></div></div>`; show("#gxPauseS");
+ if (on){ $g("#gxPauseS").innerHTML = `<div class="x-pnl" style="width:min(420px,100%);text-align:center"><div class="x-ttl" style="font-size:40px">⏸ Paused</div><div class="x-row" style="flex-direction:column;margin-top:12px"><button class="x-gb" id="gxRes1">Continue</button><button class="x-gb x-alt" id="gxRe">Restart</button><button class="x-gb x-gh" id="gxQuit">Choose another race</button></div></div>`; show("#gxPauseS");
   $g("#gxRes1").onclick = () => pause(false); $g("#gxRe").onclick = () => start(); $g("#gxQuit").onclick = () => { cancelAnimationFrame(raf); A.music(false); A.engine(0, false); menu(); }; }
- else { $g("#gxPauseS").classList.add("hid"); last = performance.now(); } }
+ else { $g("#gxPauseS").classList.add("x-hid"); last = performance.now(); } }
 function answer(g){
  const it = g.it, ln = S.lane, ok = ln === it.ans, P = g.userData.panels[ln], wp = new THREE.Vector3(); P.getWorldPosition(wp);
  S.review.push({ q:it.text, you:it.opts[ln], right:it.right, ok });
  if (ok){ S.correct++; S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak); const pts = S.L.base + Math.min(5, S.streak - 1) * 25 + Math.round(Math.max(0, S.speed - S.L.speed) * 2); S.score += pts; S.qPts += pts; S.boost = 2.6;
-  P.userData.fm.color.setRGB(.4, 3, 1); R.fx.burst(wp, 90, 26, [[.4, 2.5, 1.2], [2, 2, .6], [.6, 2, 2.6]], 1.2); A.ok(); pop(pick2(["AMAZING! ⭐", "BOOST! 🚀", "SUPER! 💫", "BRILLIANT! 🌟"]), "good", `+${pts}${S.streak > 1 ? ` · streak ×${S.streak}` : ""}`); }
+  P.userData.fm.color.setRGB(.4, 3, 1); R.fx.burst(wp, 90, 26, [[.4, 2.5, 1.2], [2, 2, .6], [.6, 2, 2.6]], 1.2); A.ok(); pop(pick2(["AMAZING! ⭐", "BOOST! 🚀", "SUPER! 💫", "BRILLIANT! 🌟"]), "x-good", `+${pts}${S.streak > 1 ? ` · streak ×${S.streak}` : ""}`); }
  else { S.streak = 0; S.slow = 1.6; S.shake = .4; P.userData.fm.color.setRGB(3, .3, .5); R.fx.burst(wp, 50, 18, [[2.5, .4, .5], [2, 1, .3]], 1); A.bad();
-  pop("Oops! ❌", "bad", `The answer is ${LETTER[it.ans]}) ${it.right}`); }
+  pop("Oops! ❌", "x-bad", `The answer is ${LETTER[it.ans]}) ${it.right}`); }
  S.qi++; showQ(); }
 const pick2 = a => a[Math.random() * a.length | 0];
 function finish(){
- S.over = true; S.run = false; A.music(false); A.engine(0, false); A.win(); $g("#gxQ").classList.add("hid");
+ S.over = true; S.run = false; A.music(false); A.engine(0, false); A.win(); $g("#gxQ").classList.add("x-hid");
  const n = S.Q.length, acc = S.correct / n, tb = Math.max(0, Math.round((S.par * 1.1 - S.t) * 15)) * (acc >= .5 ? 1 : 0), total = Math.max(0, Math.round(S.qPts + S.gemPts + tb - S.pen));
  const stars = acc >= .9 ? 3 : acc >= .7 ? 2 : acc >= .4 ? 1 : 0, coinsW = S.correct * 5 + S.gemN + stars * 5;
  let saved = false, newBest = false;
  try { const p = prof(); p.bonus = (p.bonus || 0) + coinsW; p.race = p.race || {}; const k = sel.w + "-" + sel.l, o = p.race[k]; if (!o || total > o.score){ p.race[k] = { score:total, stars, time:+S.t.toFixed(1), acc:Math.round(acc * 100), d:Date.now() }; newBest = true; } saveProf(p); saved = true; } catch(e){}
  setTimeout(() => {
-  $g("#gxRes").innerHTML = `<div class="pnl"><div class="ttl" style="font-size:clamp(28px,5vw,44px)">🏁 You reached the finish!</div><div class="sub">${escH(USERN())} · Week ${sel.w === "all" ? "mix" : sel.w} · ${LV[sel.l].ic} ${LV[sel.l].n}${newBest ? " · 🏅 NEW BEST!" : ""}</div>
-   <div class="strs">${[0, 1, 2].map(i => `<span class="${i < stars ? "" : "off"}">⭐</span>`).join("")}</div><div class="big">${total}</div><div class="sub">total points · +${coinsW} 🪙 coins${saved ? " added to your wallet" : ""}</div>
-   <div class="rg"><div class="rc"><b class="ok">${S.correct}/${n}</b><i>correct</i></div><div class="rc"><b>${Math.round(acc * 100)}%</b><i>accuracy</i></div><div class="rc"><b>${S.t.toFixed(1)}s</b><i>finish time</i></div><div class="rc"><b>${S.bestStreak}</b><i>best streak</i></div></div>
+  $g("#gxRes").innerHTML = `<div class="x-pnl"><div class="x-ttl" style="font-size:clamp(28px,5vw,44px)">🏁 You reached the finish!</div><div class="x-sub">${escH(USERN())} · Week ${sel.w === "all" ? "mix" : sel.w} · ${LV[sel.l].ic} ${LV[sel.l].n}${newBest ? " · 🏅 NEW BEST!" : ""}</div>
+   <div class="x-strs">${[0, 1, 2].map(i => `<span class="${i < stars ? "" : "x-off"}">⭐</span>`).join("")}</div><div class="x-big">${total}</div><div class="x-sub">total points · +${coinsW} 🪙 coins${saved ? " added to your wallet" : ""}</div>
+   <div class="x-rg"><div class="x-rc"><b class="x-ok">${S.correct}/${n}</b><i>correct</i></div><div class="x-rc"><b>${Math.round(acc * 100)}%</b><i>accuracy</i></div><div class="x-rc"><b>${S.t.toFixed(1)}s</b><i>finish time</i></div><div class="x-rc"><b>${S.bestStreak}</b><i>best streak</i></div></div>
    <table><tr><th>Question points</th><th>Crystals 💎</th><th>Time bonus ⏱️</th><th>Asteroids ☄️</th></tr><tr><td>${S.qPts}</td><td>+${S.gemPts}</td><td>+${tb}</td><td>-${S.pen}</td></tr></table>
-   <details><summary>📋 Review the questions</summary><table><tr><th>Question</th><th>Your answer</th><th>Right answer</th></tr>${S.review.map(r => `<tr><td style="text-align:left">${escH(r.q)}</td><td class="${r.ok ? "ok" : "no"}">${r.ok ? "✅" : "❌"} ${escH(r.you)}</td><td>${escH(r.right)}</td></tr>`).join("")}</table></details>
-   <div class="row" style="margin-top:12px"><button class="gb" id="gxAgain">Play again 🔁</button><button class="gb alt" id="gxMenuB">Change race</button><button class="gb gh" id="gxHome">🏠 Back to map</button></div></div>`;
+   <details><summary>📋 Review the questions</summary><table><tr><th>Question</th><th>Your answer</th><th>Right answer</th></tr>${S.review.map(r => `<tr><td style="text-align:left">${escH(r.q)}</td><td class="${r.ok ? "x-ok" : "x-no"}">${r.ok ? "✅" : "❌"} ${escH(r.you)}</td><td>${escH(r.right)}</td></tr>`).join("")}</table></details>
+   <div class="x-row" style="margin-top:12px"><button class="x-gb" id="gxAgain">Play again 🔁</button><button class="x-gb x-alt" id="gxMenuB">Change race</button><button class="x-gb x-gh" id="gxHome">🏠 Back to map</button></div></div>`;
   show("#gxRes"); $g("#gxAgain").onclick = () => start(); $g("#gxMenuB").onclick = () => { cancelAnimationFrame(raf); menu(); }; $g("#gxHome").onclick = () => close();
  }, 1300);
 }
@@ -9586,7 +9586,7 @@ function loop(now){
    S.speed += (tgt - S.speed) * Math.min(1, dt * 2.2); S.z -= S.speed * dt;
    const g = S.gates[S.qi]; if (g && S.z <= g.z) answer(g);
    for (const m of S.gems){ if (m.userData.got) continue; if (Math.abs(m.position.z - S.z) < 1.6 && Math.abs(m.position.x - S.x) < 2.2){ m.userData.got = 1; m.visible = false; S.gemN++; S.gemPts += 25; S.score += 25; A.gem(); R.fx.burst(m.position, 30, 10, [[2.5, 2, .4], [2, 1.6, .3]], .7); } }
-   for (const m of S.rocks){ if (m.userData.hit) continue; if (Math.abs(m.position.z - S.z) < 2 && Math.abs(m.position.x - S.x) < 2.6){ m.userData.hit = 1; m.visible = false; if (S.inv <= 0){ S.rockN++; S.pen += 50; S.score = Math.max(0, S.score - 50); S.slow = 1.2; S.shake = .6; S.inv = 1; A.hit(); pop("☄️ CRASH!", "bad", "-50 · dodge the asteroids!"); } R.fx.burst(m.position, 60, 16, [[2, .9, .3], [1.4, .6, .8]], 1); } }
+   for (const m of S.rocks){ if (m.userData.hit) continue; if (Math.abs(m.position.z - S.z) < 2 && Math.abs(m.position.x - S.x) < 2.6){ m.userData.hit = 1; m.visible = false; if (S.inv <= 0){ S.rockN++; S.pen += 50; S.score = Math.max(0, S.score - 50); S.slow = 1.2; S.shake = .6; S.inv = 1; A.hit(); pop("☄️ CRASH!", "x-bad", "-50 · dodge the asteroids!"); } R.fx.burst(m.position, 60, 16, [[2, .9, .3], [1.4, .6, .8]], 1); } }
    if (S.z <= S.finZ) finish();
    if (((S.t * 10) | 0) !== (((S.t - dt) * 10) | 0)) hud();
   }
@@ -9612,7 +9612,7 @@ function loop(now){
   // camera: fit the whole track width (portrait phones too)
   const trackHalf = S.n * LW / 2 + 1.5, hf = 2 * Math.atan(Math.tan(R.cam.fov * Math.PI / 360) * R.cam.aspect), dist = Math.max(11, trackHalf / Math.tan(hf / 2) * .9);
   const sh = S.shake > 0 ? (S.shake -= dt, S.shake * .6) : 0;
-  R.cam.position.set(S.x * .45 + rnd(-sh, sh), 3.4 + dist * .32, S.z + dist); R.cam.lookAt(S.x * .3, 1.8, S.z - 24);
+  R.cam.position.set(S.x * .45 + rnd(-sh, sh), 4.6 + dist * .42, S.z + dist); R.cam.lookAt(S.x * .3, 0, S.z - 22);
   R.cam.fov += ((S.boost > 0 ? 76 : 66) - R.cam.fov) * Math.min(1, dt * 3); R.cam.updateProjectionMatrix();
  }
  if (R.comp) R.comp.render(); else R.ren.render(R.scene, R.cam);
@@ -9620,17 +9620,17 @@ function loop(now){
 
 /* ---------- open / close ---------- */
 async function open(){
- ui(); const ov = $g("#gx"); ov.classList.remove("hid"); show("#gxMenu");
- $g("#gxMenu").innerHTML = `<div class="pnl"><div class="load">🚀 Loading the galaxy…</div></div>`;
- const ok = await load3D(); if (!ok){ $g("#gxMenu").innerHTML = `<div class="pnl"><div class="load">😕 The 3D race needs an internet connection to load.</div><div class="row" style="margin-top:12px"><button class="gb gh" id="gxBack2">🏠 Back to map</button></div></div>`; $g("#gxBack2").onclick = close; return; }
- try { setup(); resize(); } catch(e){ console.error(e); $g("#gxMenu").innerHTML = `<div class="pnl"><div class="load">😕 This device can't show 3D graphics.</div><div class="row" style="margin-top:12px"><button class="gb gh" id="gxBack2">🏠 Back to map</button></div></div>`; $g("#gxBack2").onclick = close; return; }
+ ui(); const ov = $g("#gx"); ov.classList.remove("x-hid"); show("#gxMenu");
+ $g("#gxMenu").innerHTML = `<div class="x-pnl"><div class="x-load">🚀 Loading the galaxy…</div></div>`;
+ const ok = await load3D(); if (!ok){ $g("#gxMenu").innerHTML = `<div class="x-pnl"><div class="x-load">😕 The 3D race needs an internet connection to load.</div><div class="x-row" style="margin-top:12px"><button class="x-gb x-gh" id="gxBack2">🏠 Back to map</button></div></div>`; $g("#gxBack2").onclick = close; return; }
+ try { setup(); resize(); } catch(e){ console.error(e); $g("#gxMenu").innerHTML = `<div class="x-pnl"><div class="x-load">😕 This device can't show 3D graphics.</div><div class="x-row" style="margin-top:12px"><button class="x-gb x-gh" id="gxBack2">🏠 Back to map</button></div></div>`; $g("#gxBack2").onclick = close; return; }
  menu(); cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(idle);
 }
 function idle(now){ if (S) return; raf = requestAnimationFrame(idle); const z = -now * .02; R.ship.position.set(0, 1.25 + Math.sin(now * .003) * .12, z); R.cam.position.set(Math.sin(now * .0003) * 6, 5, z + 13); R.cam.lookAt(0, 1.5, z - 10);
  R.floor.position.z = z - 420; R.rails.forEach(r => r.position.z = z - 420); R.sky.position.z = z; R.stars.position.z = z; R.sky.material.uniforms.time.value = now / 1000; R.glowU.position.set(0, .05, z);
  R.planets.children.forEach(p => p.position.z = p.userData.base.z + z * .9); R.arches.forEach(a => { if (a.position.z > z + 20) a.position.z -= 14 * 55; });
  if (R.comp) R.comp.render(); else R.ren.render(R.scene, R.cam); }
-function close(){ cancelAnimationFrame(raf); A.music(false); A.engine(0, false); S = null; const ov = $g("#gx"); if (ov) ov.classList.add("hid"); try { if (typeof renderMap === "function") renderMap(); } catch(e){} try { if (typeof updateChips === "function") updateChips(); } catch(e){} }
+function close(){ cancelAnimationFrame(raf); A.music(false); A.engine(0, false); S = null; const ov = $g("#gx"); if (ov) ov.classList.add("x-hid"); try { if (typeof renderMap === "function") renderMap(); } catch(e){} try { if (typeof updateChips === "function") updateChips(); } catch(e){} }
 window.openGalaxy = open; window.__gx = () => S;
 })();
 
