@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795591074";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795591684";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -50,6 +50,8 @@ img{user-select:none;-webkit-user-drag:none}
 .ibtn{width:clamp(46px,4.4vw,66px);height:clamp(46px,4.4vw,66px);display:inline-grid;place-items:center;transition:transform .12s;flex:none}
 .ibtn img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
 .ibtn:active{transform:scale(.92)}
+.wkb{flex:none;width:clamp(38px,3.8vw,56px);height:clamp(38px,3.8vw,56px);border-radius:50%;display:inline-grid;place-items:center;font-size:clamp(17px,1.9vw,26px);background:linear-gradient(#7b5cff,#4a2fb5);border:3px solid #e9b949;box-shadow:0 3px 6px rgba(0,0,0,.3);cursor:pointer;padding:0;line-height:1}
+.wkb:active{transform:scale(.92)}
 .chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.92);color:var(--pd);border-radius:999px;padding:6px 14px;font-weight:800;font-size:clamp(14px,1.3vw,19px);box-shadow:0 3px 10px rgba(20,10,80,.25);white-space:nowrap}
 .chip img{width:22px;height:22px;flex:none;object-fit:contain}.chip{flex-shrink:0}
 @media (max-width:440px){#home .who b{display:none}#home .who{padding:3px}#home .top .round{width:42px;height:42px;font-size:20px}}
@@ -564,7 +566,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 <section id="quiz" class="screen">
  <div class="bg" id="qbg" style="background-image:url(img/bg_quiz.webp)"></div>
  <div class="top">
-  <button class="ibtn" id="qHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button>
+  <button class="ibtn" id="qHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button><button class="wkb" id="qWeek" aria-label="Back to this week's missions" title="Week missions">📋</button>
   <div class="prog"><div class="bar"><i id="qBar" style="width:0"></i></div><span class="chip" id="qCount">1 / 10</span></div>
   <span class="chip hide-sm" id="qStreak">🔥 0</span>
   <button class="round" id="qSound" aria-label="Sound on/off">🔊</button>
@@ -635,7 +637,7 @@ td.nm{font-weight:800;color:var(--pd);cursor:pointer;text-decoration:underline d
 <section id="game" class="screen">
  <div class="gworld" id="gworld"></div>
  <div class="top">
-  <button class="ibtn" id="gHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button>
+  <button class="ibtn" id="gHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button><button class="wkb" id="gWeek" aria-label="Back to this week's missions" title="Week missions">📋</button>
   <div class="prog"><div class="bar"><i id="gBar" style="width:0"></i></div><span class="gchip" id="gCount">1/10</span></div>
   <span class="gchip"><img src="img/o_coin.webp" alt=""><span id="gCoins">0</span></span>
   <span class="gchip combo" id="gCombo">x1</span>
@@ -1111,11 +1113,15 @@ $("#bRead").onclick = () => {
 };
 function bankCoins(){ if (!G || G.over || !USER) return; const d = (G.coins || 0) - (G.banked || 0); if (d > 0){ const p = prof(); p.bonus += d; saveProf(p); G.banked = G.coins; } }
 addEventListener("pagehide", bankCoins); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") bankCoins(); });
-$("#qHome").onclick = () => {
- modal(`<div class="whead"><img src="img/m_oops.webp" alt=""><div><h2 class="h">Leave this mission?</h2><p>Your score in this try will not be saved — but you keep the <b>${G && G.coins ? G.coins : 0} coins</b> you collected! 🪙</p></div></div>
-  <div class="racts"><button class="btn teal" data-close>Keep playing</button><button class="btn cor" id="bQuit">Leave</button></div>`);
-};
-$("#modal").addEventListener("click", e => { if (e.target.id === "bQuit"){ closeModal(); if (window.speechSynthesis) speechSynthesis.cancel(); bankCoins(); clearTimers(); Q = null; G = null; document.querySelectorAll(".gnext,.mbox").forEach(x => x.remove()); goHome(); } });
+function askLeave(wk){
+ const toW = wk && Q && !Q.custom && Q.w;
+ modal(`<div class="whead"><img src="img/m_oops.webp" alt=""><div><h2 class="h">${toW ? "Back to the week missions?" : "Leave this mission?"}</h2><p>Your score in this try will not be saved — but you keep the <b>${G && G.coins ? G.coins : 0} coins</b> you collected! 🪙</p></div></div>
+  <div class="racts"><button class="btn teal" data-close>Keep playing</button>${Q && !Q.custom && Q.w ? `<button class="btn" id="bQuit" data-wk="1">📋 Week missions</button>` : ""}<button class="btn cor" id="bQuit2">🏠 Main map</button></div>`);
+}
+$("#qHome").onclick = () => askLeave(false);
+$("#qWeek").onclick = () => askLeave(true);
+window.askLeave = askLeave;
+$("#modal").addEventListener("click", e => { const b = e.target.closest("#bQuit,#bQuit2"); if (b){ const wi = b.dataset.wk && Q && !Q.custom ? Q.wi : null; closeModal(); if (window.speechSynthesis) speechSynthesis.cancel(); bankCoins(); clearTimers(); Q = null; G = null; document.querySelectorAll(".gnext,.mbox").forEach(x => x.remove()); goHome(); if (wi != null) setTimeout(() => openWeek(wi), 350); } });
 
 /* ---------------- finish & results ---------------- */
 async function finish(){
@@ -1950,7 +1956,7 @@ $("#gHint").onclick = () => {
 };
 $("#gRead").onclick = () => $("#bRead").onclick();
 $("#gSound").onclick = toggleSound;
-$("#gHome").onclick = () => $("#qHome").onclick();
+$("#gHome").onclick = () => $("#qHome").onclick(); $("#gWeek").onclick = () => askLeave(true);
 function gameResultExtras(a, pct){
  if (!G) return "";
  if (G.gems && !G.gemsDone){ G.gemsDone = 1; const pg = prof(); pg.gems = (pg.gems || 0) + G.gems; saveProf(pg); }
@@ -2076,8 +2082,8 @@ css.textContent = `
 #arcLayer>*{pointer-events:auto}
 .ahud{position:absolute;left:0;right:0;top:0;z-index:20;display:flex;align-items:center;gap:clamp(5px,1vmin,12px);padding:calc(8px + env(safe-area-inset-top)) 10px 8px;pointer-events:none}
 .ahud>*{pointer-events:auto}
-.ahud .ibtn{width:clamp(42px,6vmin,64px);height:clamp(42px,6vmin,64px)}
-.aprog{flex:1;height:clamp(10px,1.6vmin,16px);background:rgba(255,255,255,.35);border-radius:99px;overflow:hidden;min-width:40px}
+.ahud .ibtn{width:clamp(42px,6vmin,64px);height:clamp(42px,6vmin,64px)}.ahud .wkb{width:clamp(36px,5vmin,54px);height:clamp(36px,5vmin,54px);font-size:clamp(16px,2.4vmin,24px)}
+.aprog{flex:1;height:clamp(10px,1.6vmin,16px);background:rgba(255,255,255,.35);border-radius:99px;overflow:hidden;min-width:16px}
 .aprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFC93C,#FF6B8B);border-radius:99px;transition:width .4s}
 .achip{display:inline-flex;align-items:center;gap:5px;background:rgba(28,15,85,.78);color:#fff;border-radius:99px;padding:5px 11px;font-weight:800;font-size:clamp(14px,2.3vmin,24px);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .achip img{width:1.35em;height:1.35em;object-fit:contain}
@@ -2200,7 +2206,7 @@ document.head.appendChild(css);
 const sec = document.createElement("section");
 sec.id = "arc"; sec.className = "screen";
 sec.innerHTML = `<canvas id="arcCv"></canvas><div id="arcLayer"></div>
- <div class="ahud"><button class="ibtn" id="aHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button>
+ <div class="ahud"><button class="ibtn" id="aHome" aria-label="Back to map"><img src="img/btn_home.webp" alt=""></button><button class="wkb" id="aWeek" aria-label="Back to this week's missions" title="Week missions">📋</button>
   <div class="aprog"><i id="aBar"></i></div><span class="achip" id="aCount">1/1</span><span class="achip" id="aHearts"></span>
   <span class="achip"><img src="img/o_coin.webp" alt=""><b id="aCoins">0</b></span><span class="achip combo" id="aCombo">x1</span>
   <button class="round" id="aSound" aria-label="Sound on/off">🔊</button></div>
@@ -2241,7 +2247,7 @@ function fl(t, x, y){ const r = sec.getBoundingClientRect(), d = document.create
 function coin1(){ if (!G || !G.rep) return 1; G.half = !G.half; return G.half ? 1 : 0; }
 function coins(n, x, y){ if (G.rep) n = Math.ceil(n / 2); G.coins += n; G.extra += n; hud(); if (x != null) fl("+" + n + " 🪙", x, y); }
 $("#aSound").onclick = () => { toggleSound(); $("#aSound").textContent = SOUND ? "🔊" : "🔇"; };
-$("#aHome").onclick = () => $("#qHome").onclick();
+$("#aHome").onclick = () => $("#qHome").onclick(); $("#aWeek").onclick = () => window.askLeave(true);
 
 /* ---------------- question card (shared) ---------------- */
 let AQ = null;
@@ -4238,7 +4244,7 @@ function makePH(){
  G.hearts = 3; G.gems = 0; G.neutral = 0; G.caught = 0;
  const s = { t:0, bx:.5, tx:.5, ph:pick([2, 3, 11, 12]), drops:[], parts:[], state:"free", freeT:9, spawn:.4, inv:0, pose:"stand", poseT:0, msg:null, qd:[], flash:0, started:false };
  let A = playArea({});
- const P = qPanel({ pick:k => { const d = s.qd[k]; if (d && !d.dead) s.tx = d.x; }, hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont() });
+ const P = qPanel({ pick:k => { const d = s.qd[k]; if (d && !d.dead){ s.tx = d.x; s.wait = 0; } }, hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont() });
  const geo = () => { A = playArea(P); };
  const BW = () => Math.min(A.w * .2, A.h * .22), BY = () => A.y1 - BW() * .95;
  function newDrop(){ const r = Math.random(); let k;
@@ -4258,7 +4264,7 @@ function makePH(){
   }
  }
  function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = [];
-  for (let k = 0; k < n; k++) s.qd.push({ k, x:(k + .5) / n, y:-.1 - k * .03, dead:false }); s.state = "q"; }, 60); }
+  for (let k = 0; k < n; k++) s.qd.push({ k, x:(k + .5) / n, y:-.1 - k * .03, dead:false }); s.state = "q"; s.wait = readT(); }, 60); }
  function choose(k){
   if (s.state !== "q" || Q.answered) return; const d = s.qd[k]; if (!d || d.dead) return;
   const r = grade(k); P.mark(k, r);
@@ -4281,8 +4287,8 @@ function makePH(){
   const fall = d => { d.y += d.v * dt; if (Math.abs(d.x - s.bx) < bw * .5 && d.y > by - .02 && d.y < by + .06) return true; return false; };
   for (const d of s.drops){ if (d.dead) continue; if (fall(d)) catchDrop(d); if (d.y > 1.1) d.dead = true; }
   s.drops = s.drops.filter(d => !d.dead);
-  if (s.state === "q"){ for (const d of s.qd){ if (d.dead) continue; d.y += (.12 + hard * .03) * dt; if (Math.abs(d.x - s.bx) < bw * .5 && d.y > by - .02 && d.y < by + .06){ choose(d.k); break; } }
-   if (s.state === "q" && s.qd.every(d => d.dead || d.y > 1.05)){ s.qd.forEach(d => { if (!d.dead) d.y = -.1 - d.k * .03; }); s.msg = { t:"🔁 Catch the drop with the right letter!", life:2, c:"#ffe9b0" }; } }
+  if (s.state === "q"){ if (s.wait > 0) s.wait -= dt; for (const d of s.qd){ if (d.dead) continue; if (s.wait > 0){ d.y += (.17 - d.y) * Math.min(1, dt * 3); continue; } d.y += (.085 + hard * .02) * dt; if (Math.abs(d.x - s.bx) < bw * .5 && d.y > by - .02 && d.y < by + .06){ choose(d.k); break; } }
+   if (s.state === "q" && s.qd.every(d => d.dead || d.y > 1.05)){ s.qd.forEach(d => { if (!d.dead) d.y = -.1 - d.k * .03; }); s.wait = 3; s.msg = { t:"🔁 Catch the drop with the right letter!", life:2, c:"#ffe9b0" }; } }
   s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 1.5 * dt; }); s.parts = s.parts.filter(p => p.life > 0);
   if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>🧂 ${G.neutral}</span><span>💎 ${G.gems}/3</span>`; }
  }
@@ -4314,8 +4320,8 @@ function makePH(){
    cx.fillStyle = COLS[Math.round(clamp(s.ph, 0, 14))]; cx.globalAlpha = .85; cx.beginPath(); cx.ellipse(bx, by + h * .14, bw * .36, h * .08, 0, 0, 7); cx.fill(); cx.restore(); }
   if (s.flash > 0){ cx.fillStyle = `rgba(255,255,255,${s.flash * .5})`; cx.fillRect(0, 0, W, H); }
   // goal / messages
-  const goal = s.state === "free" ? (Math.abs(s.ph - 7) < .01 ? "✅ NEUTRAL!" : s.ph < 7 ? "🍋 Too ACIDIC → catch BASES 🟣" : "🧼 Too BASIC → catch ACIDS 🔴") : s.state === "q" ? "🪣 Catch the drop with the right answer!" : "";
-  const txt = s.msg ? s.msg.t : goal;
+  const goal = s.state === "free" ? (Math.abs(s.ph - 7) < .01 ? "✅ NEUTRAL!" : s.ph < 7 ? "🍋 Too ACIDIC → catch BASES 🟣" : "🧼 Too BASIC → catch ACIDS 🔴") : s.state === "q" ? (s.wait > 0 ? `🤔 Read the question… drops fall in ${Math.ceil(s.wait)}` : "🪣 Catch the drop with the right answer!") : "";
+  const txt = s.msg && !(s.state === "q" && s.wait > 0) ? s.msg.t : goal;
   if (txt){ cx.font = `900 ${Math.max(14, Math.min(21, A.w * .03))}px 'Baloo 2',sans-serif`; const tw = cx.measureText(txt).width + 30, tx = A.x0 + A.w / 2; cx.fillStyle = "rgba(31,40,56,.88)"; rr(tx - tw / 2, A.y0 + 6, tw, 38, 14); cx.fill(); cx.fillStyle = s.msg ? s.msg.c : "#ffe9b0"; cx.textAlign = "center"; cx.fillText(txt, tx, A.y0 + 25); }
   if (!s.started){ cx.fillStyle = "rgba(31,40,56,.88)"; const tw = Math.min(A.w * .9, 480), tx = A.x0 + A.w / 2, ty = A.y0 + A.h * .35; rr(tx - tw / 2, ty, tw, 90, 16); cx.fill();
    cx.fillStyle = "#ffe9b0"; cx.font = "900 18px 'Baloo 2',sans-serif"; cx.fillText("👆 Drag to move the bucket. Make it pH 7!", tx, ty + 28); cx.fillStyle = "#fff"; cx.fillText("Tap to start!", tx, ty + 62); }
@@ -4342,6 +4348,7 @@ document.head.appendChild(g6css);
 function rr6(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
 function pill6(txt, x, y, col, fs){ cx.font = `900 ${fs}px 'Baloo 2',sans-serif`; const tw = cx.measureText(txt).width + 26; cx.fillStyle = "rgba(31,40,56,.88)"; rr6(x - tw / 2, y - fs * .95, tw, fs * 1.9, 14); cx.fill(); cx.fillStyle = col || "#ffe9b0"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(txt, x, y); }
 
+function readT(){ const it = Q.items[Q.i], q = it.q, w = (q.q + " " + it.order.map(i => q.o[i]).join(" ")).split(/\s+/).length; return clamp(3 + w * .28, 5, 14) * (G && G.slow ? 1.3 : 1); }
 /* ---------------- KART RUSH: tap to jump, hit the right answer sign ---------------- */
 function makeSpeed(SK){
  SK = Object.assign({ bg:"w5_bg", karts:["k5_teal", "k5_purple", "k5_yellow"], en:"en5_", ens:["tire", "cone", "robot"], coin:"w5_coin", gem:"w5_bolt", flag:"d5_flag", win:"🏆 RACE CHAMPION!", big:["tire"] }, SK || {});
@@ -4352,7 +4359,7 @@ function makeSpeed(SK){
  const s = { t:0, cam:0, h:0, vy:0, objs:[], signs:null, parts:[], inv:0, boost:0, dizzy:0, state:"run", nextQ:5, started:false, auto:null, pose:"stand", poseT:0, dist:0 };
  const BASE = .55 + hard * .07, GY = .84, JV = 1.3, GR = 3.3, SIGN_H = .24;
  let A = playArea({}), U = A.h;
- const P = qPanel({ pick:k => { const b = s.signs && s.signs[k]; if (b && !b.dead && s.state === "q") s.auto = b; }, hint:rm => rm.forEach(k => { if (s.signs && s.signs[k]) s.signs[k].dead = true; }), go:() => cont(), goLabel:"Keep racing ➜" });
+ const P = qPanel({ pick:k => { const b = s.signs && s.signs[k]; if (b && !b.dead && s.state === "q"){ s.auto = b; s.boost = Math.max(s.boost, 2.5); } }, hint:rm => rm.forEach(k => { if (s.signs && s.signs[k]) s.signs[k].dead = true; }), go:() => cont(), goLabel:"Keep racing ➜" });
  const geo = () => { A = playArea(P); U = Math.min(A.h, A.w * .75); };
  const KX = () => A.x0 + A.w * .2, WX = wx => KX() + (wx - s.cam) * U, GYp = () => A.y0 + GY * A.h, HY = h => GYp() - h * U;
  let nextObs = 1.4;
@@ -4362,7 +4369,7 @@ function makeSpeed(SK){
   else if (r < .88){ for (let i = 0; i < 5; i++) s.objs.push({ t:"coin", x:wx + i * .11, y:.08 + (i % 2) * .1 }); }
   else if (G.gems < 3) s.objs.push({ t:"gem", x:wx, y:.26 });
  }
- function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length, x0 = s.cam + (A.x1 - KX()) / U + .15;
+ function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length, x0 = s.cam + (A.x1 - KX()) / U + .15 + readT() * BASE * .75 * .7;
   s.objs = s.objs.filter(o => o.x < x0 - .3 || o.t === "coin"); s.signs = []; for (let k = 0; k < n; k++) s.signs.push({ k, x:x0 + k * .62, dead:false }); s.state = "q"; }, 60); }
  function choose(b){
   if (s.state !== "q" || Q.answered || b.dead) return;
@@ -4472,7 +4479,7 @@ function makeMagnet(SK){
  G.hearts = 3; G.gems = 0; G.caught = 0;
  const s = { t:0, bx:.5, tx:.5, drops:[], parts:[], state:"free", freeT:9, spawn:.4, inv:0, pose:"stand", poseT:0, msg:null, qd:[], started:false, said:{} };
  let A = playArea({});
- const P = qPanel({ pick:k => { const d = s.qd[k]; if (d && !d.dead) s.tx = d.x; }, hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont() });
+ const P = qPanel({ pick:k => { const d = s.qd[k]; if (d && !d.dead){ s.tx = d.x; s.wait = 0; } }, hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont() });
  const geo = () => { A = playArea(P); };
  const BW = () => Math.min(A.w * .2, A.h * .22), BY = () => A.y1 - BW() * 1.55;
  function newDrop(){ const r = Math.random(); let d;
@@ -4487,7 +4494,7 @@ function makeMagnet(SK){
   if (!s.said.first){ s.said.first = 1; s.msg = { t:SK.firstMsg(d.n), life:2, c:"#b8f5a0" }; }
   if (G.caught % 4 === 0){ coins(5); s.pose = "cheer"; s.poseT = 1.2; FX.starRain(8); if (G.gems < 3){ G.gems++; banner(`💎 Gem ${G.gems}/3!`); sfx.star(); } else banner("🧲 +5 coins!"); }
  }
- function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:(k + .5) / n, y:-.1 - k * .03, dead:false }); s.state = "q"; }, 60); }
+ function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, x:(k + .5) / n, y:-.1 - k * .03, dead:false }); s.state = "q"; s.wait = readT(); }, 60); }
  function choose(k){
   if (s.state !== "q" || Q.answered) return; const d = s.qd[k]; if (!d || d.dead) return;
   const r = grade(k); P.mark(k, r);
@@ -4513,8 +4520,8 @@ function makeMagnet(SK){
    if (Math.abs(d.x - s.bx) < bw * .45 && d.y > by - .03 && d.y < by + .06) catchDrop(d);
    if (d.y > 1.1) d.dead = true; }
   s.drops = s.drops.filter(d => !d.dead);
-  if (s.state === "q"){ for (const d of s.qd){ if (d.dead) continue; d.y += (.12 + hard * .03) * dt; if (Math.abs(d.x - s.bx) < bw * .5 && d.y > by - .03 && d.y < by + .06){ choose(d.k); break; } }
-   if (s.state === "q" && s.qd.every(d => d.dead || d.y > 1.05)){ s.qd.forEach(d => { if (!d.dead) d.y = -.1 - d.k * .03; }); s.msg = { t:"🔁 Catch the coin with the right letter!", life:2, c:"#ffe9b0" }; } }
+  if (s.state === "q"){ if (s.wait > 0) s.wait -= dt; for (const d of s.qd){ if (d.dead) continue; if (s.wait > 0){ d.y += (.17 - d.y) * Math.min(1, dt * 3); continue; } d.y += (.085 + hard * .02) * dt; if (Math.abs(d.x - s.bx) < bw * .5 && d.y > by - .03 && d.y < by + .06){ choose(d.k); break; } }
+   if (s.state === "q" && s.qd.every(d => d.dead || d.y > 1.05)){ s.qd.forEach(d => { if (!d.dead) d.y = -.1 - d.k * .03; }); s.wait = 3; s.msg = { t:"🔁 Catch the coin with the right letter!", life:2, c:"#ffe9b0" }; } }
   s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 1.5 * dt; }); s.parts = s.parts.filter(p => p.life > 0);
   if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>🧲 ${G.caught}</span><span>💎 ${G.gems}/3</span>`; }
  }
@@ -4532,8 +4539,8 @@ function makeMagnet(SK){
   const im = HS[s.state === "wrong" ? "dizzy" : s.pose] || HS.stand;
   if (ready(im)){ const hh = bw * 1.3, w = hh * im.naturalWidth / im.naturalHeight; cx.save(); cx.translate(bx - bw * .55, A.y1 - 2 - (s.pose === "cheer" ? Math.abs(Math.sin(s.t * 6)) * hh * .1 : 0)); if (s.pose === "dizzy") cx.rotate(Math.sin(s.t * 9) * .1); cx.drawImage(im, -w / 2, -hh, w, hh); cx.restore(); }
   cx.save(); if (s.inv > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .55; drawImg(SK.tool, bx, by + bw * .2, bw, { rot:SK.toolRot }); cx.restore();
-  const goal = s.state === "free" ? SK.goal : s.state === "q" ? SK.qgoal : "";
-  const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 26, s.msg ? s.msg.c : "#ffe9b0", Math.max(14, Math.min(20, A.w * .03)));
+  const goal = s.state === "free" ? SK.goal : s.state === "q" ? (s.wait > 0 ? `🤔 Read the question… coins drop in ${Math.ceil(s.wait)}` : SK.qgoal) : "";
+  const txt = s.msg && !(s.state === "q" && s.wait > 0) ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 26, s.msg ? s.msg.c : "#ffe9b0", Math.max(14, Math.min(20, A.w * .03)));
   if (!s.started){ pill6("👆 Drag the magnet. Tap to start!", A.x0 + A.w / 2, A.y0 + A.h * .4, "#ffe9b0", Math.max(15, Math.min(20, A.w * .035))); }
   s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 2); cx.fillStyle = p.c; cx.beginPath(); cx.arc(X(p.x), by + p.y * A.h, p.r, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
  }
