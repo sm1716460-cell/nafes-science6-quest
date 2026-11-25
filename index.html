@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795627157";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795628014";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -1606,7 +1606,7 @@ function openModeSel(){ show("modeSel"); $("#msTitle").textContent = `Hi ${USER.
 $("#modeSel").addEventListener("click", e => {
  const b = e.target.closest("[data-mode]"); if (!b) return;
  MODE = b.dataset.mode; store.set("mode", MODE); sfx.tap();
- if (isGame() && !prof().avatar) return pickAvatar(true);
+ if (!prof().avatar) return pickAvatar(true);
  goHome();
 });
 function goHome(){ show("home"); applyMode(); renderMap(); updateChips(); }
@@ -9635,6 +9635,12 @@ avatarHTML = function(width, extra = ""){
  return `<span class="avw" style="width:${width}" ${extra}><img class="base" src="${P("h" + a + "_wave")}" alt="${esc(AVATARS[a-1].name)}"></span>`;
 };
 const hero = pose => P("h" + (prof().avatar || 1) + "_" + pose);
+/* classic mode: the chosen scientist is the quiz coach (instead of the owl) */
+const POSEMAP = { m_think:"stand", m_think2:"stand", m_magnify:"stand", m_point:"stand", m_point2:"stand", m_idea:"stand", m_wave:"wave", m_heart:"wave",
+ m_thumbs:"cheer", m_wow:"cheer", m_star:"cheer", m_celebrate:"cheer", m_trophy:"cheer", m_jump:"jump", m_fire:"jump", m_oops:"dizzy", m_fist:"dizzy", m_thumbs2:"dizzy" };
+const _say = say;
+say = function(text, cls, pose, anim){ _say(text, cls, pose, anim); if (pose && prof().avatar){ const o = $("#owl"); if (o){ o.src = hero(POSEMAP[pose] || "stand"); o.alt = AVATARS[prof().avatar - 1].name; } } };
+document.addEventListener("click", e => { if (e.target.closest(".ihero")) pickAvatar(false); });
 
 /* ---------- styles ---------- */
 const css = document.createElement("style");
@@ -9710,7 +9716,7 @@ label.f{color:#6b4a22}
 .inode.done .med .ring{--rc:#22e36b;filter:drop-shadow(0 0 6px rgba(34,227,107,.95))}
 .inode .med .pstar{position:absolute;width:62%;top:-34%;right:-34%;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));animation:pulse 2s ease-in-out infinite}
 .inode .pin{width:3px;height:calc(var(--ns) * .35);background:linear-gradient(#6e451a,transparent)}
-.ihero{position:absolute;z-index:3;width:calc(var(--ns) * 1.25);transform:translate(-50%,-100%);pointer-events:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.45));animation:hbob 2.2s ease-in-out infinite}
+.ihero{position:absolute;z-index:3;width:calc(var(--ns) * 1.25);transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;filter:drop-shadow(0 8px 8px rgba(0,0,0,.45));animation:hbob 2.2s ease-in-out infinite}
 #buddy,#buddyA{display:none!important}
 #bShop,#bPet{display:none!important}
 .mapbar .round{width:clamp(50px,5vw,64px);height:clamp(50px,5vw,64px)}
