@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795563507";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795590199";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2013,7 +2013,7 @@ async function boot(){
 const IMC = {};
 function IM(p){ if (!IMC[p]){ const i = new Image(); i.decoding = "async"; i.src = p; IMC[p] = i; } return IMC[p]; }
 const g2 = n => IM("img/g2/" + n + ".webp"), r1 = n => IM("img/" + n + ".webp");
-const worldBg = () => Q && Q.w && Q.w.n === 8 ? IM("img/p3/w8_bg.webp") : Q && Q.w && Q.w.n === 7 ? IM("img/p3/w7_bg.webp") : Q && Q.w && Q.w.n === 6 ? IM("img/p3/w6_bg.webp") : Q && Q.w && Q.w.n === 5 ? IM("img/p3/w5_bg.webp") : Q && Q.w && Q.w.n === 4 ? IM("img/p3/w4_bg.webp") : Q && Q.w && Q.w.n === 3 ? IM("img/p3/w3_bg.webp") : Q && Q.w && Q.w.n === 1 ? IM("img/p3/w1_bg.webp") : Q && Q.w && Q.w.n === 2 ? IM("img/p3/w2_bg.webp") : r1("world" + G.world);
+const worldBg = () => Q && Q.w && Q.w.n === 9 ? IM("img/p3/w9_bg.webp") : Q && Q.w && Q.w.n === 8 ? IM("img/p3/w8_bg.webp") : Q && Q.w && Q.w.n === 7 ? IM("img/p3/w7_bg.webp") : Q && Q.w && Q.w.n === 6 ? IM("img/p3/w6_bg.webp") : Q && Q.w && Q.w.n === 5 ? IM("img/p3/w5_bg.webp") : Q && Q.w && Q.w.n === 4 ? IM("img/p3/w4_bg.webp") : Q && Q.w && Q.w.n === 3 ? IM("img/p3/w3_bg.webp") : Q && Q.w && Q.w.n === 1 ? IM("img/p3/w1_bg.webp") : Q && Q.w && Q.w.n === 2 ? IM("img/p3/w2_bg.webp") : r1("world" + G.world);
 const ready = i => i && i.complete && i.naturalWidth > 0;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), rnd = (a, b) => a + Math.random() * (b - a), ri = (a, b) => Math.floor(rnd(a, b + 1));
 const ING = Array.from({ length:16 }, (_, i) => "ing" + (i + 1));
@@ -2041,9 +2041,11 @@ Object.assign(GAMES, {
  surf:    { name:"Surf Rush", icon:"🏄‍♀️" },
  light:   { name:"Light Catcher", icon:"💡" },
  spark:   { name:"Spark Rush", icon:"🛹" },
- conductor: { name:"Conductor Catch", icon:"⚡" }
+ conductor: { name:"Conductor Catch", icon:"⚡" },
+ sling:   { name:"Planet Sling", icon:"🚀" },
+ fish:    { name:"Magnet Fishing", icon:"🧲" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -2052,6 +2054,7 @@ gameFor = function(w, mi){
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
  if (w.n === 1) return ["jump", "maze", "slice", "jump", "maze", "kitchen"][mi % 6];
+ if (w.n === 9) return ["jump", "sling", "fish", "jump", "sling", "fish"][mi % 6];
  if (w.n === 8) return ["jump", "spark", "conductor", "jump", "spark", "conductor"][mi % 6];
  if (w.n === 7) return ["jump", "surf", "light", "jump", "surf", "light"][mi % 6];
  if (w.n === 6) return ["jump", "coaster", "machine", "jump", "coaster", "machine"][mi % 6];
@@ -2812,12 +2815,12 @@ function makeKitchen(){
    ===================================================================== */
 function makeBoss(){
  const w = Q.w, d = w && w.type === "review" ? "final" : (w && w.missions[0] && w.missions[0][0] ? w.missions[0][0].d : "life");
- const JNK = d !== "final" && w && w.n === 2, GOO = d !== "final" && w && w.n === 3, LAVA = d !== "final" && w && w.n === 4, BRK = d !== "final" && w && w.n === 5, RST = d !== "final" && w && w.n === 6, SQL = d !== "final" && w && w.n === 7, VLT = d !== "final" && w && w.n === 8;
- const B = JNK ? { img:"boss5", name:"Junk Monster" } : GOO ? { img:"boss6", name:"Professor Goo" } : LAVA ? { img:"boss7", name:"Lava King" } : BRK ? { img:"boss8", name:"Captain Friction" } : RST ? { img:"boss9", name:"Rusty the Machine Monster" } : SQL ? { img:"boss10", name:"Squall the Storm Octopus" } : VLT ? { img:"boss11", name:"Voltz the Short-Circuit King" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
+ const JNK = d !== "final" && w && w.n === 2, GOO = d !== "final" && w && w.n === 3, LAVA = d !== "final" && w && w.n === 4, BRK = d !== "final" && w && w.n === 5, RST = d !== "final" && w && w.n === 6, SQL = d !== "final" && w && w.n === 7, VLT = d !== "final" && w && w.n === 8, ECL = d !== "final" && w && w.n === 9;
+ const B = JNK ? { img:"boss5", name:"Junk Monster" } : GOO ? { img:"boss6", name:"Professor Goo" } : LAVA ? { img:"boss7", name:"Lava King" } : BRK ? { img:"boss8", name:"Captain Friction" } : RST ? { img:"boss9", name:"Rusty the Machine Monster" } : SQL ? { img:"boss10", name:"Squall the Storm Octopus" } : VLT ? { img:"boss11", name:"Voltz the Short-Circuit King" } : ECL ? { img:"boss12", name:"Captain Eclipse" } : BOSSES[d] || BOSSES.final; G.bossImg = B.img; G.bossName = B.name; G.need = Math.ceil(Q.items.length * PASS); G.bossDown = false;
  const fin = d === "final";
  const IMG = fin ? { n: g2("pc_laugh"), hit: g2("pc_shock"), down: g2("pc_sorry"), run: g2("pc_run") } : { n: r1(B.img), hit: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "h" : B.img), down: r1(B.img + "x"), run: r1(/^boss(1|[5-9]|1[0-9])$/.test(B.img) ? B.img + "r" : B.img) };
  if (fin) G.bossImg = "boss4";
- const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : GOO ? ["../p3/en3_slime", "../p3/en3_spark", "../p3/en3_steam"] : LAVA ? ["../p3/en4_fire", "../p3/en4_acid", "../p3/d4_rock"] : BRK ? ["../p3/en5_tire", "../p3/en5_cone", "../p3/en5_robot"] : RST ? ["../p3/en6_gear", "../p3/en6_screw", "../p3/en6_beetle"] : SQL ? ["../p3/en7_crab", "../p3/en7_jelly", "../p3/en7_speaker"] : VLT ? ["../p3/en8_spark", "../p3/en8_wire", "../p3/en8_fuse"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
+ const SHOT = JNK ? ["jk_can", "jk_bottle", "jk_paper"] : GOO ? ["../p3/en3_slime", "../p3/en3_spark", "../p3/en3_steam"] : LAVA ? ["../p3/en4_fire", "../p3/en4_acid", "../p3/d4_rock"] : BRK ? ["../p3/en5_tire", "../p3/en5_cone", "../p3/en5_robot"] : RST ? ["../p3/en6_gear", "../p3/en6_screw", "../p3/en6_beetle"] : SQL ? ["../p3/en7_crab", "../p3/en7_jelly", "../p3/en7_speaker"] : VLT ? ["../p3/en8_spark", "../p3/en8_wire", "../p3/en8_fuse"] : ECL ? ["../p3/en9_rock", "../p3/d9_comet", "../p3/en9_ufo"] : { life:["gm1", "gm2", "gm5"], physical:["gem6", "ob_drone"], earth:["ob_lava", "pu_coins"], final:["gm1", "gem6", "ob_slime", "gm2"] }[d] || ["gm1"];
  SHOT.forEach(g2);
  const av = prof().avatar || 1, me = IM("img/p3/h" + av + "_jump.webp"), bg = worldBg(), star = r1("o_star");
  const s = { t:0, px:.5, tx:.5, dir:0, stars:[], shots:[], parts:[], fire:1.2, sh:0, charge:0, asking:false, inv:0, hitT:0, beam:0, shake:0, laugh:0, end:0, run:0 };
@@ -2935,7 +2938,7 @@ document.head.appendChild(jcss);
 function makeJump(){
  const av = prof().avatar || 1;
  const HS = { run:P3(`h${av}_run`), jump:P3(`h${av}_jump`), stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
- const JG = !!(Q.w && Q.w.n === 2), FC = !!(Q.w && Q.w.n === 3), VL = !!(Q.w && Q.w.n === 4), RC = !!(Q.w && Q.w.n === 5), GW = !!(Q.w && Q.w.n === 6), WL = !!(Q.w && Q.w.n === 7), SC = !!(Q.w && Q.w.n === 8);
+ const JG = !!(Q.w && Q.w.n === 2), FC = !!(Q.w && Q.w.n === 3), VL = !!(Q.w && Q.w.n === 4), RC = !!(Q.w && Q.w.n === 5), GW = !!(Q.w && Q.w.n === 6), WL = !!(Q.w && Q.w.n === 7), SC = !!(Q.w && Q.w.n === 8), SP = !!(Q.w && Q.w.n === 9);
  const TM = { w1_bg:"w2_bg", w1_plat_long:"w2_plat_long", w1_plat_short:"w2_plat_short", w1_plat_crumble:"w2_plat_crumble", w1_plat_move:"w2_plat_move", w1_spring:"w2_spring", w1_flag:"w2_flag", w1_finish:"w2_finish",
   en_germ:"en2_walk", en_virus:"en2_spike", en_fly:"en2_fly", it_coin:"w2_coin", it_gem:"w2_gem", it_heart:"w2_heart", it_box:"w2_box" };
  const TM3 = { w1_bg:"w3_bg", w1_plat_long:"w3_plat_long", w1_plat_short:"w3_ice", w1_plat_crumble:"w3_plat_crumble", w1_plat_move:"w3_plat_move", w1_spring:"w3_spring", w1_flag:"w3_flag", w1_finish:"w3_finish",
@@ -2950,7 +2953,9 @@ function makeJump(){
   en_germ:"en7_crab", en_virus:"en7_jelly", en_fly:"en7_speaker", it_coin:"w7_coin", it_gem:"w7_gem" };
  const TM8 = { w1_bg:"w8_bg", w1_plat_long:"w8_plat_long", w1_plat_short:"w8_plat_glass", w1_plat_crumble:"w8_plat_glass", w1_plat_move:"w8_plat_batt", w1_flag:"d8_bulb", w1_finish:"w8_trophy", w1_spring:"w8_spring",
   en_germ:"en8_wire", en_virus:"en8_spark", en_fly:"en8_fuse", it_coin:"w8_coin", it_gem:"w8_gem" };
- const A = n => P3(SC && TM8[n] ? TM8[n] : WL && TM7[n] ? TM7[n] : GW && TM6[n] ? TM6[n] : RC && TM5[n] ? TM5[n] : VL && TM4[n] ? TM4[n] : FC && TM3[n] ? TM3[n] : JG && TM[n] ? TM[n] : n);
+const TM9 = { w1_bg:"w9_bg", w1_plat_long:"w9_plat_long", w1_plat_short:"w9_plat_station", w1_plat_crumble:"w9_plat_station", w1_plat_move:"w9_plat_sat", w1_flag:"d9_flag", w1_finish:"w9_trophy", w1_spring:"w9_spring",
+ en_germ:"en9_blob", en_virus:"en9_rock", en_fly:"en9_ufo", it_coin:"w9_coin", it_gem:"w9_gem" };
+ const A = n => P3(SP && TM9[n] ? TM9[n] : SC && TM8[n] ? TM8[n] : WL && TM7[n] ? TM7[n] : GW && TM6[n] ? TM6[n] : RC && TM5[n] ? TM5[n] : VL && TM4[n] ? TM4[n] : FC && TM3[n] ? TM3[n] : JG && TM[n] ? TM[n] : n);
  ["w1_bg","w1_plat_long","w1_plat_short","w1_plat_crumble","w1_plat_move","w1_spring","w1_flag","w1_finish","en_germ","en_virus","en_fly","it_coin","it_gem","it_heart","it_box","ui_star","d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"].forEach(A);
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
@@ -2966,7 +2971,7 @@ function makeJump(){
  const ent = (type, x, y, ex = {}) => { const e = Object.assign({ type, x, y, alive:true, ph:Math.random() * 6 }, ex); s.ents.push(e); return e; };
  const coinLine = (x0, y, n, dx = .1) => { for (let i = 0; i < n; i++) ent("coin", x0 + i * dx, y); };
  const coinArc = (x0, x1, y0, y1, h = .22) => { const n = 5; for (let i = 0; i < n; i++){ const t = (i + .5) / n; ent("coin", x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * h); } };
- const DECO = SC ? ["d8_battery","d8_bulb","d8_switch","d8_copper","d8_balloon","d8_magnet","d8_bolt","d8_plug","d8_glasses","d8_guitar","d8_megaphone","d8_lamp"] : WL ? ["d7_lighthouse","d7_turbine","d7_drum","d7_megaphone","d7_prism","d7_mirror","d7_lens","d7_torch","d7_bulb","d7_fire","d7_solar","d7_fork"] : GW ? ["d6_seesaw","d6_pulley","d6_ramp","d6_screw","d6_axe","d6_wheel","d6_spring","d6_scale","d6_cart","d6_battery","d6_wrench","d6_crate"] : RC ? ["d5_flag","d5_speedo","d5_watch","d5_magnet","d5_compass","d5_apple","d5_chute","d5_cart","d5_rocket","d5_nitro","d5_trophy"] : VL ? ["d4_palm","d4_rock","d4_pool","d4_volcano","d4_lemon","d4_soap","d4_vinegar","d4_soda","d4_fire","d4_anchor","d4_lizard","d4_flower"] : FC ? ["d3_flask","d3_tubes","d3_boiler","d3_barrel","d3_bottles","d3_table","d3_bulb","d3_robot","d3_plant","w3_crate"] : JG ? ["d2_fern","d2_flower","d2_torch","d2_sign","d2_banana","d2_rock","an_monkey","an_parrot","an_frog","w2_crate"] : ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
+ const DECO = SP ? ["d9_telescope","d9_rocket","d9_satellite","d9_helmet","d9_compass","d9_magnet","d9_emag","d9_moon","d9_sun","d9_comet","d9_flag","d9_rover"] : SC ? ["d8_battery","d8_bulb","d8_switch","d8_copper","d8_balloon","d8_magnet","d8_bolt","d8_plug","d8_glasses","d8_guitar","d8_megaphone","d8_lamp"] : WL ? ["d7_lighthouse","d7_turbine","d7_drum","d7_megaphone","d7_prism","d7_mirror","d7_lens","d7_torch","d7_bulb","d7_fire","d7_solar","d7_fork"] : GW ? ["d6_seesaw","d6_pulley","d6_ramp","d6_screw","d6_axe","d6_wheel","d6_spring","d6_scale","d6_cart","d6_battery","d6_wrench","d6_crate"] : RC ? ["d5_flag","d5_speedo","d5_watch","d5_magnet","d5_compass","d5_apple","d5_chute","d5_cart","d5_rocket","d5_nitro","d5_trophy"] : VL ? ["d4_palm","d4_rock","d4_pool","d4_volcano","d4_lemon","d4_soap","d4_vinegar","d4_soda","d4_fire","d4_anchor","d4_lizard","d4_flower"] : FC ? ["d3_flask","d3_tubes","d3_boiler","d3_barrel","d3_bottles","d3_table","d3_bulb","d3_robot","d3_plant","w3_crate"] : JG ? ["d2_fern","d2_flower","d2_torch","d2_sign","d2_banana","d2_rock","an_monkey","an_parrot","an_frog","w2_crate"] : ["d1_bush","d1_lamp","d1_crates","d1_tank","d1_tower","d1_rock","d1_bubbles","d1_sign"];
  DECO.concat(JG ? ["an_croc"] : []).forEach(A);
  const deco = p => { if (p.w > .8 && Math.random() < .6) ent("deco", p.x + rnd(.15, p.w - .15), p.y, { img:pick(DECO), sz:rnd(.12, .2) }); };
  let gemsLeft = 3;
@@ -3194,9 +3199,9 @@ function makeJump(){
   // background parallax (seamless tiles)
   const bg = A("w1_bg");
   cx.fillStyle = "#8fd3ff"; cx.fillRect(0, 0, W, H);
-  if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; const sc = s.cam * U * .35; let ti = Math.floor(sc / bw), ox = -(sc - ti * bw); for (let x = ox; x < W; x += bw, ti++){ if ((RC || GW || WL || SC) && ti % 2){ cx.save(); cx.translate(x + bw, H - bh * .97); cx.scale(-1, 1); cx.drawImage(bg, 0, 0, bw, bh); cx.restore(); } else cx.drawImage(bg, x, H - bh * .97, bw, bh); } }
+  if (ready(bg)){ const bh = Math.max(H * 1.05, U * 1.12), bw = bh * bg.naturalWidth / bg.naturalHeight; const sc = s.cam * U * .35; let ti = Math.floor(sc / bw), ox = -(sc - ti * bw); for (let x = ox; x < W; x += bw, ti++){ if ((RC || GW || WL || SC || SP) && ti % 2){ cx.save(); cx.translate(x + bw, H - bh * .97); cx.scale(-1, 1); cx.drawImage(bg, 0, 0, bw, bh); cx.restore(); } else cx.drawImage(bg, x, H - bh * .97, bw, bh); } }
   // sea
-  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); if (SC){ g.addColorStop(0, "#b388ff"); g.addColorStop(.5, "#5e35b1"); g.addColorStop(1, "#1a0b3d"); } else if (WL){ g.addColorStop(0, "#4fd1ff"); g.addColorStop(.5, "#1e88e5"); g.addColorStop(1, "#0b3d7a"); } else if (GW){ g.addColorStop(0, "#ffcc80"); g.addColorStop(.5, "#a1683a"); g.addColorStop(1, "#4e342e"); } else if (RC){ g.addColorStop(0, "#90a4ae"); g.addColorStop(.5, "#546e7a"); g.addColorStop(1, "#263238"); } else if (VL){ g.addColorStop(0, "#ffb347"); g.addColorStop(.5, "#ff6a1f"); g.addColorStop(1, "#a4260b"); } else if (FC){ g.addColorStop(0, "#a8ec6a"); g.addColorStop(.5, "#4fbf4a"); g.addColorStop(1, "#1f6b3a"); } else if (JG){ g.addColorStop(0, "#5fd6d0"); g.addColorStop(.5, "#22a3b0"); g.addColorStop(1, "#11667a"); } else { g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85"); }
+  const sy = Y(SEA), g = cx.createLinearGradient(0, sy, 0, H); if (SP){ g.addColorStop(0, "#9fa8da"); g.addColorStop(.5, "#3949ab"); g.addColorStop(1, "#0d1033"); } else if (SC){ g.addColorStop(0, "#b388ff"); g.addColorStop(.5, "#5e35b1"); g.addColorStop(1, "#1a0b3d"); } else if (WL){ g.addColorStop(0, "#4fd1ff"); g.addColorStop(.5, "#1e88e5"); g.addColorStop(1, "#0b3d7a"); } else if (GW){ g.addColorStop(0, "#ffcc80"); g.addColorStop(.5, "#a1683a"); g.addColorStop(1, "#4e342e"); } else if (RC){ g.addColorStop(0, "#90a4ae"); g.addColorStop(.5, "#546e7a"); g.addColorStop(1, "#263238"); } else if (VL){ g.addColorStop(0, "#ffb347"); g.addColorStop(.5, "#ff6a1f"); g.addColorStop(1, "#a4260b"); } else if (FC){ g.addColorStop(0, "#a8ec6a"); g.addColorStop(.5, "#4fbf4a"); g.addColorStop(1, "#1f6b3a"); } else if (JG){ g.addColorStop(0, "#5fd6d0"); g.addColorStop(.5, "#22a3b0"); g.addColorStop(1, "#11667a"); } else { g.addColorStop(0, "#c45ad8"); g.addColorStop(.5, "#8a2fb3"); g.addColorStop(1, "#5c1a85"); }
   cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, H);
   for (let x = 0; x <= W + 20; x += 20) cx.lineTo(x, sy + Math.sin(x * .02 + s.t * 2.4 + s.cam * 4) * U * .008);
   cx.lineTo(W, H); cx.fill();
@@ -3225,7 +3230,7 @@ function makeJump(){
    else if (e.type === "box") img("it_box", ex, ey, U * .09, { a:e.used ? .55 : 1 });
    else if (e.type === "spring"){ const sq = e.sq > 0 ? (e.sq -= 1 / 60, .7) : 1; img("w1_spring", ex, ey + 2, U * .1, { bottom:1, sy:sq }); }
    else if (e.type === "germ") img("en_germ", ex, ey + Math.abs(Math.sin(s.t * 8)) * -4 + 2, U * .11, { bottom:1, flip:e.dir > 0 });
-   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * (JG || FC || VL || RC || GW || WL || SC ? .11 : .1), JG || FC || VL || RC || GW || WL || SC ? { sx:1 + Math.sin(s.t * 6) * .04 } : { rot:s.t * 2 });
+   else if (e.type === "virus") img("en_virus", ex, ey - U * .055, U * (JG || FC || VL || RC || GW || WL || SC || SP ? .11 : .1), JG || FC || VL || RC || GW || WL || SC || SP ? { sx:1 + Math.sin(s.t * 6) * .04 } : { rot:s.t * 2 });
    else if (e.type === "fly") img("en_fly", ex, ey, U * .11, { sy:.9 + Math.abs(Math.sin(s.t * 14)) * .12 });
    else if (e.type === "flag") img("w1_flag", ex, ey + 2, U * .2, { bottom:1 });
    else if (e.type === "finish") img("w1_finish", ex, ey + 4, U * .36, { bottom:1 });
@@ -4330,7 +4335,7 @@ function makePH(){
    WEEK 5 RACEWAY GAMES — Kart Rush (speed) · Magnet Grab (magnet)
    ===================================================================== */
 const g6css = document.createElement("style");
-g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light", "spark", "conductor"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
+g6css.textContent = ["speed", "magnet", "coaster", "machine", "surf", "light", "spark", "conductor", "sling", "fish"].map(k => [".spanel{padding:8px 12px}", ".spanel h3{font-size:clamp(15px,2.8vmin,32px);margin:2px 0 6px}", ".spanel .aopt{min-height:clamp(34px,5.6vmin,64px);font-size:clamp(13px,2.3vmin,26px);padding:4px 10px;border-width:3px}", ".spanel .aopt b{background:var(--oc)}", ".spanel .tip{display:none}"].map(r => `#arc[data-kind=${k}] ` + r).join("") +
  `@media (orientation:landscape){#arc[data-kind=${k}] .spanel{left:8px;transform:none;width:36vw;max-height:calc(100% - clamp(70px,10vmin,100px));overflow:auto}#arc[data-kind=${k}] .spanel .aopts{grid-template-columns:1fr}}@media (orientation:portrait){#arc[data-kind=${k}] .spanel{max-height:40%;overflow:auto}}`).join("");
 document.head.appendChild(g6css);
 function rr6(x, y, w, h, r){ cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
@@ -4566,6 +4571,267 @@ const makeConductor = () => makeMagnet({ bg:"w8_bg", tool:"p8_magnet", coin:"w8_
  nonMsg:n => `🚫 ${n} is an INSULATOR — electricity can't flow through it!`, firstMsg:n => `⚡ ${n}! Metals are good CONDUCTORS.`,
  goal:"⚡ Catch the CONDUCTORS — dodge sparks & tangled wires!", qgoal:"⚡ Catch the coin with the right answer!", win:"🏆 CIRCUIT MASTER!", hurt:"⚡ Zap! Dodge the sparks!", ok:"CONDUCTOR! ⚡" });
 
+/* =====================================================================
+   WEEK 9 SPACE STATION GAMES — Planet Sling (sling) · Magnet Fishing (fish)
+   ===================================================================== */
+/* ---------------- PLANET SLING: pull back, let go, let gravity bend the path ---------------- */
+function makeSling(){
+ const av = prof().avatar || 1, HS = { stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
+ const PL = ["k9_mars", "k9_ice", "k9_ringed", "k9_green"], ENS = ["en9_rock", "en9_blob", "en9_ufo"];
+ ["w9_bg", "k9_sling", "k9_rocket", "k9_portal", "k9_asteroid", "w9_coin", "d9_sun", "ui_star", ...ENS, ...ENS.map(e => e + "_x"), ...PL].forEach(P3);
+ G.hearts = 3; G.gems = 0; G.hits = 0;
+ const s = { t:0, state:"pre", started:false, asked:false, planets:[], bender:null, coinsL:[], ens:[], rocks:[], portal:null, rk:null, drag:null, auto:null, trail:[], parts:[], msg:null, pose:"stand", poseT:0, shots:0, round:0 };
+ let A = playArea({}), U = 1, WW = 1, K = 1;
+ const P = qPanel({ pick:k => autoAim(k), hint:rm => rm.forEach(k => { const p = s.planets[k]; if (p) p.dead = true; }), go:() => cont(), goLabel:"Next planet ➜" });
+ const geo = () => { A = playArea(P); U = A.h; WW = A.w / U; K = Math.min(1, WW); };
+ const X = x => A.x0 + x * U, Y = y => A.y0 + y * U;
+ const SL = () => ({ x:Math.max(.2 * WW, .2 * K), y:.66 });
+ const R = () => .072 * K, VMAX = () => 1.55 * K, MAXP = () => .2 * K;
+ const pos = o => ({ x:o.fx * WW, y:o.fy });
+ function layout(){
+  const n = Q.items[Q.i].order.length, pl = shuffle(PL.slice()); s.round++;
+  const pts = [], ok = (fx, fy, d) => pts.every(p => Math.hypot((p[0] - fx) * WW, p[1] - fy) > d);
+  s.bender = s.round > 1 || Math.random() < .5 ? { fx:rnd(.36, .46), fy:rnd(.28, .55), im:Math.random() < .5 ? "d9_sun" : "k9_asteroid" } : null;
+  if (s.bender) pts.push([s.bender.fx, s.bender.fy]);
+  s.planets = [];
+  for (let k = 0; k < n; k++){ let fx, fy, tries = 0; do { fx = rnd(.58, .92); fy = rnd(.17, .86); tries++; } while (!ok(fx, fy, R() * 3.6) && tries < 200);
+   pts.push([fx, fy]); s.planets.push({ k, fx, fy, im:pl[k % 4], dead:false, spin:Math.random() * 6 }); }
+  s.rocks = []; if (s.round > 2){ let tries = 0, fx, fy; do { fx = rnd(.4, .55); fy = rnd(.15, .85); tries++; } while (!ok(fx, fy, R() * 2.6) && tries < 100); s.rocks.push({ fx, fy, ph:Math.random() * 6 }); pts.push([fx, fy]); }
+  s.portal = null; if (s.round > 3 && Math.random() < .55){ s.portal = { a:{ fx:.33, fy:rnd(.15, .3) }, b:{ fx:.5, fy:rnd(.7, .85) } }; if (Math.random() < .5){ const t = s.portal.a.fy; s.portal.a.fy = 1 - s.portal.b.fy; s.portal.b.fy = 1 - t; } }
+  s.coinsL = []; for (let i = 0; i < 5; i++){ let fx, fy, tries = 0; do { fx = rnd(.3, .85); fy = rnd(.1, .9); tries++; } while (!ok(fx, fy, R() * 1.8) && tries < 60); s.coinsL.push({ fx, fy, dead:false }); }
+  s.ens = []; for (let i = 0; i < 1 + (s.round > 2 ? 1 : 0); i++){ let fx, fy, tries = 0; do { fx = rnd(.32, .8); fy = rnd(.12, .88); tries++; } while (!ok(fx, fy, R() * 2.2) && tries < 80); pts.push([fx, fy]); s.ens.push({ fx, fy, im:pick(ENS), hit:false, ph:Math.random() * 6 }); }
+  s.rk = null; s.auto = null; s.drag = null; s.trail = [];
+ }
+ // one physics step — shared by flight and aiming preview
+ function step(r, dt, real){
+  const rr = .022 * K;
+  const pull = (o, F, GM) => { const p = pos(o), dx = p.x - r.x, dy = p.y - r.y, d = Math.hypot(dx, dy); if (d < F && d > .001){ const a = GM / (d * d); r.vx += dx / d * a * dt; r.vy += dy / d * a * dt; } return d; };
+  for (const p of s.planets) if (!p.dead) pull(p, R() * 2.3, .045 * K * K * K);
+  if (s.bender) pull(s.bender, R() * 3.4, .07 * K * K * K);
+  r.x += r.vx * dt; r.y += r.vy * dt; r.t += dt;
+  for (const p of s.planets){ if (p.dead) continue; const q = pos(p); if (Math.hypot(q.x - r.x, q.y - r.y) < R() + rr) return { hit:"planet", k:p.k }; }
+  if (s.bender){ const q = pos(s.bender); if (Math.hypot(q.x - r.x, q.y - r.y) < R() * 1.05) return { hit:"crash", why:s.bender.im === "d9_sun" ? "☀️ Too hot! The Sun's gravity pulled you in." : "🌑 Crash! Gravity pulled you into the rock." }; }
+  for (const o of s.rocks){ const q = pos(o); if (Math.hypot(q.x - r.x, q.y - r.y) < R() * .75) return { hit:"crash", why:"☄️ Boom! You hit an asteroid." }; }
+  if (s.portal && !r.port){ const a = pos(s.portal.a); if (Math.hypot(a.x - r.x, a.y - r.y) < .05 * K){ const b = pos(s.portal.b); r.x = b.x; r.y = b.y; r.port = 1; if (real){ tone([300, 900, 1500], .08, "sine", .07); s.msg = { t:"🌀 Wormhole! Same speed, new place!", life:1.8, c:"#d7b8ff" }; } } }
+  if (real){
+   for (const c of s.coinsL){ if (c.dead) continue; const q = pos(c); if (Math.hypot(q.x - r.x, q.y - r.y) < .05 * K){ c.dead = true; const c1 = coin1(); G.coins += c1; G.extra += c1; hud(); tone([1300, 1700], .03, "square", .04); burst(q.x, q.y, 6, ["#ffd23f", "#fff"]); } }
+   for (const e of s.ens){ if (e.hit) continue; const q = pos(e); if (Math.hypot(q.x - r.x, q.y - r.y) < .06 * K){ e.hit = true; coins(2, X(q.x), Y(q.y)); burst(q.x, q.y, 12, ["#b2ff59", "#fff", "#ffd23f"]); tone([600, 900], .06, "square", .07); s.msg = { t:"💥 Bonk! +2", life:1.2, c:"#b8f5a0" }; } }
+  }
+  if (r.x < -.4 || r.x > WW + .4 || r.y < -.5 || r.y > 1.4 || r.t > 6) return { hit:"out" };
+  return null;
+ }
+ const launchV = p => { const L = Math.hypot(p.x, p.y), f = Math.min(1, L / MAXP()); return { vx:p.x / (L || 1) * f * VMAX(), vy:p.y / (L || 1) * f * VMAX() }; };
+ function predict(p){ const sl = SL(), v = launchV(p), r = { x:sl.x, y:sl.y, vx:v.vx, vy:v.vy, t:0 }, out = []; for (let i = 0; i < 110; i++){ const e = step(r, 1 / 120, false); if (i % 4 === 0) out.push([r.x, r.y]); if (e) break; } return out; }
+ function autoAim(k){
+  if (s.state !== "aim" || Q.answered || s.auto) return; const tgt = s.planets[k]; if (!tgt || tgt.dead) return;
+  const sl = SL(); let best = null;
+  for (let pw = .55; pw <= 1.001 && !best; pw += .15) for (let a = -1.35; a <= 1.1; a += .015){
+   const p = { x:Math.cos(a) * MAXP() * pw, y:Math.sin(a) * MAXP() * pw }, v = launchV(p), r = { x:sl.x, y:sl.y, vx:v.vx, vy:v.vy, t:0 };
+   let e = null; for (let i = 0; i < 480 && !e; i++) e = step(r, 1 / 120, false);
+   if (e && e.hit === "planet" && e.k === k){ best = p; break; } }
+  if (!best){ const q = pos(tgt); s.rk = { x:q.x, y:q.y, vx:0, vy:0, t:0 }; return land(k); }
+  s.auto = { p:best, t:0, k }; s.started = true;
+ }
+ function launch(p){ const sl = SL(), v = launchV(p); s.rk = { x:sl.x, y:sl.y, vx:v.vx, vy:v.vy, t:0 }; s.lastAuto = s.auto ? s.auto.k : -1; s.trail = []; s.state = "fly"; s.shots++; s.drag = null; s.auto = null; tone([220, 520, 880], .07, "triangle", .07); }
+ function land(k){
+  const r = grade(k); P.mark(k, r); const pl = s.planets[k]; s.rk = null;
+  if (r.ok){ G.hits++; s.pose = "cheer"; s.poseT = 1.6; FX.starRain(r.gold ? 26 : 14); burst(pl.fx * WW, pl.fy, 26, ["#ffd23f", "#fff", "#7c4dff", "#4fc3f7"]); pl.won = true;
+   banner(r.gold ? "✨ GOLDEN LANDING!" : Q.streak >= 3 ? `🔥 COMBO x${comboMult()}!` : pick(["🪐 PERFECT LANDING!", "🚀 Gravity master!", "AMAZING! ⭐", "OUT OF THIS WORLD! 🌌"]));
+   s.state = "cheer"; later(() => { P.hide(); next(); }, 1400); }
+  else { pl.dead = true; pl.bad = true; s.pose = "dizzy"; s.poseT = 99; s.state = "wrong"; burst(pl.fx * WW, pl.fy, 14, ["#ff5252", "#fff"]); tone([200, 120], .14, "sawtooth", .1); }
+ }
+ function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); layout(); s.state = "aim"; }, 60); }
+ function cont(){ if (s.state !== "wrong") return; s.poseT = 0; s.pose = "stand"; P.hide(); next(); }
+ function next(){
+  Q.i++; hud();
+  if (Q.i >= Q.items.length){ s.state = "end"; s.pose = "cheer"; s.poseT = 99; FX.starRain(34); sfx.win(); banner("🏆 GALAXY CHAMPION!"); later(arcDone, 2200); return; }
+  ask();
+ }
+ function burst(x, y, n, cols){ for (let i = 0; i < n; i++) s.parts.push({ x, y, vx:rnd(-.5, .5), vy:rnd(-.5, .5), life:rnd(.4, .9), c:pick(cols), r:rnd(.004, .01) }); }
+ function update(dt){
+  s.t += dt; geo();
+  if (!s.asked){ s.asked = true; ask(); }
+  if (s.poseT > 0 && s.poseT < 50){ s.poseT -= dt; if (s.poseT <= 0) s.pose = "stand"; }
+  if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; }
+  if (s.auto && s.state === "aim"){ s.auto.t += dt; if (s.auto.t > .55) launch(s.auto.p); }
+  if (s.state === "fly" && s.rk){ const n = Math.max(1, Math.round(dt * 120));
+   for (let i = 0; i < n; i++){ const e = step(s.rk, dt / n, true);
+    if ((i & 1) === 0) s.trail.push([s.rk.x, s.rk.y]);
+    if (e){ if (e.hit === "planet"){ land(e.k); break; }
+     const q = s.rk; if (e.hit === "crash"){ burst(q.x, q.y, 16, ["#ff9800", "#ffd23f", "#fff"]); tone([180, 90], .12, "sawtooth", .08); }
+     s.msg = { t:e.hit === "crash" ? e.why + " Try again!" : "🚀 Lost in space! Pull back and try again.", life:2.4, c:"#ffd3a8" }; s.rk = null; s.state = "aim"; if (s.lastAuto >= 0){ const k = s.lastAuto; s.lastAuto = -1; land(k); } break; } }
+   if (s.trail.length > 90) s.trail.splice(0, s.trail.length - 90); }
+  s.parts.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; }); s.parts = s.parts.filter(p => p.life > 0);
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>🚀 ${s.shots}</span><span>🪐 ${G.hits}</span>`; }
+ }
+ function field(x, y, F, col){ cx.save(); const g = cx.createRadialGradient(x, y, 0, x, y, F); g.addColorStop(0, col + "55"); g.addColorStop(1, col + "00"); cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, F, 0, 7); cx.fill();
+  cx.strokeStyle = col + "aa"; cx.lineWidth = 2; cx.setLineDash([8, 10]); cx.lineDashOffset = -s.t * 20; cx.beginPath(); cx.arc(x, y, F, 0, 7); cx.stroke(); cx.restore(); }
+ function draw(){
+  geo(); const W = view.w, H = view.h, bg = P3("w9_bg");
+  cx.fillStyle = "#1a1446"; cx.fillRect(0, 0, W, H); if (ready(bg)) cover(bg, 0, 0, W, H, 0);
+  cx.fillStyle = "rgba(10,6,40,.5)"; cx.fillRect(0, 0, W, H);
+  const r = R() * U;
+  if (s.bender){ const p = pos(s.bender), x = X(p.x), y = Y(p.y); field(x, y, R() * 3.4 * U, s.bender.im === "d9_sun" ? "#ffb300" : "#b39ddb"); drawImg(s.bender.im, x, y, r * 2.3, { rot:s.bender.im === "d9_sun" ? Math.sin(s.t) * .1 : s.t * .2 }); }
+  if (s.portal){ for (const [o, c] of [[s.portal.a, 1], [s.portal.b, -1]]){ const p = pos(o); drawImg("k9_portal", X(p.x), Y(p.y), U * .11 * K, { rot:s.t * 2 * c, a:c > 0 ? 1 : .8 }); } pill6("IN", X(pos(s.portal.a).x), Y(pos(s.portal.a).y) + U * .075 * K, "#d7b8ff", Math.max(11, U * .022)); pill6("OUT", X(pos(s.portal.b).x), Y(pos(s.portal.b).y) + U * .075 * K, "#d7b8ff", Math.max(11, U * .022)); }
+  for (const p of s.planets){ const q = pos(p), x = X(q.x), y = Y(q.y), a = p.dead ? .3 : 1;
+   if (!p.dead) field(x, y, R() * 2.3 * U, p.won ? "#69f0ae" : "#4fc3f7");
+   drawImg(p.im, x, y, r * (p.im === "k9_ringed" ? 3 : 2.25), { a, rot:p.im === "k9_ringed" ? -.15 : Math.sin(s.t * .5 + p.spin) * .08 });
+   if (p.won) drawImg("d9_flag", x + r * .2, y - r * .7, r * 1.1, { bottom:1 });
+   letterBadge(x, y - r * 1.25, Math.max(13, r * .42), p.k, a);
+   if (p.bad){ cx.strokeStyle = "#ff5252"; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(x - r * .5, y - r * .5); cx.lineTo(x + r * .5, y + r * .5); cx.moveTo(x + r * .5, y - r * .5); cx.lineTo(x - r * .5, y + r * .5); cx.stroke(); } }
+  for (const o of s.rocks){ const q = pos(o); drawImg("k9_asteroid", X(q.x), Y(q.y), r * 1.5, { rot:s.t * .6 }); }
+  for (const c of s.coinsL){ if (c.dead) continue; const q = pos(c); drawImg("w9_coin", X(q.x), Y(q.y), U * .05 * K, { sx:.35 + .65 * Math.abs(Math.cos(s.t * 4 + q.x * 9)) }); }
+  for (const e of s.ens){ const q = pos(e); drawImg(e.im + (e.hit ? "_x" : ""), X(q.x), Y(q.y) + Math.sin(s.t * 2 + e.ph) * U * .01, U * .1 * K, { rot:e.hit ? Math.sin(s.t * 5) * .2 : 0, a:e.hit ? .8 : 1 }); }
+  // trail + preview
+  cx.fillStyle = "rgba(255,214,102,.7)"; s.trail.forEach(([x, y], i) => { if (i % 2) return; cx.beginPath(); cx.arc(X(x), Y(y), Math.max(2, U * .004), 0, 7); cx.fill(); });
+  const aim = s.state === "aim" ? (s.auto ? { x:s.auto.p.x * Math.min(1, s.auto.t / .4), y:s.auto.p.y * Math.min(1, s.auto.t / .4) } : s.drag && s.drag.p) : null;
+  if (aim && Math.hypot(aim.x, aim.y) > .015){ const pts = predict(aim); pts.forEach(([x, y], i) => { cx.globalAlpha = Math.max(0, 1 - i / pts.length); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(X(x), Y(y), Math.max(2.5, U * .006), 0, 7); cx.fill(); }); cx.globalAlpha = 1; }
+  // slingshot, rocket, girl
+  const sl = SL(), sx = X(sl.x), sy = Y(sl.y), sw = U * .2 * K, sim = P3("k9_sling"), sh = ready(sim) ? sw * sim.naturalHeight / sim.naturalWidth : sw * .85;
+  const im = HS[s.pose] || HS.stand; if (ready(im)){ const hh = U * .3 * K, w = hh * im.naturalWidth / im.naturalHeight; cx.save(); cx.translate(sx - sw * .75, sy + sh * .78 - (s.pose === "cheer" ? Math.abs(Math.sin(s.t * 6)) * hh * .08 : 0)); if (s.pose === "dizzy") cx.rotate(Math.sin(s.t * 9) * .1); cx.drawImage(im, -w / 2, -hh, w, hh); cx.restore(); }
+  drawImg("k9_sling", sx, sy - sh * .22, sw, { top:1 });
+  const rp = aim ? { x:sx - aim.x * U, y:sy - aim.y * U } : { x:sx, y:sy }, fl = [sx - sw * .26, sy - sh * .14], fr = [sx + sw * .26, sy - sh * .14];
+  if (!s.rk && (s.state === "aim" || s.state === "pre")){
+   cx.strokeStyle = "#ffcc80"; cx.lineWidth = Math.max(3, U * .008); cx.beginPath(); cx.moveTo(fl[0], fl[1]); cx.lineTo(rp.x, rp.y); cx.lineTo(fr[0], fr[1]); cx.stroke();
+   const ang = aim ? Math.atan2(aim.y, aim.x) : -.5; drawImg("k9_rocket", rp.x, rp.y, U * .1 * K, { rot:ang }); }
+  if (s.rk){ const q = s.rk, ang = Math.atan2(q.vy, q.vx); drawImg("k9_rocket", X(q.x), Y(q.y), U * .1 * K, { rot:ang });
+   cx.fillStyle = "rgba(255,152,0,.6)"; cx.beginPath(); cx.arc(X(q.x) - Math.cos(ang) * U * .05 * K, Y(q.y) - Math.sin(ang) * U * .05 * K, U * .012 * (1 + Math.random() * .5), 0, 7); cx.fill(); }
+  if (s.state === "wrong") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; drawImg("ui_star", sx - sw * .75 + Math.cos(a) * U * .05, sy - U * .12 * K + Math.sin(a) * 6, U * .035); }
+  s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(X(p.x), Y(p.y), p.r * U, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+  const goal = s.state === "aim" ? (A.w < 560 ? "🚀 Pull back, let go, hit the right planet!" : "🚀 Pull back & let go — land on the planet with the right answer!") : s.state === "wrong" ? "😵 Tap to keep going" : "";
+  const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 26, s.msg ? s.msg.c : "#ffe9b0", Math.max(13, Math.min(19, A.w * .028)));
+  if (!s.started && s.state === "aim") pill6("👆 Drag BACK anywhere, then let go!", A.x0 + A.w / 2, A.y0 + A.h * .93, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
+ }
+ const down = e => { if (G.hold) return; if (s.state === "wrong") return cont(); if (s.state !== "aim" || s.auto) return; s.started = true; const p = ptr(e); s.drag = { x0:p.x, y0:p.y, p:{ x:0, y:0 } }; };
+ const move = e => { if (!s.drag) return; const p = ptr(e); let dx = (s.drag.x0 - p.x) / U, dy = (s.drag.y0 - p.y) / U; const L = Math.hypot(dx, dy), m = MAXP(); if (L > m){ dx *= m / L; dy *= m / L; } s.drag.p = { x:dx, y:dy }; };
+ const up = () => { if (!s.drag) return; const p = s.drag.p; s.drag = null; if (s.state === "aim" && Math.hypot(p.x, p.y) > .03 * K) launch(p); };
+ cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
+ const rz = () => later(P.measure, 60); addEventListener("resize", rz);
+ $("#aCtl").classList.add("hide"); window.__sl = s; window.__slAuto = autoAim;
+ return { update, draw, key(e){ if (e.key === " " && s.state === "wrong"){ e.preventDefault(); cont(); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); cv.removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("resize", rz); } };
+}
+
+/* ---------------- MAGNET FISHING: swing the electromagnet hook, drop it, reel in iron & steel ---------------- */
+function makeFish(){
+ const av = prof().avatar || 1, HS = { stand:P3(`h${av}_stand`), cheer:P3(`h${av}_cheer`), dizzy:P3(`h${av}_dizzy`) };
+ const MAG = [["p9_anchor", "Iron anchor", 5, .45, 1.35], ["p9_can", "Steel can", 3, .75, 1], ["../lab3/m_nail", "Iron nail", 2, 1, .9], ["../lab3/m_mspoon", "Steel spoon", 2, 1, .9]];
+ const NON = [["p9_boot", "Rubber boot"], ["d9_helmet", "Plastic helmet"], ["../lab3/m_wood", "Wood"], ["../lab3/m_cork", "Cork"], ["../lab3/m_copper", "Copper"], ["../lab3/m_pspoon", "Plastic spoon"]];
+ const ALI = ["en9_blob", "en9_ufo"];
+ ["w9_bg", "p9_rod", "p9_hook", "w9_plat_station", "w9_gem", "k9_asteroid", "ui_star", ...ALI].concat(MAG.map(m => m[0]), NON.map(m => m[0])).forEach(P3);
+ const hard = (Q.mi || 0) >= 3 ? 1 : 0;
+ G.hearts = 3; G.gems = 0; G.caught = 0;
+ const COILS = [5, 10, 20];
+ const s = { t:0, ph:0, ang:0, L:0, mode:"idle", held:null, items:[], qd:[], lvl:0, state:"free", freeT:8, started:false, stun:0, msg:null, pose:"stand", poseT:0, parts:[], said:{}, askT:0, autoK:-1, casts:0 };
+ let A = playArea({});
+ const P = qPanel({ pick:k => autoCast(k), hint:rm => rm.forEach(k => { if (s.qd[k]) s.qd[k].dead = true; }), go:() => cont(), goLabel:"Keep fishing ➜" });
+ const geo = () => { A = playArea(P); };
+ const M = () => Math.min(A.w, A.h * 1.2), PV = () => ({ x:A.x0 + A.w * .52, y:A.y0 + A.h * .15 }), SURF = () => A.y0 + A.h * .33, HR = () => M() * .04;
+ const hookPos = () => { const p = PV(); return { x:p.x + Math.sin(s.ang) * s.L, y:p.y + Math.cos(s.ang) * s.L }; };
+ const FX0 = f => A.x0 + f * A.w, FY0 = f => A.y0 + f * A.h;
+ function newItem(kind){ const r = Math.random(); let d;
+  if (kind === "rare") d = { k:"m", im:"k9_asteroid", n:"Iron meteorite", val:10, wt:.6, sz:1.15, rare:1 };
+  else if (r < .12 + hard * .05) d = { k:"e", im:pick(ALI), n:"", sz:1 };
+  else if (r < .62){ const m = pick(MAG); d = { k:"m", im:m[0], n:m[1], val:m[2], wt:m[3], sz:m[4] }; }
+  else { const m = pick(NON); d = { k:"n", im:m[0], n:m[1], sz:.95 }; }
+  const dir = Math.random() < .5 ? -1 : 1;
+  Object.assign(d, { fx:dir > 0 ? -.08 : 1.08, fy:rnd(.47, .9), vx:dir * rnd(.035, .08) * (d.k === "e" ? 1.6 : 1) * (d.rare ? 1.8 : 1), ph:Math.random() * 6, wob:0 });
+  if (kind === "init") d.fx = rnd(.05, .95);
+  s.items.push(d); return d; }
+ for (let i = 0; i < 7; i++) newItem("init");
+ function cast(){ if (s.mode !== "idle" || s.stun > 0 || s.state === "end" || s.state === "pre" || s.state === "cheer") return; s.mode = "down"; s.casts++; tone([500, 300], .05, "triangle", .05); }
+ function autoCast(k){ if (s.state !== "q" || Q.answered) return; const d = s.qd[k]; if (!d || d.dead) return; s.started = true; s.autoK = k; if (s.mode === "idle"){ const p = PV(); s.ang = Math.atan2(FX0(d.fx) - p.x, FY0(d.fy) - p.y); s.ph = Math.asin(clamp(s.ang / 1.15, -1, 1)); cast(); } }
+ function ask(){ s.state = "pre"; P.ask(); later(() => { geo(); const n = Q.items[Q.i].order.length; s.qd = []; for (let k = 0; k < n; k++) s.qd.push({ k, fx:.14 + .72 * (n > 1 ? k / (n - 1) : .5), fy:.6 + (k % 2) * .1, dead:false }); s.state = "q"; s.askT = 0; }, 60); }
+ function choose(k){
+  if (s.state !== "q" || Q.answered) return; const d = s.qd[k]; if (!d || d.dead) return;
+  const r = grade(k); P.mark(k, r); s.autoK = -1;
+  if (r.ok){ s.pose = "cheer"; s.poseT = 1.4; FX.starRain(r.gold ? 26 : 14); s.qd.forEach(o => o.dead = true); d.got = true; s.state = "cheer";
+   const fast = s.askT < 10; if (s.lvl < 2) s.lvl++;
+   banner(r.gold ? "✨ GOLDEN CATCH!" : s.lvl > 0 && fast ? `🔋 ${COILS[s.lvl]} COILS — stronger electromagnet!` : pick(["🧲 GREAT CATCH!", "AMAZING! ⭐", "SUPER! 🚀", "PERFECT! 💎"]));
+   if (fast){ newItem("rare"); later(() => { s.msg = { t:"☄️ A rare IRON METEORITE appeared! Catch it for +10!", life:2.6, c:"#ffe082" }; }, 1400); }
+   later(() => { P.hide(); next(); }, 1300); }
+  else { d.dead = true; s.pose = "dizzy"; s.poseT = 99; s.state = "wrong"; if (s.lvl > 0) s.lvl--; tone([200, 120], .14, "sawtooth", .1); }
+ }
+ function cont(){ if (s.state !== "wrong") return; s.poseT = 0; s.pose = "stand"; P.hide(); next(); }
+ function next(){
+  Q.i++; hud(); s.qd = [];
+  if (Q.i >= Q.items.length){ s.state = "end"; s.pose = "cheer"; s.poseT = 99; FX.starRain(34); sfx.win(); banner("🏆 MAGNET FISHING CHAMPION!"); later(arcDone, 2200); return; }
+  s.state = "free"; s.freeT = 8 + hard; geo();
+ }
+ function bank(d){ G.caught++; const p = PV(); coins(d.val, p.x, p.y - 20); tone([900, 1200, 1500], .05, "triangle", .06);
+  for (let i = 0; i < 10; i++) s.parts.push({ x:p.x, y:p.y, vx:rnd(-120, 120), vy:rnd(-220, -60), life:.7, c:pick(["#ffd23f", "#ff5252", "#90caf9", "#fff"]), r:rnd(3, 6) });
+  if (!s.said.first){ s.said.first = 1; s.msg = { t:`🧲 ${d.n}! Iron & steel stick to an electromagnet.`, life:2.4, c:"#b8f5a0" }; }
+  if (d.rare){ s.msg = { t:"☄️ Iron meteorite! Some space rocks are made of IRON!", life:2.6, c:"#ffe082" }; FX.starRain(10); }
+  if (G.caught % 5 === 0 && G.gems < 3){ G.gems++; banner(`💎 Gem ${G.gems}/3!`); sfx.star(); s.pose = "cheer"; s.poseT = 1.2; } }
+ function update(dt){
+  s.t += dt; geo();
+  if (s.poseT > 0 && s.poseT < 50){ s.poseT -= dt; if (s.poseT <= 0) s.pose = "stand"; }
+  if (s.msg){ s.msg.life -= dt; if (s.msg.life <= 0) s.msg = null; } if (s.stun > 0) s.stun -= dt;
+  if (s.state === "q") s.askT += dt;
+  for (const d of s.items){ d.fx += d.vx * dt * (d === s.held ? 0 : 1); if (d.wob > 0) d.wob -= dt; }
+  s.items = s.items.filter(d => d === s.held || (d.fx > -.12 && d.fx < 1.12));
+  while (s.items.filter(d => !d.rare).length < 7) newItem();
+  const p = PV(), hr = HR(), m = M(), pw = 1 + s.lvl * .35;
+  if (s.mode === "idle"){ if (s.started && s.stun <= 0) s.ph += dt * (1.5 + hard * .3); s.ang = 1.15 * Math.sin(s.ph); s.L = Math.max(m * .14, s.L - dt * m * 2); }
+  else if (s.mode === "down"){ s.L += dt * A.h * 1.0; const h = hookPos();
+   if (h.y > A.y1 - hr || h.x < A.x0 + hr || h.x > A.x1 - hr) s.mode = "up";
+   else if (s.state === "q"){ for (const d of s.qd){ if (d.dead) continue; if (Math.hypot(FX0(d.fx) - h.x, FY0(d.fy) - h.y) < hr + m * .06){ s.mode = "up"; choose(d.k); break; } } }
+   else { const reach = hr + m * (.045 + s.lvl * .03);
+    for (const d of s.items){ const x = FX0(d.fx), y = FY0(d.fy), dist = Math.hypot(x - h.x, y - h.y), rad = m * .055 * d.sz;
+     if (d.k === "m" && dist < reach + rad && h.y > SURF()){ d.fx += (h.x - x) / A.w * Math.min(1, dt * 6); d.fy += (h.y - y) / A.h * Math.min(1, dt * 6); d.pull = 1; } else d.pull = 0;
+     if (dist < hr + rad * .8){
+      if (d.k === "m"){ s.held = d; s.mode = "up"; break; }
+      if (d.k === "n"){ d.wob = .6; s.mode = "up"; if (!s.said[d.n]){ s.said[d.n] = 1; s.msg = { t:`🚫 ${d.n} is NOT magnetic — it slips right off!`, life:2.4, c:"#ffd3a8" }; } else s.msg = { t:"🚫 Not magnetic!", life:1.2, c:"#ffd3a8" }; tone([300, 250], .06, "sine", .05); break; }
+      if (d.k === "e"){ s.mode = "up"; s.stun = 1.2; s.pose = "dizzy"; s.poseT = 1.2; sfx.bad(); s.msg = { t:"👾 Zap! The alien shorted your magnet — avoid aliens!", life:2.2, c:"#ffb4a8" }; break; } } } } }
+  else if (s.mode === "up"){ const sp = s.held ? A.h * (.25 + .5 * s.held.wt) * pw : A.h * 1.4; s.L -= dt * sp;
+   if (s.held){ const h = hookPos(); s.held.fx = (h.x - A.x0) / A.w; s.held.fy = (h.y - A.y0) / A.h + .05; }
+   if (s.L <= m * .14){ s.L = m * .14; s.mode = "idle"; if (s.held){ const d = s.held; s.held = null; s.items = s.items.filter(o => o !== d); bank(d); } s.items.forEach(d => d.pull = 0);
+    if (s.autoK >= 0 && s.state === "q"){ const k = s.autoK; s.autoK = -1; autoCast(k); } } }
+  if (s.state === "free" && s.started){ s.freeT -= dt; if (s.freeT <= 0 && Q.i < Q.items.length && !s.held) ask(); }
+  if (!s.started && s.state === "free"){ s.ang = 1.15 * Math.sin(s.t * 1.2); }
+  s.parts.forEach(q => { q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 400 * dt; }); s.parts = s.parts.filter(q => q.life > 0);
+  if ((s.t * 2 | 0) !== ((s.t - dt) * 2 | 0)){ P.measure(); $("#aPow").innerHTML = `<span>🧲 ${G.caught}</span><span>🔋 ${COILS[s.lvl]} coils</span><span>💎 ${G.gems}/3</span>`; }
+ }
+ function draw(){
+  geo(); const W = view.w, H = view.h, bg = P3("w9_bg"), m = M(), p = PV(), sy = SURF();
+  cx.fillStyle = "#1a1446"; cx.fillRect(0, 0, W, H); if (ready(bg)) cover(bg, 0, 0, W, H, 0);
+  // cosmic crater lake
+  const g = cx.createLinearGradient(0, sy, 0, H); g.addColorStop(0, "rgba(124,77,255,.82)"); g.addColorStop(.5, "rgba(48,27,140,.92)"); g.addColorStop(1, "rgba(14,8,50,.97)");
+  cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, H); for (let x = 0; x <= W + 10; x += 10) cx.lineTo(x, sy + Math.sin(x / 40 + s.t * 2) * 4); cx.lineTo(W, H); cx.closePath(); cx.fill();
+  cx.fillStyle = "rgba(255,255,255,.55)"; for (let i = 0; i < 22; i++){ const x = (i * 137.5 + Math.sin(s.t + i) * 10) % W, y = sy + ((i * 71 - s.t * 25 * (1 + i % 3)) % (H - sy) + (H - sy)) % (H - sy); cx.beginPath(); cx.arc(x, y, 1.5 + i % 3, 0, 7); cx.fill(); }
+  const sz = m * .11, fade = s.state === "q" || s.state === "pre" ? .35 : 1;
+  for (const d of s.items){ if (d === s.held) continue; const x = FX0(d.fx), y = FY0(d.fy) + Math.sin(s.t * 2 + d.ph) * 4;
+   if (d.pull){ const h = hookPos(); cx.save(); cx.strokeStyle = "rgba(255,82,82,.8)"; cx.setLineDash([5, 6]); cx.lineDashOffset = -s.t * 40; cx.lineWidth = 2.5; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(h.x, h.y); cx.stroke(); cx.restore(); }
+   drawImg(d.im, x, y, sz * d.sz, { a:fade, flip:d.vx < 0 && d.k === "e", rot:d.wob > 0 ? Math.sin(d.wob * 30) * .3 : Math.sin(s.t * 2 + d.ph) * .08 });
+   if (d.rare){ cx.save(); cx.globalAlpha = .5 + Math.sin(s.t * 6) * .3; cx.strokeStyle = "#ffe082"; cx.lineWidth = 3; cx.beginPath(); cx.arc(x, y, sz * .7, 0, 7); cx.stroke(); cx.restore(); }
+   if (d.n && fade === 1){ cx.font = `800 ${Math.max(11, sz * .19)}px 'Baloo 2',sans-serif`; cx.textAlign = "center"; cx.textBaseline = "middle"; const tw = cx.measureText(d.n).width + 12; cx.fillStyle = d.k === "m" ? "rgba(91,63,217,.9)" : "rgba(31,40,56,.82)"; rr6(x - tw / 2, y + sz * .5, tw, sz * .28, 8); cx.fill(); cx.fillStyle = "#fff"; cx.fillText(d.n, x, y + sz * .64); } }
+  for (const d of s.qd){ if (d.dead && !d.got && s.state === "cheer") continue; const x = FX0(d.fx), y = FY0(d.fy) + Math.sin(s.t * 2 + d.k) * 3; drawImg("w9_gem", x, y, sz * 1.05, { a:d.dead && !d.got ? .3 : 1 }); letterBadge(x, y - sz * .72, Math.max(15, sz * .28), d.k, d.dead && !d.got ? .3 : 1); }
+  // platform, girl, rod
+  const gx = p.x - m * .21, gb = p.y + m * .15, hh = m * .2;
+  drawImg("w9_plat_station", gx + m * .04, gb - m * .015, m * .27, { top:1 });
+  const im = HS[s.state === "wrong" ? "dizzy" : s.pose] || HS.stand, jy = s.pose === "cheer" ? Math.abs(Math.sin(s.t * 6)) * hh * .08 : 0;
+  if (ready(im)){ const w = hh * im.naturalWidth / im.naturalHeight; cx.save(); cx.translate(gx, gb - jy); if (s.pose === "dizzy") cx.rotate(Math.sin(s.t * 9) * .1); cx.drawImage(im, -w / 2, -hh, w, hh); cx.restore(); }
+  const rod = P3("p9_rod"); if (ready(rod)){ const rw0 = rod.naturalWidth, rh0 = rod.naturalHeight, hx = gx + hh * .12, hy = gb - jy - hh * .42;
+   const sv = Math.hypot(.92 * rw0, .92 * rh0), dv = Math.hypot(p.x - hx, p.y - hy), sc = dv / sv, rot = Math.atan2(p.y - hy, p.x - hx) - Math.atan2(-.92 * rh0, .92 * rw0);
+   cx.save(); cx.translate(hx, hy); cx.rotate(rot); cx.scale(sc, sc); cx.drawImage(rod, -.05 * rw0, -.95 * rh0); cx.restore(); }
+  const h = hookPos(); cx.strokeStyle = "#4fc3f7"; cx.lineWidth = Math.max(2, m * .006); cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(h.x, h.y); cx.stroke();
+  if (s.held) drawImg(s.held.im, h.x, h.y + sz * .45 * s.held.sz, sz * s.held.sz, { rot:Math.sin(s.t * 5) * .1 });
+  cx.save(); if (s.stun > 0 && ((s.t * 10) | 0) % 2) cx.globalAlpha = .5; drawImg("p9_hook", h.x, h.y, HR() * 2.3, { rot:-s.ang }); cx.restore();
+  if (s.mode === "down" && s.stun <= 0){ cx.strokeStyle = "#ffeb3b"; cx.lineWidth = 2; for (let k = 0; k < 2 + s.lvl; k++){ const a = s.t * 9 + k * 2.2, r0 = HR() * (1.4 + s.lvl * .5); cx.beginPath(); cx.moveTo(h.x + Math.cos(a) * r0 * .6, h.y + Math.sin(a) * r0 * .6 + HR() * .5); cx.lineTo(h.x + Math.cos(a + .3) * r0, h.y + Math.sin(a + .3) * r0 + HR() * .5); cx.stroke(); } }
+  if (s.mode === "idle" && s.state !== "end"){ cx.save(); cx.setLineDash([4, 8]); cx.strokeStyle = "rgba(255,255,255,.35)"; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(h.x, h.y); cx.lineTo(p.x + Math.sin(s.ang) * A.h, p.y + Math.cos(s.ang) * A.h); cx.stroke(); cx.restore(); }
+  if (s.state === "wrong") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; drawImg("ui_star", p.x - m * .21 + Math.cos(a) * m * .05, p.y - m * .06 + Math.sin(a) * 6, m * .035); }
+  s.parts.forEach(q => { cx.globalAlpha = Math.max(0, q.life * 1.5); cx.fillStyle = q.c; cx.beginPath(); cx.arc(q.x, q.y, q.r, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+  pill6(`🔋 ${COILS[s.lvl]} coils`, A.x1 - m * .12, A.y0 + A.h * .12, s.lvl ? "#7CFC9A" : "#ffe9b0", Math.max(12, m * .03));
+  const nr = A.w < 560, goal = s.state === "free" ? (nr ? "🧲 Tap to drop — catch IRON & STEEL!" : "🧲 Tap to drop the electromagnet — catch IRON & STEEL!") : s.state === "q" ? (nr ? "💎 Drop on the right crystal!" : "💎 Drop the magnet on the crystal with the right answer!") : s.state === "wrong" ? "😵 Tap to keep fishing" : "";
+  const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 26, s.msg ? s.msg.c : "#ffe9b0", Math.max(13, Math.min(19, A.w * .028)));
+  if (!s.started) pill6("👆 Tap when the magnet points at a metal item!", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
+ }
+ const down = () => { if (G.hold) return; if (s.state === "wrong") return cont(); if (!s.started){ s.started = true; s.ph = Math.asin(clamp(s.ang / 1.15, -1, 1)); } cast(); };
+ cv.addEventListener("pointerdown", down);
+ const rz = () => later(P.measure, 60); addEventListener("resize", rz);
+ $("#aCtl").classList.add("hide"); window.__fs = s; window.__fsAuto = autoCast;
+ return { update, draw, key(e){ if (e.key === " " || e.key === "ArrowDown"){ e.preventDefault(); if (!e.repeat) down(); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); removeEventListener("resize", rz); } };
+}
+
 /* ---------------- start / stop ---------------- */
 function stopArc(){
  if (A && A.cleanup) A.cleanup(); A = null;
@@ -4580,7 +4846,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
