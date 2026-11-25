@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795592683";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795593462";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -5957,12 +5957,12 @@ function challengeStation(src){
   api.hoot("Show me what you learned! 🏆", "m_fist");
  }};
 }
-function bigStation(BIG, img, title, wide){
+function bigStation(BIG, img, title, wide, noTx){
  return { id:"big", icon:"🗺️", short:"Big Picture", title:"The Big Picture", render(el, api){
   const box = (b, cls, txt) => `<div class="tx ${cls}" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%">${txt}</div>`;
   el.innerHTML = `<div class="big"><div class="lcard" style="padding:10px"><div class="infg${wide ? " wide" : ""}" id="ig"><img src="${img}" alt="Summary infographic">
-    ${box(title[0], "t", title[1])}
-    ${BIG.map((p, i) => box(p.lb, "", p.t) + `<div class="hs" data-i="${i}" style="left:${p.r[0]}%;top:${p.r[1]}%;width:${p.r[2]}%;height:${p.r[3]}%"></div>`).join("")}</div></div>
+    ${noTx ? "" : box(title[0], "t", title[1])}
+    ${BIG.map((p, i) => (noTx ? "" : box(p.lb, "", p.t)) + `<div class="hs" data-i="${i}" style="left:${p.r[0]}%;top:${p.r[1]}%;width:${p.r[2]}%;height:${p.r[3]}%"></div>`).join("")}</div></div>
    <div><div class="lcard" id="bgInfo"><h2>🗺️ The Big Picture</h2><p>The whole week on one page! <b>Tap each picture</b> to open its key facts.</p></div></div></div>`;
   const seen = new Set();
   $("#ig").addEventListener("click", e => { const h = e.target.closest(".hs"); if (!h) return; const i = +h.dataset.i, p = BIG[i]; seen.add(i);
@@ -8331,6 +8331,253 @@ W9.notes = [
  ["🪐 Space", ["The Sun's gravity keeps the planets in orbit. The Sun gives Earth light and heat.", "Jupiter rotates the fastest (~10 hours). A light year is the distance light travels in one year."], "#f59e0b"]
 ];
 LAB[9] = W9;
+
+/* =====================================================================
+   WEEK 10 — Our Dynamic Earth: spheres, layers, plate tectonics,
+   weathering, erosion & deposition
+   uses helpers: arr5, tasks5, loop5, seg5, quiz5, puzzle5, sortGame, bar6
+   ===================================================================== */
+const W10 = { w:10, emoji:"🌋", label:"Week 10 · Our Dynamic Earth", stations:[] };
+const sky10 = `<defs><linearGradient id="sk10" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8ff"/><stop offset="1" stop-color="#e8f6ff"/></linearGradient></defs>`;
+
+/* 1 — EARTH'S 4 SPHERES */
+W10.stations.push({ id:"spheres", icon:"🌍", short:"4 Spheres", title:"Earth's 4 Spheres", covers:["E034","E053","E054"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🌍 Earth's 4 spheres</h2><p>Tap each part of the picture to discover its sphere!</p>
+   <svg class="f5sc" viewBox="0 0 400 220" id="spV"></svg><div class="f5big" id="spT">👆 Tap the rocks, the water, the air or the living things</div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="spAir">💨 What is air made of?</button></div><div id="spPie"></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="spK"></div></div><div id="spSort"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>🪨 <span class="kw">Geosphere</span> = rocks, soil, mountains and Earth's inside.</p><p>💧 <span class="kw">Hydrosphere</span> = <b>all the water on Earth</b> — oceans, rivers, lakes, ice and groundwater.</p><p>💨 <span class="kw">Atmosphere</span> = the air around Earth. It is mostly <b>nitrogen (78%)</b>, then oxygen (21%).</p><p>🦌 <span class="kw">Biosphere</span> = <b>all living things</b> — plants, animals, people, bacteria. Rocks are NOT part of the biosphere!</p></div></div></div><div id="spQ"></div>`;
+  const seen = new Set();
+  const mark = tasks5($("#spK"), [["four", "Tap all 4 spheres"], ["air", "Find out what air is made of"], ["sort", "Sort things into their spheres"]], () => quiz5(el, api, "#spQ", ["E034","E053","E054"]));
+  const INFO = { geo:["🪨 GEOSPHERE", "Rocks, soil, mountains and everything inside the Earth."], hyd:["💧 HYDROSPHERE", "ALL the water on Earth: oceans, rivers, lakes, glaciers and groundwater."], atm:["💨 ATMOSPHERE", "The blanket of air around Earth — mostly nitrogen."], bio:["🦌 BIOSPHERE", "ALL living things: plants, animals, people and tiny microbes."] };
+  $("#spV").innerHTML = sky10 + `<rect width="400" height="220" fill="url(#sk10)"/>
+   <g data-sp="atm" style="cursor:pointer"><rect x="0" y="0" width="400" height="90" fill="transparent"/><ellipse cx="80" cy="40" rx="40" ry="16" fill="#fff"/><ellipse cx="110" cy="32" rx="28" ry="14" fill="#fff"/><ellipse cx="300" cy="30" rx="36" ry="13" fill="#fff"/><path d="M190 50 q20 -8 40 0 M200 62 q20 -8 40 0" stroke="#90caf9" stroke-width="3" fill="none"/></g>
+   <g data-sp="geo" style="cursor:pointer"><polygon points="0,170 70,80 130,150 180,95 250,170" fill="#8d6e63"/><polygon points="70,80 88,104 55,100" fill="#fff"/><polygon points="180,95 196,116 166,114" fill="#fff"/><rect x="0" y="168" width="250" height="52" fill="#a1887f"/></g>
+   <g data-sp="hyd" style="cursor:pointer"><path d="M250 150 Q300 140 400 150 V220 H250 Z" fill="#29b6f6"/><path d="M262 170 q15 -6 30 0 t30 0 t30 0 t30 0" stroke="#e1f5fe" stroke-width="3" fill="none"/><path d="M140 168 q20 20 0 52 h30 q-15 -30 0 -52z" fill="#4fc3f7"/></g>
+   <g data-sp="bio" style="cursor:pointer"><rect x="210" y="130" width="8" height="36" fill="#6d4c41"/><circle cx="214" cy="120" r="22" fill="#43a047"/><circle cx="40" cy="150" r="14" fill="#66bb6a"/><rect x="37" y="150" width="6" height="18" fill="#6d4c41"/><g transform="translate(90,160)"><ellipse cx="0" cy="0" rx="18" ry="9" fill="#a1683a"/><rect x="-14" y="5" width="4" height="13" fill="#7b4a26"/><rect x="10" y="5" width="4" height="13" fill="#7b4a26"/><circle cx="18" cy="-8" r="7" fill="#a1683a"/><path d="M16 -15 l-4 -9 M21 -15 l4 -9" stroke="#5d4037" stroke-width="2.5"/></g><path d="M330 190 q12 -9 24 0 q-12 9 -24 0z M354 190 l8 -6 v12z" fill="#ff8a65"/></g>`;
+  $("#spV").onclick = e => { const g = e.target.closest("[data-sp]"); if (!g) return; const k = g.dataset.sp, [t, d] = INFO[k]; seen.add(k); sfx.tap();
+   $("#spT").innerHTML = `${t} — ${d}`; api.hoot(`<b>${t}</b>: ${d}`, "m_point"); if (seen.size === 4){ mark("four"); api.hoot("You found all 4 spheres! They work together — rain (hydrosphere) wears down rocks (geosphere) and helps plants grow (biosphere). 🌍", "m_wow"); } };
+  $("#spAir").onclick = () => { sfx.tap(); mark("air");
+   const sl = (a0, a1, c) => { const p = a => [100 + 70 * Math.cos(a), 85 + 70 * Math.sin(a)], [x0, y0] = p(a0), [x1, y1] = p(a1); return `<path d="M100 85 L${x0} ${y0} A70 70 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${x1} ${y1} Z" fill="${c}"/>`; };
+   const T = Math.PI * 2, a = -Math.PI / 2;
+   $("#spPie").innerHTML = `<svg viewBox="0 0 400 170" style="width:100%">${sl(a, a + T * .78, "#7e57c2")}${sl(a + T * .78, a + T * .99, "#29b6f6")}${sl(a + T * .99, a + T, "#ffb300")}
+    <rect x="200" y="40" width="18" height="18" rx="4" fill="#7e57c2"/><text x="226" y="54" font-size="15" font-weight="900" fill="#3a2a8f">Nitrogen 78%</text><rect x="200" y="72" width="18" height="18" rx="4" fill="#29b6f6"/><text x="226" y="86" font-size="15" font-weight="900" fill="#3a2a8f">Oxygen 21%</text><rect x="200" y="104" width="18" height="18" rx="4" fill="#ffb300"/><text x="226" y="118" font-size="15" font-weight="900" fill="#3a2a8f">Other gases 1%</text></svg>`;
+   api.hoot("Surprise! Air is mostly <b>NITROGEN</b> (78%) — not oxygen. Oxygen is only about 21%. 💨", "m_wow"); };
+  sortGame($("#spSort"), { title:"🧺 Which sphere does it belong to?", min:110, items:[["", "🪨 Rock", "geo"], ["", "⛰️ Mountain", "geo"], ["", "🌊 Ocean", "hyd"], ["", "🧊 Glacier ice", "hyd"], ["", "💨 Wind", "atm"], ["", "🫧 Oxygen gas", "atm"], ["", "🌳 Tree", "bio"], ["", "🐟 Fish", "bio"]],
+   bins:[["geo", "🪨 Geosphere"], ["hyd", "💧 Hydrosphere"], ["atm", "💨 Atmosphere"], ["bio", "🦌 Biosphere"]], wrong:() => "Is it rock, water, air or alive? 🤔", onDone:() => { mark("sort"); api.hoot("Perfect sorting! Every part of Earth belongs to a sphere. ✅", "m_star"); } });
+  api.hoot("Earth has 4 big parts called <b>spheres</b>. Let's find them! 🌍", "m_point");
+ }});
+
+/* 2 — LAYERS OF THE EARTH */
+const LAY10 = [["Crust", 0, 35, "#8d6e63", "solid rock — the thin OUTERMOST layer we live on", "~ 20 °C"], ["Mantle", 35, 2900, "#e65100", "hot rock that flows very slowly; MAGMA forms here", "up to 3700 °C"], ["Outer Core", 2900, 5150, "#ffb300", "LIQUID iron & nickel — its motion makes Earth's MAGNETIC FIELD", "~ 5000 °C"], ["Inner Core", 5150, 6371, "#fff176", "SOLID iron & nickel — squeezed solid by huge pressure", "~ 5400 °C"]];
+W10.stations.push({ id:"layers", icon:"🔥", short:"Earth's Layers", title:"Journey to the Center", covers:["E032","E033","E036","E043","E059"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🔥 Journey to the center of the Earth</h2>
+   <label style="font-weight:900;color:#5B3FD9">⛏️ Drill depth: <span id="lyD">0</span> km</label><input type="range" id="lyR" min="0" max="6371" value="0" style="width:100%">
+   <svg class="f5sc" viewBox="0 0 400 230" id="lyV"></svg><div class="f5read" id="lyI"></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="lyK"></div></div><div class="lcard" id="lyP"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>From the surface to the center: <b>Crust → Mantle → Outer Core → Inner Core</b>.</p><p>The <span class="kw">crust</span> is the thin outermost layer. The crust and the very top of the mantle form the <b>lithosphere</b>, which is broken into <b>tectonic plates</b>.</p><p>The <span class="kw">mantle</span> is hot, slowly flowing rock — <b>magma</b> forms here.</p><p>The <span class="kw3">outer core</span> is <b>liquid</b> metal; its movement makes Earth's <b>magnetic field</b>. The inner core is <b>solid</b>.</p></div></div></div><div id="lyQ"></div>`;
+  let D = 0; const got = new Set();
+  const mark = tasks5($("#lyK"), [["Mantle", "Drill into the mantle"], ["Outer Core", "Reach the liquid outer core"], ["Inner Core", "Reach the center"], ["order", "Solve the layer-order puzzle"]], () => quiz5(el, api, "#lyQ", ["E032","E033","E036","E043","E059"]));
+  const layerAt = d => LAY10.find(l => d >= l[1] && d <= l[2]) || LAY10[3];
+  const draw = () => { const cx = 200, cy = 230, R = 220; let s = `<rect width="400" height="230" fill="#1a1446"/>`;
+   const rad = [220, 205, 120, 60]; LAY10.forEach((l, i) => s += `<path d="M${cx - rad[i]} ${cy} A${rad[i]} ${rad[i]} 0 0 1 ${cx + rad[i]} ${cy} Z" fill="${l[3]}"/>`);
+   s += `<text x="200" y="22" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">CRUST</text><text x="200" y="62" font-size="13" font-weight="900" fill="#fff" text-anchor="middle">MANTLE</text><text x="200" y="140" font-size="12" font-weight="900" fill="#5d4037" text-anchor="middle">OUTER CORE (liquid)</text><text x="200" y="205" font-size="11" font-weight="900" fill="#5d4037" text-anchor="middle">INNER CORE (solid)</text>`;
+   for (let i = 0; i < 6; i++){ const a = Math.PI + (i + 1) * Math.PI / 7; s += `<path d="M${cx + Math.cos(a) * 205} ${cy + Math.sin(a) * 205} L${cx + Math.cos(a) * 220} ${cy + Math.sin(a) * 220}" stroke="#3e2723" stroke-width="2"/>`; }
+   const f = D / 6371, py = 10 + f * 220 * .98; s += `<line x1="330" y1="8" x2="330" y2="${py}" stroke="#cfd8dc" stroke-width="4" stroke-dasharray="6 4"/><g transform="translate(330,${py})"><polygon points="-10,-14 10,-14 0,6" fill="#78909c"/><rect x="-8" y="-28" width="16" height="14" rx="3" fill="#ffca28"/></g>`;
+   if (layerAt(D)[0] === "Outer Core") s += `<path d="M30 120 q-25 -110 170 -112 q195 2 170 112" stroke="#7e57c2" stroke-width="3" stroke-dasharray="7 6" fill="none" opacity=".9"/><text x="40" y="100" font-size="10" font-weight="900" fill="#d1c4e9">magnetic field</text>`;
+   $("#lyV").innerHTML = s; const l = layerAt(D);
+   $("#lyI").innerHTML = `<span>📍 ${l[0]}</span><span>${l[0].includes("Outer") ? "💧 liquid" : "🪨 solid"}</span><span>🌡️ ${l[5]}</span>`; };
+  $("#lyR").oninput = e => { D = +e.target.value; $("#lyD").textContent = D; draw(); const l = layerAt(D);
+   if (!got.has(l[0])){ got.add(l[0]); if (l[0] !== "Crust"){ mark(l[0]); api.hoot(`You reached the <b>${l[0]}</b>: ${l[4]}! ${l[0] === "Outer Core" ? "🧲" : "🔥"}`, "m_wow"); } else api.hoot("The <b>crust</b> is the thin outermost layer — only about 35 km deep under continents. Its pieces are the <b>tectonic plates</b>. 🪨", "m_point"); } };
+  puzzle5($("#lyP"), [{ q:"Order of the layers from the SURFACE to the CENTER?", o:["Crust → Mantle → Outer Core → Inner Core", "Mantle → Crust → Inner Core → Outer Core", "Inner Core → Outer Core → Mantle → Crust", "Crust → Outer Core → Mantle → Inner Core"], why:"Crust → Mantle → Outer Core → Inner Core! 🌍" },
+   { q:"Which layer is LIQUID and makes Earth's magnetic field?", o:["Outer Core", "Inner Core", "Crust", "Mantle"], why:"The liquid outer core moves and makes the magnetic field. 🧲" },
+   { q:"Where does MAGMA form?", o:["Mantle", "Inner Core", "Atmosphere", "Crust"], why:"Magma forms in the hot mantle. 🔥" }], () => mark("order"));
+  draw(); api.hoot("Drag the drill down and travel to the center of the Earth! ⛏️", "m_point");
+ }});
+
+/* 3 — CONVECTION CURRENTS MOVE THE PLATES */
+const PLATES10 = ["Pacific", "North American", "South American", "Eurasian", "African", "Indo-Australian", "Antarctic"];
+W10.stations.push({ id:"convect", icon:"♨️", short:"Convection", title:"What Moves the Plates?", covers:["E035","E040","E045","E047","E058"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>♨️ What moves the plates?</h2>
+   <svg class="f5sc" viewBox="0 0 400 220" id="cvV"></svg><div class="f5big" id="cvT">The core heats the mantle from below… turn the heat on!</div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="cvH">🔥 Heat: OFF</button><button class="lbtn y" id="cvM">🗺️ Show the 7 major plates</button></div><div id="cvP"></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="cvK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Plate tectonics</span> is the theory that Earth's outer shell (the <b>lithosphere</b>) is broken into plates that <b>move</b>.</p><p>The plates are moved by <span class="kw3">convection currents</span> in the mantle: hot magma <b>rises</b>, spreads out, cools and <b>sinks</b> again — round and round, like soup boiling in a pot. 🍲</p><p>There are <b>7 major plates</b>.</p></div></div></div><div id="cvQ"></div>`;
+  let on = 0, t = 0, run = 0; const P = Array.from({ length:36 }, (_, i) => ({ c:i % 2, a:i / 18 * Math.PI * 2 + Math.random(), r:.55 + (i % 3) * .2 }));
+  const mark = tasks5($("#cvK"), [["heat", "Turn on the heat"], ["move", "Watch the plates move for 4 seconds"], ["seven", "Meet the 7 major plates"]], () => quiz5(el, api, "#cvQ", ["E035","E040","E045","E047","E058"]));
+  const draw = () => { const off = run * 18; let s = `<rect width="400" height="220" fill="#ff8f00"/><rect y="0" width="400" height="220" fill="url(#cvg)"/><defs><linearGradient id="cvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb74d"/><stop offset="1" stop-color="#d84315"/></linearGradient></defs>`;
+   s += `<rect x="0" y="196" width="400" height="24" fill="#ffeb3b"/><text x="200" y="213" font-size="12" font-weight="900" fill="#e65100" text-anchor="middle">🔥 HOT CORE 🔥</text>`;
+   [[100, 110], [300, 110]].forEach(([x, y], k) => { s += `<ellipse cx="${x}" cy="${y}" rx="80" ry="60" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="6 6"/>`;
+    if (on){ const d = k ? 1 : -1; s += arr5(x + d * -80, y + 20, x + d * -80, y - 30, "#fff", 4) + arr5(x - 80 * d * -1, y - 20, x - 80 * d * -1, y + 30, "#90caf9", 4); } });
+   if (on) P.forEach(p => { const x = (p.c ? 300 : 100) + Math.cos(p.a) * 80 * p.r, y = 110 + Math.sin(p.a) * 60 * p.r, hot = Math.sin(p.a) > 0 ? 0 : 1; s += `<circle cx="${x}" cy="${y}" r="4" fill="${hot ? "#fff59d" : "#ff7043"}"/>`; });
+   s += `<rect x="${-10 - off}" y="20" width="205" height="26" rx="5" fill="#6d4c41" stroke="#3e2723" stroke-width="2"/><rect x="${205 + off}" y="20" width="205" height="26" rx="5" fill="#795548" stroke="#3e2723" stroke-width="2"/><text x="${90 - off}" y="38" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">PLATE ←</text><text x="${310 + off}" y="38" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">→ PLATE</text>`;
+   if (run > .3) s += `<path d="M${195 - off} 46 Q200 ${40 - run * 6} ${205 + off} 46" fill="#ff5722"/>`;
+   $("#cvV").innerHTML = s; };
+  $("#cvH").onclick = () => { on = 1 - on; $("#cvH").textContent = "🔥 Heat: " + (on ? "ON" : "OFF"); sfx.tap(); if (on){ mark("heat"); t = 0; api.hoot("Hot magma <b>rises</b>, spreads under the plates, cools and <b>sinks</b> — these loops are <b>convection currents</b>! ♨️", "m_wow"); $("#cvT").textContent = "Watch the plates on top…"; } };
+  $("#cvM").onclick = () => { mark("seven"); sfx.tap(); $("#cvP").innerHTML = `<div class="pills" style="margin-top:8px">${PLATES10.map((p, i) => `<span>${i + 1}. ${p}</span>`).join("")}</div>`; api.hoot("Earth's lithosphere is broken into <b>7 major plates</b> (plus many small ones). 🧩", "m_point"); };
+  loop5(dt => { if (on){ P.forEach(p => p.a += dt * (p.c ? -1 : 1) * 1.1); t += dt; run = Math.min(1.4, run + dt * .12); if (t > 4){ t = -99; mark("move"); $("#cvT").textContent = "The plates move apart where magma rises! 🌋"; api.hoot("The convection currents drag the plates — that's what drives <b>plate tectonics</b>! The plates move only a few cm per year. 🐌", "m_star"); } } draw(); });
+  draw(); api.hoot("Why do the giant plates move? Let's find out! ♨️", "m_point");
+ }});
+
+/* 4 — PLATE BOUNDARIES */
+W10.stations.push({ id:"bounds", icon:"🏔️", short:"Plate Boundaries", title:"Plate Boundaries", covers:["E039","E041","E042","E044","E046","E049","E050","E052","E055","E060","E061","E062"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🏔️ Plate boundaries</h2>
+   <div class="seg" id="bdS"><button data-v="div" class="on">↔️ Divergent</button><button data-v="sub">🌊↘️ Convergent (ocean)</button><button data-v="mtn">⛰️ Convergent (continents)</button><button data-v="tr">⇅ Transform</button></div>
+   <svg class="f5sc" viewBox="0 0 400 210" id="bdV" style="margin-top:6px"></svg><div class="f5big" id="bdT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="bdGo">▶️ Move the plates!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="bdK"></div></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>↔️ <span class="kw">Divergent</span>: plates move <b>apart</b>. Magma rises and makes <b>new oceanic crust</b> → <b>ocean ridges</b>.</p><p>➡️⬅️ <span class="kw">Convergent</span>: plates move <b>towards each other</b>. An ocean plate is forced <b>under</b> another = <b>subduction</b> → deep <b>ocean trenches</b> and volcanoes. Two continents collide → <b>mountain ranges</b> (the <b>Himalayas</b>!).</p><p>⇅ <span class="kw3">Transform</span>: plates <b>slide past</b> each other → earthquakes.</p></div></div></div><div id="bdQ"></div>`;
+  let M = "div", p = 0, run = 0;
+  const TXT = { div:"↔️ DIVERGENT — plates move APART. Magma rises and makes NEW oceanic crust (ocean ridge).", sub:"🌊 CONVERGENT — the heavy ocean plate dives UNDER: SUBDUCTION → deep trench + volcanoes.", mtn:"⛰️ CONVERGENT — two continents COLLIDE and crumple up into MOUNTAINS (like the Himalayas).", tr:"⇅ TRANSFORM — plates SLIDE PAST each other → earthquakes!" };
+  const mark = tasks5($("#bdK"), [["div", "Make new crust (divergent)"], ["sub", "Make a trench (subduction)"], ["mtn", "Build the Himalayas"], ["tr", "Slide plates past each other"]], () => quiz5(el, api, "#bdQ", ["E039","E041","E042","E044","E046","E049","E050","E052","E055","E060","E061","E062"]));
+  const draw = () => { let s = sky10 + `<rect width="400" height="210" fill="url(#sk10)"/><rect y="130" width="400" height="80" fill="#e65100"/>`;
+   if (M === "div"){ const g = p * 60; s += `<rect y="70" width="400" height="30" fill="#4fc3f7" opacity=".6"/><rect x="${-g}" y="100" width="200" height="34" fill="#795548"/><rect x="${200 + g}" y="100" width="200" height="34" fill="#6d4c41"/>`;
+    if (p > 0){ s += `<path d="M${200 - g} 134 L${200 - g} 100 Q200 ${92 - p * 14} ${200 + g} 100 L${200 + g} 134 Z" fill="#455a64"/><path d="M192 180 Q200 150 208 180" fill="#ffeb3b"/>` + arr5(200, 175, 200, 128, "#ffeb3b", 5) + arr5(150 - g, 117, 100 - g, 117, "#fff") + arr5(250 + g, 117, 300 + g, 117, "#fff"); s += `<text x="200" y="${82 - p * 10}" font-size="11" font-weight="900" fill="#0d47a1" text-anchor="middle">new crust · ocean ridge</text>`; } }
+   if (M === "sub"){ const g = p * 70; s += `<rect y="70" width="230" height="30" fill="#4fc3f7" opacity=".6"/><g transform="translate(${-g * .3},0)"><path d="M0 100 H${200 + g * .3} L${260 + g * .3} ${130 + p * 60} L${230 + g * .3} ${150 + p * 60} L${180 + g * .3} 134 H0 Z" fill="#546e7a"/></g><path d="M200 134 L200 100 L250 80 L400 80 V134 Z" fill="#8d6e63"/>`;
+    s += `<text x="90" y="122" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">ocean plate</text><text x="330" y="112" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">continent</text>` + arr5(60, 116, 130, 116, "#fff");
+    if (p > .5) s += `<polygon points="290,80 310,${80 - p * 36} 330,80" fill="#6d4c41"/><path d="M310 ${80 - p * 36} q-4 -10 2 -18" stroke="#ff5722" stroke-width="4" fill="none"/><text x="205" y="64" font-size="11" font-weight="900" fill="#0d47a1" text-anchor="middle">⬇ deep trench</text><text x="300" y="${56 - p * 30}" font-size="10" font-weight="900" fill="#bf360c">volcano</text>`; }
+   if (M === "mtn"){ const g = (1 - p) * 40, h = p * 70; s += `<rect x="${-g}" y="100" width="200" height="34" fill="#795548"/><rect x="${200 + g}" y="100" width="200" height="34" fill="#8d6e63"/>`;
+    if (p > 0) s += `<polygon points="${130},100 ${170},${100 - h * .7} ${200},${100 - h} ${235},${100 - h * .75} ${270},100" fill="#6d4c41"/><polygon points="${188},${100 - h * .8} ${200},${100 - h} ${212},${100 - h * .82}" fill="#fff"/>` + arr5(60, 117, 120, 117, "#fff") + arr5(340, 117, 280, 117, "#fff");
+    if (p > .8) s += `<text x="200" y="${88 - h}" font-size="12" font-weight="900" fill="#3a2a8f" text-anchor="middle">⛰️ Himalayas!</text>`; }
+   if (M === "tr"){ const g = p * 70, sh = run && p < 1 ? Math.sin(p * 80) * 3 : 0; s += `<rect y="40" width="400" height="90" fill="#9ccc65"/><g transform="translate(${sh},0)"><rect x="${-40 + g}" y="40" width="440" height="44" fill="#aed581"/><path d="M${40 + g} 62 H${160 + g}" stroke="#fff" stroke-width="6" stroke-dasharray="14 10"/></g><rect x="${-40 - g}" y="86" width="440" height="44" fill="#9ccc65"/><path d="M${120 - g} 108 H${240 - g}" stroke="#fff" stroke-width="6" stroke-dasharray="14 10"/><line x1="0" y1="85" x2="400" y2="85" stroke="#5d4037" stroke-width="3" stroke-dasharray="6 3"/>` + arr5(300, 62, 360, 62, "#3e2723") + arr5(100, 108, 40, 108, "#3e2723");
+    if (p > .3 && p < 1) s += `<text x="200" y="30" font-size="13" font-weight="900" fill="#c62828" text-anchor="middle">💥 EARTHQUAKE!</text>`; }
+   $("#bdV").innerHTML = s; $("#bdT").textContent = TXT[M]; };
+  seg5(el, "#bdS", v => { M = v; p = 0; run = 0; draw(); });
+  $("#bdGo").onclick = () => { p = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (run){ p = Math.min(1, p + dt * .45); if (p >= 1){ run = 0; mark(M); api.hoot({ div:"Plates moved APART → magma filled the gap → <b>new oceanic crust</b> and an <b>ocean ridge</b>! ↔️", sub:"The ocean plate was forced UNDER the continent — <b>subduction</b>! It made a deep <b>ocean trench</b> and a volcano. 🌋", mtn:"Two continental plates collided → a <b>mountain range</b>! This is how the <b>Himalayas</b> formed. ⛰️", tr:"The plates <b>slid past</b> each other — a <b>transform boundary</b>. The rocks get stuck, then slip → earthquakes! 💥" }[M], "m_wow"); } draw(); } });
+  draw(); api.hoot("Pick a boundary and press ▶️ to move the plates! 🏔️", "m_point");
+ }});
+
+/* 5 — PANGAEA, CONTINENTAL DRIFT & WHAT MOVING PLATES DO */
+const CONT10 = [["N. America", "M-30 -25 L20 -30 L28 -5 L5 10 L-10 28 L-28 5 Z", "#8bc34a", [150, 92, 20], [95, 70, 0]], ["S. America", "M-12 -26 L16 -20 L14 8 L0 30 L-10 10 Z", "#7cb342", [168, 135, 30], [130, 140, 0]],
+ ["Eurasia", "M-45 -18 L40 -22 L50 0 L20 18 L-30 14 Z", "#aed581", [215, 85, -10], [265, 65, 0]], ["Africa", "M-20 -24 L20 -20 L18 8 L2 30 L-14 6 Z", "#c0ca33", [205, 125, 0], [225, 120, 0]],
+ ["Australia", "M-18 -10 L18 -12 L16 10 L-14 12 Z", "#cddc39", [235, 150, 40], [330, 150, 0]], ["Antarctica", "M-40 -8 L40 -8 L30 8 L-30 8 Z", "#eceff1", [200, 168, 0], [210, 196, 0]]];
+W10.stations.push({ id:"pangaea", icon:"🧩", short:"Pangaea", title:"Continental Drift & Pangaea", covers:["E037","E038","E048","E051","E057","E064","E071","E073"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🧩 Continental drift</h2>
+   <label style="font-weight:900;color:#5B3FD9">⏳ <span id="pgY">250</span> million years ago</label><input type="range" id="pgR" min="0" max="100" value="0" style="width:100%">
+   <svg class="f5sc" viewBox="0 0 400 210" id="pgV"></svg>
+   <div class="lrow" style="justify-content:center;flex-wrap:wrap"><button class="lbtn y" data-cl="fos">🦴 Fossil clue</button><button class="lbtn y" data-cl="fit">🧩 Puzzle clue</button><button class="lbtn y" data-cl="rock">⛰️ Rock clue</button></div><div class="f5big" id="pgT">Drag the time slider to today!</div>
+   <div class="lcard" style="margin-top:8px;box-shadow:none;border:3px dashed #ffe0b2"><h3>🌋 Magma reaches the surface</h3><svg viewBox="0 0 400 140" style="width:100%" id="pgI"></svg><button class="lbtn t" id="pgE">🌋 Erupt!</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="pgK"></div></div><div id="pgS"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p>Long ago all the continents were joined in one supercontinent: <span class="kw">Pangaea</span>. The plates slowly moved them apart = <b>continental drift</b>.</p><p>Clues: the same <b>fossils</b> on different continents, coastlines that <b>fit like a puzzle</b>, and matching rocks and mountains.</p><p>Moving plates cause <b>earthquakes, volcanoes, mountains</b> and trenches. When <b>magma</b> reaches the surface it erupts from a <b>volcano</b>, cools into <span class="kw3">igneous rock</span> and can build <b>new land</b> — even new <b>islands</b>!</p></div></div></div><div id="pgQ"></div>`;
+  let f = 0, er = 0, run = 0; const cl = new Set();
+  const mark = tasks5($("#pgK"), [["today", "Drift the continents to today"], ["clues", "Find all 3 clues"], ["erupt", "Build a new island"], ["sort", "Sort what moving plates cause"]], () => quiz5(el, api, "#pgQ", ["E037","E038","E048","E051","E057","E064","E071","E073"]));
+  const CLUE = { fos:["🦴 The same fossils (like the reptile Mesosaurus) are found in South America AND Africa — they were once joined!", [[160, 135], [205, 125]]], fit:["🧩 The coasts of South America and Africa fit together like puzzle pieces!", [[178, 135], [190, 125]]], rock:["⛰️ The same kinds of rocks and mountain chains continue across oceans!", [[150, 92], [215, 85]]] };
+  let show = null;
+  const draw = () => { let s = `<rect width="400" height="210" fill="#4fc3f7"/><path d="M0 30 q100 -10 200 0 t200 0" stroke="#b3e5fc" stroke-width="3" fill="none" opacity=".5"/>`;
+   CONT10.forEach(c => { const [x0, y0, r0] = c[3], [x1, y1, r1] = c[4], x = x0 + (x1 - x0) * f, y = y0 + (y1 - y0) * f, r = r0 + (r1 - r0) * f; s += `<g transform="translate(${x},${y}) rotate(${r})"><path d="${c[1]}" fill="${c[2]}" stroke="#33691e" stroke-width="2"/></g>`; if (f > .85) s += `<text x="${x}" y="${y + 4}" font-size="9" font-weight="900" fill="#1b5e20" text-anchor="middle">${c[0]}</text>`; });
+   if (f < .08) s += `<text x="200" y="25" font-size="15" font-weight="900" fill="#fff" text-anchor="middle">PANGAEA 🌍</text>`;
+   if (show && f < .3) CLUE[show][1].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="13" fill="none" stroke="#ff1744" stroke-width="3"/>` + (show === "fos" ? `<text x="${x}" y="${y + 5}" font-size="14" text-anchor="middle">🦎</text>` : ""));
+   $("#pgV").innerHTML = s; };
+  const idraw = () => { const h = Math.min(1, er) * 55; let s = `<rect width="400" height="140" fill="#b3e5fc"/><rect y="80" width="400" height="60" fill="#29b6f6"/><rect y="120" width="400" height="20" fill="#5d4037"/><path d="M198 140 Q200 110 202 80" stroke="#ff5722" stroke-width="6" fill="none"/>`;
+   if (er > 0) s += `<polygon points="${200 - 30 - h},${80 + 30} ${200 - 8},${80 - h + 20} ${200 + 8},${80 - h + 20} ${200 + 30 + h},${80 + 30}" fill="${er >= 1 ? "#5d4037" : "#6d4c41"}"/>`;
+   if (run) for (let i = 0; i < 6; i++){ const a = -Math.PI / 2 + (i - 2.5) * .35; s += `<circle cx="${200 + Math.cos(a) * 20 * (er * 7 % 1 + .3)}" cy="${80 - h + 18 + Math.sin(a) * 30 * (er * 7 % 1 + .3)}" r="4" fill="#ff7043"/>`; }
+   if (er >= 1) s += `<text x="200" y="${70 - h + 20}" font-size="12" font-weight="900" fill="#3e2723" text-anchor="middle">🏝️ NEW ISLAND — made of igneous rock!</text><circle cx="250" cy="${80 - h * .5 + 14}" r="3" fill="#43a047"/>`;
+   $("#pgI").innerHTML = s; };
+  $("#pgR").oninput = e => { f = +e.target.value / 100; $("#pgY").textContent = Math.round(250 * (1 - f)); draw(); if (f >= 1){ mark("today"); $("#pgT").textContent = "Today's continents — and they are STILL moving (a few cm a year)!"; api.hoot("The continents drifted apart over 250 million years — <b>continental drift</b>. They're still moving today! 🐌", "m_wow"); } };
+  el.querySelectorAll("[data-cl]").forEach(b => b.onclick = () => { const k = b.dataset.cl; show = k; cl.add(k); sfx.tap(); $("#pgT").textContent = CLUE[k][0]; if (f > .3){ f = 0; $("#pgR").value = 0; $("#pgY").textContent = 250; } draw(); b.classList.add("t"); if (cl.size === 3){ mark("clues"); api.hoot("Fossils, puzzle-fit coasts and matching rocks — 3 clues that the continents were once <b>joined in Pangaea</b>! 🕵️", "m_star"); } });
+  $("#pgE").onclick = () => { if (run) return; er = 0; run = 1; tone([120, 80], .3, "sawtooth", .08); };
+  loop5(dt => { if (run){ er += dt * .35; if (er >= 1){ er = 1; run = 0; mark("erupt"); api.hoot("Magma rose to the surface and erupted. The lava <b>cooled and became igneous rock</b> — and built <b>new land</b>: an island! 🌋🏝️", "m_wow"); } idraw(); } });
+  sortGame($("#pgS"), { title:"🌍 Caused by moving plates?", min:120, items:[["", "💥 Earthquakes", "y"], ["", "🌋 Volcanoes", "y"], ["", "⛰️ Mountains", "y"], ["", "🏝️ New volcanic islands", "y"], ["", "🌊 Tides", "n"], ["", "🌗 Day & night", "n"], ["", "🌈 Rainbows", "n"]],
+   bins:[["y", "✅ Plate movement"], ["n", "🚫 Something else"]], wrong:(n, k) => k === "n" ? "Hmm — that is caused by the Moon, the Sun or light! 🤔" : "Moving plates DO cause this! 💡", onDone:() => { mark("sort"); api.hoot("Right! Moving plates cause <b>earthquakes, volcanoes and mountains</b> — all of the above! ✅", "m_star"); } });
+  draw(); idraw(); api.hoot("250 million years ago the world looked very different… slide to today! ⏳", "m_point");
+ }});
+
+/* 6 — WEATHERING */
+W10.stations.push({ id:"weather", icon:"🪨", short:"Weathering", title:"Weathering Breaks Rocks", covers:["E056","E063","E065","E069","E074","E075"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🪨 Weathering</h2>
+   <div class="seg" id="wtS"><button data-v="ice" class="on">🧊 Ice wedging</button><button data-v="root">🌱 Plant roots</button><button data-v="temp">🌡️ Hot & cold</button><button data-v="acid">🌧️ Acid rain</button><button data-v="rust">🟠 Rusting</button></div>
+   <svg class="f5sc" viewBox="0 0 400 210" id="wtV" style="margin-top:6px"></svg><div class="f5big" id="wtT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="wtGo"></button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="wtK"></div></div><div id="wtSort"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Weathering</span> = the <b>breakdown of rocks into smaller pieces</b> (the result: cracked, crumbled rock).</p><p>🔨 <b>Physical (mechanical) weathering</b> breaks rock into pieces but doesn't change what it's made of: ice wedging, plant roots and <b>temperature changes</b> (the main cause!).</p><p>🧪 <span class="kw3">Chemical weathering</span> changes the rock with <b>chemical reactions</b>: acid rain dissolves limestone and carves <b>caves</b>; iron in rocks <b>rusts</b>.</p></div></div></div><div id="wtQ"></div>`;
+  let M = "ice", n = 0, p = 0, run = 0;
+  const GO = { ice:"❄️ Freeze & thaw", root:"🌱 Let it grow", temp:"☀️🌙 Day & night", acid:"🌧️ Make it rain", rust:"💧 Add water & air" };
+  const TX = { ice:"Water seeps into a crack, FREEZES and EXPANDS → the crack grows. Repeat 3 times!", root:"A seed grows in a crack — its roots push the rock apart.", temp:"Hot days make rock expand, cold nights make it shrink → it cracks and flakes.", acid:"Rain with a little acid DISSOLVES limestone — a chemical reaction!", rust:"Iron in rock reacts with water and oxygen → RUST. The rock turns orange and crumbles." };
+  const mark = tasks5($("#wtK"), [["ice", "Split a rock with ice"], ["root", "Crack a rock with roots"], ["temp", "Crack a rock with hot & cold"], ["acid", "Carve a cave with acid rain"], ["rust", "Rust a rock"], ["sort", "Sort physical vs chemical"]], () => quiz5(el, api, "#wtQ", ["E056","E063","E065","E069","E074","E075"]));
+  const rock = (g, col = "#9e9e9e") => `<path d="M100 170 L120 90 L180 70 L${200 - g} 72 L${200 - g} 170 Z" fill="${col}" stroke="#616161" stroke-width="3"/><path d="M${200 + g} 72 L240 72 L290 95 L300 170 L${200 + g} 170 Z" fill="${col}" stroke="#616161" stroke-width="3"/>`;
+  const draw = () => { let s = sky10 + `<rect width="400" height="210" fill="url(#sk10)"/><rect y="170" width="400" height="40" fill="#8d6e63"/>`;
+   if (M === "ice"){ const g = n >= 3 ? 30 : n * 4 + (run ? p * 4 : 0); s += rock(g); s += `<path d="M${200 - g} 72 L200 ${100 + n * 20} L${200 + g} 72" fill="${run && p > .5 ? "#e1f5fe" : "#4fc3f7"}"/>`; if (run && p > .5) s += `<text x="200" y="60" font-size="13" font-weight="900" fill="#0277bd" text-anchor="middle">❄️ ice expands!</text>`; if (n >= 3) s += `<text x="200" y="40" font-size="14" font-weight="900" fill="#3a2a8f" text-anchor="middle">💥 The rock split!</text>`; }
+   if (M === "root"){ const g = p * 22; s += rock(g); s += `<rect x="197" y="${70 - p * 40}" width="6" height="${p * 40 + 4}" fill="#6d4c41"/><circle cx="200" cy="${62 - p * 40}" r="${4 + p * 22}" fill="#43a047"/><path d="M200 72 Q${190 - g} 110 ${196} 160 M200 80 Q${210 + g} 120 ${204} 165" stroke="#795548" stroke-width="${2 + p * 3}" fill="none"/>`; }
+   if (M === "temp"){ const day = run ? Math.sin(p * Math.PI * 6) > 0 : 1; s = (day ? sky10 + `<rect width="400" height="210" fill="url(#sk10)"/>` : `<rect width="400" height="210" fill="#1a237e"/>`) + `<rect y="170" width="400" height="40" fill="#d7a86e"/>` + (day ? `<circle cx="340" cy="40" r="22" fill="#ffd23f"/>` : `<circle cx="340" cy="40" r="18" fill="#fff9c4"/>`) + rock(p * 6, "#bcaaa4");
+    for (let i = 0; i < Math.floor(p * 8); i++) s += `<path d="M${130 + i * 20} ${100 + (i % 3) * 20} l8 10 l-6 8" stroke="#5d4037" stroke-width="2" fill="none"/>`; if (p >= 1) s += `<polygon points="120,170 135,160 150,170" fill="#bcaaa4"/><polygon points="250,170 262,158 275,170" fill="#bcaaa4"/>`; }
+   if (M === "acid"){ s += `<path d="M60 170 L60 70 L340 70 L340 170 Z" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="3"/><text x="200" y="88" font-size="11" font-weight="900" fill="#757575" text-anchor="middle">LIMESTONE</text>`; const c = p * 60; if (p > 0) s += `<path d="M${200 - c} 170 Q200 ${170 - c * 1.3} ${200 + c} 170 Z" fill="#424242"/>`; if (p > .6) s += `<text x="200" y="160" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">🦇 CAVE</text>`;
+    if (run) for (let i = 0; i < 18; i++){ const x = (i * 23 + p * 300) % 400, y = (i * 37 + p * 900) % 60; s += `<line x1="${x}" y1="${y}" x2="${x - 3}" y2="${y + 9}" stroke="#7cb342" stroke-width="2"/>`; } }
+   if (M === "rust"){ const col = p < 1 ? `rgb(${158 + p * 72},${158 - p * 40},${158 - p * 110})` : "#e65100"; s += rock(p * 10, col); if (p > .4) for (let i = 0; i < 6; i++) s += `<circle cx="${120 + i * 30}" cy="${150 + (i % 2) * 8}" r="${3 + p * 3}" fill="#bf360c"/>`; if (run) s += `<text x="200" y="40" font-size="13" font-weight="900" fill="#0277bd" text-anchor="middle">💧 + 🫧 oxygen</text>`; }
+   $("#wtV").innerHTML = s; $("#wtT").textContent = TX[M]; $("#wtGo").textContent = GO[M]; };
+  seg5(el, "#wtS", v => { M = v; p = 0; run = 0; n = 0; draw(); });
+  $("#wtGo").onclick = () => { if (run) return; if (M === "ice" && n >= 3) n = 0; p = 0; run = 1; sfx.tap(); };
+  const DONE = { root:"Roots grow and <b>push the rock apart</b> — physical weathering! 🌱", temp:"Heating and cooling again and again cracked the rock. <b>Temperature changes</b> are the main cause of physical weathering! 🌡️", acid:"Acid rain <b>dissolved</b> the limestone and carved a <b>cave</b> — <b>chemical weathering</b>! 🦇", rust:"Iron + water + oxygen → <b>rust</b>. The rock changed into a new substance — chemical weathering! 🟠" };
+  loop5(dt => { if (!run) return; p = Math.min(1, p + dt * (M === "ice" ? .9 : .4));
+   if (p >= 1){ run = 0; if (M === "ice"){ n++; if (n >= 3){ mark("ice"); api.hoot("Water froze, <b>expanded</b> and wedged the crack wider 3 times → the rock split! That's <b>physical weathering</b>. 🧊", "m_wow"); } else { p = 0; api.hoot(`Freeze ${n}/3 — the crack is bigger! Again! ❄️`, "m_point"); } } else { mark(M); api.hoot(DONE[M], "m_wow"); } } draw(); });
+  sortGame($("#wtSort"), { title:"🔨 Physical or 🧪 chemical weathering?", min:120, items:[["", "🧊 Ice in cracks", "p"], ["", "🌱 Tree roots", "p"], ["", "🌡️ Hot days & cold nights", "p"], ["", "🌧️ Acid rain on limestone", "c"], ["", "🟠 Rusting rock", "c"], ["", "🦇 Cave formation", "c"]],
+   bins:[["p", "🔨 Physical"], ["c", "🧪 Chemical"]], wrong:() => "Does it just break the rock, or change what it's made of? 🤔", onDone:() => { mark("sort"); api.hoot("Physical = breaks into pieces. Chemical = changes the rock with reactions. ✅", "m_star"); } });
+  draw(); api.hoot("Rocks look strong… but water, ice, plants and acid can break them! 🪨", "m_point");
+ }});
+
+/* 7 — EROSION & DEPOSITION */
+W10.stations.push({ id:"erosion", icon:"🏜️", short:"Erosion", title:"Erosion & Deposition", covers:["E066","E067","E068","E070","E072","E076"],
+ render(el, api){
+  el.innerHTML = `<div class="lgrid two"><div class="lcard"><h2>🏜️ Erosion & deposition</h2>
+   <div class="seg" id="erS"><button data-v="water" class="on">🌊 Water</button><button data-v="wind">💨 Wind</button><button data-v="ice">🧊 Ice</button><button data-v="grav">⬇️ Gravity</button><button data-v="mtn">⛰️ 1 million years</button><button data-v="sed">🪨 Sediment layers</button></div>
+   <svg class="f5sc" viewBox="0 0 400 210" id="erV" style="margin-top:6px"></svg><div class="f5big" id="erT"></div>
+   <div class="lrow" style="justify-content:center"><button class="lbtn t" id="erGo">▶️ Start</button></div></div>
+   <div><div class="lcard"><h3>🎯 Missions</h3><div class="f5tasks" id="erK"></div></div><div id="erSort"></div>
+    <div class="lcard"><h3>🧠 Remember</h3><p><span class="kw">Erosion</span> = moving pieces of rock and soil away. The agents of erosion are <b>water, wind, ice (glaciers) and gravity</b>. Plate tectonics is NOT an agent of erosion!</p><p><span class="kw">Deposition</span> = dropping the sediment somewhere new → <b>river deltas</b>, sand dunes.</p><p>Erosion carves <b>river valleys</b> and canyons and <b>smooths and wears down mountains</b>. In deserts, <b>wind</b> erosion is most common.</p><p>Layers of sediment pressed together become <span class="kw3">sedimentary rock</span>.</p></div></div></div><div id="erQ"></div>`;
+  let M = "water", p = 0, run = 0;
+  const TX = { water:"🌊 A river carries sand and rocks downhill, carves a VALLEY, and drops the sediment where it meets the sea → a DELTA.", wind:"💨 In the desert, wind picks up sand and drops it in piles → SAND DUNES.", ice:"🧊 A huge, slow glacier scrapes and carries rocks, carving a wide U-shaped valley.", grav:"⬇️ Gravity pulls loose rock and soil downhill — a landslide!", mtn:"⛰️ Watch erosion wear down a sharp, young mountain over a million years.", sed:"🪨 Sediment settles in layers. Over time the weight presses them into SEDIMENTARY ROCK." };
+  const DONE = { water:"Water <b>eroded</b> the land into a <b>river valley</b> and <b>deposited</b> sediment → a <b>delta</b>! 🌊", wind:"Wind erosion made a <b>sand dune</b> — the most common erosion in a <b>desert</b>. 💨", ice:"The glacier (ice) carved a big valley — ice is an agent of erosion. 🧊", grav:"<b>Gravity</b> moved the rocks downhill — a landslide! ⬇️", mtn:"Erosion <b>smoothed and wore down</b> the mountain. Old mountains are rounder and lower! ⛰️", sed:"Layers of sediment were pressed together into <b>sedimentary rock</b>! 🪨" };
+  const mark = tasks5($("#erK"), [["water", "Carve a valley & build a delta"], ["wind", "Build a sand dune"], ["ice", "Carve with a glacier"], ["grav", "Start a landslide"], ["mtn", "Wear down a mountain"], ["sed", "Make sedimentary rock"], ["sort", "Sort the agents of erosion"]], () => quiz5(el, api, "#erQ", ["E066","E067","E068","E070","E072","E076"]));
+  const draw = () => { let s = sky10 + `<rect width="400" height="210" fill="url(#sk10)"/>`;
+   if (M === "water"){ s += `<polygon points="0,60 140,30 260,90 260,210 0,210" fill="#8d6e63"/><rect x="260" y="130" width="140" height="80" fill="#29b6f6"/><rect y="120" width="260" height="90" fill="#a1887f"/>`; const v = p * 34;
+    s += `<path d="M20 70 Q90 ${80 + v} 150 ${100 + v * .6} T260 135" stroke="#4fc3f7" stroke-width="${8 + p * 8}" fill="none" stroke-linecap="round"/>`; if (p > .2) s += `<path d="M60 ${84 + v * .4} q60 ${v} 120 ${v * .5}" stroke="#5d4037" stroke-width="2" fill="none" opacity=".6"/>`;
+    if (p > .3) s += `<path d="M258 130 L${270 + p * 60} ${120 + p * 6} L${270 + p * 70} ${140 + p * 4} L${270 + p * 50} ${158} Z" fill="#d7ccc8"/><path d="M262 134 L${290 + p * 40} 128 M262 136 L${290 + p * 48} 146" stroke="#4fc3f7" stroke-width="3"/>`;
+    if (run) for (let i = 0; i < 8; i++){ const q = (p * 3 + i / 8) % 1; s += `<circle cx="${20 + q * 240}" cy="${70 + q * 65}" r="2.5" fill="#6d4c41"/>`; }
+    if (p >= 1) s += `<text x="120" y="160" font-size="12" font-weight="900" fill="#3e2723" text-anchor="middle">VALLEY</text><text x="330" y="112" font-size="12" font-weight="900" fill="#0d47a1" text-anchor="middle">DELTA</text>`; }
+   if (M === "wind"){ s += `<rect width="400" height="210" fill="#ffe0b2"/><circle cx="340" cy="40" r="20" fill="#ffd23f"/><rect y="170" width="400" height="40" fill="#f6c27a"/><path d="M${170 - p * 60} 170 Q${260 - p * 10} ${170 - p * 70} ${330} 170 Z" fill="#f4b860"/>`;
+    if (run) for (let i = 0; i < 26; i++){ const q = (p * 4 + i / 26) % 1; s += `<circle cx="${q * 330}" cy="${150 + Math.sin(i * 7) * 15 - q * 20}" r="2" fill="#c68a3a"/>`; } s += arr5(30, 100, 110, 100, "#90a4ae", 4); if (p >= 1) s += `<text x="${260}" y="${80}" font-size="13" font-weight="900" fill="#8d4e00" text-anchor="middle">SAND DUNE</text>`; }
+   if (M === "ice"){ const d = p * 50; s += `<polygon points="0,40 120,40 160,${100 + d * .2} 240,${100 + d * .2} 280,40 400,40 400,210 0,210" fill="#8d6e63"/><path d="M120 40 Q${130} ${100 + d} 200 ${110 + d} Q${270} ${100 + d} 280 40" fill="#a1887f"/><path d="M140 40 L${150} ${60 + p * 70} L250 ${60 + p * 70} L260 40 Z" fill="#e1f5fe" stroke="#81d4fa" stroke-width="2"/>`; for (let i = 0; i < 5; i++) s += `<circle cx="${160 + i * 20}" cy="${60 + p * 70}" r="4" fill="#757575"/>`; if (p >= 1) s += `<text x="200" y="200" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">U-shaped valley carved by ice</text>`; }
+   if (M === "grav"){ s += `<polygon points="0,40 220,170 400,170 400,210 0,210" fill="#8d6e63"/><rect y="170" width="400" height="40" fill="#795548"/>`; for (let i = 0; i < 8; i++){ const x0 = 30 + i * 18, y0 = 50 + i * 10.6, t2 = clampL(p * 1.6 - i * .08, 0, 1), x = x0 + t2 * (230 - x0 + i * 10), y = y0 + t2 * (164 - y0); s += `<circle cx="${x}" cy="${y}" r="${7 + i % 3 * 2}" fill="#9e9e9e" stroke="#616161" stroke-width="2"/>`; } s += arr5(60, 40, 140, 88, "#ef5350", 4); }
+   if (M === "mtn"){ const h = 130 - p * 60, w = 90 + p * 60; s += `<rect y="170" width="400" height="40" fill="#8d6e63"/><path d="M${200 - w} 170 Q${200 - w * .35} ${170 - h * (p > .5 ? .9 : .4)} 200 ${170 - h} Q${200 + w * .35} ${170 - h * (p > .5 ? .9 : .4)} ${200 + w} 170 Z" fill="#795548"/>`; if (p < .3) s += `<polygon points="${188},${178 - h} 200,${170 - h} 212,${178 - h}" fill="#fff"/>`; s += `<text x="200" y="196" font-size="12" font-weight="900" fill="#fff" text-anchor="middle">${Math.round(p * 1000)} thousand years</text>`; }
+   if (M === "sed"){ s += `<rect x="80" y="20" width="240" height="170" fill="#e1f5fe" stroke="#90a4ae" stroke-width="3"/>`; const C = ["#d7a86e", "#a1887f", "#ffcc80", "#8d6e63", "#bcaaa4"]; const n = Math.ceil(p * 5);
+    for (let i = 0; i < n; i++){ const th = p >= 1 ? 16 : 26; s += `<rect x="82" y="${188 - (i + 1) * th}" width="236" height="${th}" fill="${C[i]}"/>`; } if (p >= 1) s += arr5(200, 30, 200, 90, "#3a2a8f", 6) + `<text x="200" y="120" font-size="13" font-weight="900" fill="#3a2a8f" text-anchor="middle">pressed → SEDIMENTARY ROCK</text>`; }
+   $("#erV").innerHTML = s; $("#erT").textContent = TX[M]; };
+  seg5(el, "#erS", v => { M = v; p = 0; run = 0; draw(); });
+  $("#erGo").onclick = () => { if (run) return; p = 0; run = 1; sfx.tap(); };
+  loop5(dt => { if (!run) return; p = Math.min(1, p + dt * .35); if (p >= 1){ run = 0; mark(M); api.hoot(DONE[M], "m_wow"); } draw(); });
+  sortGame($("#erSort"), { title:"🚚 Is it an agent of erosion?", min:120, items:[["", "🌊 Moving water", "y"], ["", "💨 Wind", "y"], ["", "🧊 Glaciers", "y"], ["", "⬇️ Gravity", "y"], ["", "🧩 Plate tectonics", "n"], ["", "🌗 The Moon's phases", "n"]],
+   bins:[["y", "✅ Agent of erosion"], ["n", "🚫 Not an agent"]], wrong:() => "Does it carry rock and soil away? 🤔", onDone:() => { mark("sort"); api.hoot("Water, wind, ice and gravity carry sediment away. Plate tectonics builds land — it's NOT an agent of erosion. ✅", "m_star"); } });
+  draw(); api.hoot("Weathering breaks rocks — <b>erosion</b> carries the pieces away! 🚚", "m_point");
+ }});
+
+/* 8–10 */
+W10.stations.push(bigStation([
+ { r:[3.3,12.2,46.5,21.3], lb:[14.6,8.9,25.4,3], t:"Earth's 4 Spheres", s:0, f:["Geosphere (rocks), hydrosphere (all water), atmosphere (air), biosphere (living things).","Air is mostly nitrogen (78%)."] },
+ { r:[50.9,12.2,46.7,21.3], lb:[60.2,8.9,26.5,2.9], t:"Layers of the Earth", s:1, f:["Crust → Mantle → Outer Core (liquid) → Inner Core (solid).","Magma forms in the mantle; the outer core makes the magnetic field."] },
+ { r:[2.9,37.7,46.5,16], lb:[15.8,34.5,24.8,3], t:"Plate Tectonics", s:2, f:["The lithosphere is broken into plates (7 major plates).","Convection currents in the mantle move the plates."] },
+ { r:[50.5,37.7,47.4,16], lb:[61.7,34.3,25.3,3], t:"Plate Boundaries", s:3, f:["Divergent: apart → new crust, ocean ridges. Convergent: together → mountains, trenches, subduction.","Transform: sliding past → earthquakes."] },
+ { r:[2.7,57.8,47.8,15.8], lb:[10.4,54.6,33.1,3], t:"Continental Drift & Pangaea", s:4, f:["All continents were once joined in Pangaea.","Clues: fossils, puzzle-fit coasts, matching rocks."] },
+ { r:[51.3,57.5,46.5,16.2], lb:[64.9,54.4,18.9,2.9], t:"Weathering", s:5, f:["Weathering breaks rocks into smaller pieces.","Physical: ice, roots, temperature. Chemical: acid rain (caves), rust."] },
+ { r:[17.1,77.9,40.5,21.2], lb:[25.4,74.7,25.4,3], t:"Erosion & Deposition", s:6, f:["Erosion: water, wind, ice and gravity carry sediment away.","Deposition drops it in new places → deltas, dunes."] },
+ { r:[58.4,77.9,39.9,21.2], lb:[68.2,74.7,18.2,3], t:"Landforms", s:6, f:["Canyons and valleys are carved by erosion.","Deltas and sand dunes are built by deposition."] }
+], IMG(10, "infographic"), [[20,0.9,63.4,6.6], "Week 10: Our Dynamic Earth"], false, true));
+W10.stations.push(cardsStation(W10, [["🪨","Geosphere","Rocks, soil and Earth's inside"],["💧","Hydrosphere","All the water on Earth"],["💨","Atmosphere","The air — mostly nitrogen"],["🦌","Biosphere","All living things (not rocks!)"],["🥚","Crust","The thin outermost layer"],["🔥","Mantle","Hot flowing rock where magma forms"],["🧲","Outer core","Liquid metal; makes the magnetic field"],["⚪","Inner core","Solid iron & nickel"],["🧩","Tectonic plates","Pieces of the lithosphere (7 major)"],["♨️","Convection currents","Rising & sinking magma that moves plates"],["↔️","Divergent","Plates move apart → new crust, ridges"],["➡️⬅️","Convergent","Plates move together → mountains"],["⬇️","Subduction","One plate forced beneath another"],["🌊","Ocean trench","Deep trench at a convergent boundary"],["⇅","Transform","Plates slide past each other"],["⛰️","Himalayas","Formed by colliding continental plates"],["🌍","Pangaea","The ancient supercontinent"],["🌋","Igneous rock","Formed when magma/lava cools"],["🔨","Physical weathering","Breaks rock into pieces (temperature, ice)"],["🧪","Chemical weathering","Changes rock by reactions → caves"],["🚚","Erosion","Water, wind, ice & gravity move sediment"],["🏜️","Desert erosion","Mostly by wind"],["🔺","Delta","Sediment deposited where a river meets the sea"],["🧱","Sedimentary rock","Formed from pressed layers of sediment"]]));
+W10.stations.push(challengeStation(10));
+W10.notes = [
+ ["🌍 Earth's spheres", ["Geosphere = rocks & soil; hydrosphere = all water; atmosphere = air (mostly nitrogen); biosphere = all living things (rocks are not part of it)."], "#0ea5e9"],
+ ["🔥 Earth's layers", ["Surface to center: crust → mantle → outer core → inner core.", "The crust is the thin outermost layer; with the top of the mantle it forms the lithosphere, broken into tectonic plates.", "Magma forms in the mantle. The liquid outer core makes Earth's magnetic field; the inner core is solid."], "#e65100"],
+ ["🧩 Plate tectonics", ["Plate tectonics = the theory explaining the movement of Earth's lithospheric plates (7 major plates).", "Convection currents of magma in the mantle move the plates.", "All continents were once joined in Pangaea (clues: fossils, puzzle-fit coasts, matching rocks)."], "#5B3FD9"],
+ ["🏔️ Plate boundaries", ["Divergent: plates move apart → magma makes new oceanic crust → ocean ridges.", "Convergent: plates move towards each other → mountains (Himalayas), subduction (one plate forced beneath another) and deep ocean trenches.", "Transform: plates slide past each other. Moving plates cause earthquakes, volcanoes and mountains."], "#14B8A6"],
+ ["🌋 Volcanoes & new land", ["Magma rising to the surface erupts from volcanoes.", "Lava cools into igneous rock and creates new land, even islands."], "#ef4444"],
+ ["🪨 Weathering, erosion & deposition", ["Weathering breaks rock into smaller pieces. Physical: ice, roots, temperature changes (main cause). Chemical: reactions — acid rain makes caves, rust.", "Erosion: water, wind, ice and gravity carry sediment (not plate tectonics). It carves river valleys and wears mountains down. Deserts: wind.", "Deposition builds deltas and dunes. Pressed sediment layers form sedimentary rock."], "#f59e0b"]
+];
+LAB[10] = W10;
 
 window.__lab = { openLab, labHome, LAB };
 })();
