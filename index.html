@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795615719";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795616102";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -5330,14 +5330,14 @@ function makeRace3D(theme){
  function makeGate(z){
   const T = W.T, it = Q.items[Q.i], q = it.q, n = it.order.length, pw = ROAD / n, g = new T.Group(); g.position.z = z;
   const panels = [];
-  for (let k = 0; k < n; k++){ const t = W.ctex(512, 280, (c, w, h) => { c.fillStyle = "#fffdf7"; rrC(c, 6, 6, w - 12, h - 12, 34); c.fill(); c.lineWidth = 12; c.strokeStyle = OPTC[k]; rrC(c, 6, 6, w - 12, h - 12, 34); c.stroke();
+  for (let k = 0; k < n; k++){ const t = W.ctex(512, 280, (c, w, h) => { c.fillStyle = "#ffffff"; rrC(c, 6, 6, w - 12, h - 12, 34); c.fill(); c.lineWidth = 16; c.strokeStyle = OPTC[k]; rrC(c, 6, 6, w - 12, h - 12, 34); c.stroke();
     c.fillStyle = OPTC[k]; c.beginPath(); c.arc(70, h / 2, 46, 0, 7); c.fill(); c.fillStyle = "#fff"; c.font = "900 58px 'Baloo 2',sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(LET[k], 70, h / 2 + 3);
-    wrapC(c, q.o[it.order[k]], 134, h / 2, w - 160, h - 40, "#1f2838"); });
-   const wpan = pw - .25, hpan = Math.min(wpan * .55, 2.1), pl = new T.Mesh(new T.PlaneGeometry(wpan, hpan), new T.MeshBasicMaterial({ map:t, transparent:true, side:T.DoubleSide }));
+    wrapC(c, q.o[it.order[k]], 134, h / 2, w - 160, h - 40, "#0d1220"); });
+   const wpan = pw - .25, hpan = Math.min(wpan * .55, 2.1), pl = new T.Mesh(new T.PlaneGeometry(wpan, hpan), new T.MeshBasicMaterial({ map:t, transparent:true, side:T.DoubleSide, fog:false, toneMapped:false })); pl.material.color.setScalar(.86);
    pl.position.set(-HALF + (k + .5) * pw, 1.05 + hpan / 2, 0); g.add(pl); panels.push(pl); }
   for (const s2 of [-1, 1]){ const p = W.mesh(new T.CylinderGeometry(.25, .3, 4.4, 10), W.toon(0xffc107)); p.position.set(s2 * (HALF + .6), 2.2, 0); g.add(p); }
   const top = W.mesh(new T.BoxGeometry(ROAD + 1.6, .5, .3), W.toon(0x5b3fd9)); top.position.y = 4.3; g.add(top);
-  const lab = new T.Mesh(new T.PlaneGeometry(4.2, .9), new T.MeshBasicMaterial({ map:W.ctex(512, 110, (c, w, h) => { c.fillStyle = "#5b3fd9"; c.fillRect(0, 0, w, h); c.fillStyle = "#ffd23f"; c.font = "900 70px 'Baloo 2',sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(`❓ QUESTION ${Q.i + 1}`, w / 2, h / 2 + 4); }) }));
+  const lab = new T.Mesh(new T.PlaneGeometry(4.2, .9), new T.MeshBasicMaterial({ fog:false, map:W.ctex(512, 110, (c, w, h) => { c.fillStyle = "#5b3fd9"; c.fillRect(0, 0, w, h); c.fillStyle = "#ffd23f"; c.font = "900 70px 'Baloo 2',sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(`❓ QUESTION ${Q.i + 1}`, w / 2, h / 2 + 4); }) }));
   lab.position.set(0, 4.95, 0); g.add(lab);
   W.scene.add(g);
   const G0 = { g, z, n, pw, panels, done:false, px:k => -HALF + (k + .5) * pw, kill:k => { const p = panels[k]; if (p){ p.material.opacity = .25; } } };
@@ -5374,7 +5374,7 @@ function makeRace3D(theme){
   ["boost", "slow", "inv"].forEach(k => { if (s[k] > 0) s[k] = Math.max(0, s[k] - dt); }); if (s.spin > 0) s.spin = Math.max(0, s.spin - dt * 1.3);
   if (!s.started){ s.speed = 0; return; }
   // reading zone: slow down in front of the question gate
-  let zone = 1; if (s.gate && !s.gate.done){ const gd = s.z - s.gate.z; if (gd < 70) zone = Math.max(.33, (gd - 8) / 62); }
+  const zone = 1;
   // player speed control: ↑ faster, ↓ slower → stop → reverse
   if (s.thr > 0) s.cruise = Math.min(BASE * 1.7, s.cruise + BASE * 1.1 * dt); else if (s.thr < 0) s.cruise = Math.max(-BASE * .4, s.cruise - BASE * 1.4 * dt);
   let tgt = s.state === "end" ? 6 : s.cruise * (s.boost > 0 ? 1.4 : s.slow > 0 ? .5 : 1);
@@ -5433,7 +5433,7 @@ function makeRace3D(theme){
   if (!window.__r3NR){ if (W.comp) W.comp.render(); else W.ren.render(W.scene, W.cam); }
   // 2D overlay
   const fs = Math.max(13, Math.min(19, A.w * .028)), nr = A.w < 560;
-  const goal = !s.started ? "" : s.state === "q" ? (s.gate && s.z - s.gate.z > 70 ? "🤔 Read the question — the kart slows down at the gate" : nr ? "🏁 Drive into the RIGHT answer!" : "🏁 Steer into the gate with the RIGHT answer!") : s.state === "wrong" ? "😵 Tap to keep racing" : s.state === "run" ? SK.tip : "";
+  const goal = !s.started ? "" : s.state === "q" ? (s.gate && s.z - s.gate.z > 70 ? "🤔 Read the question — slide DOWN or tap the kart to slow down" : nr ? "🏁 Drive into the RIGHT answer!" : "🏁 Steer into the gate with the RIGHT answer!") : s.state === "wrong" ? "😵 Tap to keep racing" : s.state === "run" ? SK.tip : "";
   const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 24, s.msg ? s.msg.c : "#ffe9b0", fs);
   if (!s.started) pill6(coarse ? "👆 Slide UP faster · DOWN slower · tap the kart = STOP" : "⬅️ ➡️ lanes · ⬆️ faster · ⬇️ slower / reverse — or slide with the mouse", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
   if (s.state !== "end"){ const gx = A.x1 - 16, gh = Math.min(180, A.h * .34), gy = A.y0 + A.h * .58, f = (s.cruise + BASE * .4) / (BASE * 2.1), z0 = (BASE * .4) / (BASE * 2.1);
@@ -5476,7 +5476,7 @@ function makeRace3D(theme){
 (() => { const st = document.createElement("style"); st.textContent = ".aopt.r3on{outline:4px solid #ffd23f;outline-offset:1px;box-shadow:0 0 14px rgba(255,210,63,.8);transform:scale(1.02)}.aopt.r3on::after{content:\"🏎️\";margin-left:auto;padding-left:6px}"; document.head.appendChild(st); })();
 function rrC(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
 function wrapC(c, text, x0, cy, mw, mh, col){ let fs = 60, lines; c.textAlign = "left"; c.textBaseline = "middle";
- const wrap = () => { c.font = `800 ${fs}px 'Baloo 2',sans-serif`; const ws = String(text).split(/\s+/), L = []; let cur = ""; ws.forEach(w => { const t = cur ? cur + " " + w : w; if (c.measureText(t).width > mw && cur){ L.push(cur); cur = w; } else cur = t; }); if (cur) L.push(cur); return L; };
+ const wrap = () => { c.font = `900 ${fs}px 'Baloo 2',sans-serif`; const ws = String(text).split(/\s+/), L = []; let cur = ""; ws.forEach(w => { const t = cur ? cur + " " + w : w; if (c.measureText(t).width > mw && cur){ L.push(cur); cur = w; } else cur = t; }); if (cur) L.push(cur); return L; };
  while (true){ lines = wrap(); if ((lines.length * fs * 1.08 <= mh && lines.every(l => c.measureText(l).width <= mw)) || fs <= 20) break; fs -= 3; }
  c.fillStyle = col; const y0 = cy - (lines.length - 1) * fs * 1.08 / 2; lines.forEach((l, i) => c.fillText(l, x0, y0 + i * fs * 1.08)); }
 
@@ -9888,7 +9888,7 @@ function loop(now){
   if (S.cd > 0){ S.cd -= dt; }
   else if (S.run){
    S.t += dt; if (S.boost > 0) S.boost -= dt; if (S.slow > 0) S.slow -= dt; if (S.inv > 0) S.inv -= dt;
-   const ng = S.gates[S.qi], gd = ng ? S.z - ng.z : 999, zone = gd < 75 ? Math.max(.38, (gd - 12) / 63) : 1; S.zone = zone < 1;
+   const ng = S.gates[S.qi], gd = ng ? S.z - ng.z : 999, zone = 1; S.zone = false;
    // player speed control: ↑ faster, ↓ slower → stop → reverse
    if (gThr > 0) S.cruise = Math.min(L.speed * 1.7, S.cruise + L.speed * 1.1 * dt); else if (gThr < 0) S.cruise = Math.max(-L.speed * .4, S.cruise - L.speed * 1.4 * dt);
    let tgt = S.cruise * (S.boost > 0 ? 1.4 : S.slow > 0 ? .55 : 1);
