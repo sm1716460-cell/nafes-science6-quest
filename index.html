@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795629868";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795630944";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -6033,6 +6033,11 @@ st.textContent = `
 .lsvg{width:100%;height:auto;display:block;touch-action:none;user-select:none}
 .lsvg [data-part]{cursor:pointer;transition:filter .2s,opacity .3s}
 .lsvg [data-part]:hover{filter:brightness(1.1) drop-shadow(0 0 6px rgba(255,201,60,.9))}
+.spgame{display:flex;flex-direction:column;gap:8px}.sphead{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff3cd;border:2px solid #f5b62a;border-radius:14px;padding:8px 12px;color:#5a3a10;font-size:clamp(14px,1.6vw,18px)}
+.spc{background:#f5b62a;color:#fff;border-radius:99px;padding:2px 12px;font-weight:900}.sppair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.splab{text-align:center;font-weight:900;color:var(--pd);margin-bottom:4px}
+.spok{background:#e7f8ec;border:2px solid #43a047;border-radius:12px;padding:6px 10px;margin:4px 0;font-weight:800;color:#1b5e20}.sptab{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}.sptab div{background:#fff;border:2px solid #d9c3f5;border-radius:12px;padding:8px;text-align:center}.sptab b{display:block;color:var(--p);margin-bottom:4px}.sptab span{font-weight:700;color:#4a3a6a;line-height:1.5}
+.lsvg .spno{animation:spshake .5s}@keyframes spshake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media (max-width:600px){.sptab{grid-template-columns:1fr}}
 .lsvg .hl{filter:drop-shadow(0 0 8px #FFC93C) drop-shadow(0 0 4px #FFC93C)!important;animation:lpulse 1s infinite}
 @keyframes lpulse{50%{opacity:.75}}
 .linfo{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,#f7f3ff,#eefcff);border-radius:18px;padding:12px;border:3px solid #e6defd;animation:lin .35s}
@@ -6355,23 +6360,36 @@ W1.stations.push({ id:"city", icon:"🏙️", short:"Cell City", title:"Cell Cit
    <div id="cBox" style="margin-top:8px"></div><p style="text-align:center;color:#7a6bb3;font-weight:800">👆 Tap any part of the cell</p>
    <div class="lrow" style="justify-content:center"><b style="color:var(--pd)">🧪 What if…</b><button class="lbtn c" data-wi="nucleus">the nucleus stops?</button><button class="lbtn c" data-wi="wall">no cell wall?</button><button class="lbtn c" data-wi="membrane">the membrane locks?</button></div></div>
    <div><div class="lcard" id="cInfo"><h3>Every cell is like a tiny city 🏙️</h3><p>Each part (called an <span class="kw">organelle</span>) has a special job. Tap them to meet the team!</p><div class="lrow" id="cSeen"></div></div><div id="cQ"></div></div></div>`;
-  let type = "plant"; const seen = new Set();
+  let type = "plant", spot = null; const seen = new Set();
   const need = { plant:["wall","membrane","cyto","nucleus","mito","chloro","vac"], animal:["membrane","cyto","nucleus","mito"] };
-  function drawCell(){ $("#cBox").innerHTML = type === "plant" ? plantCellSVG("cSvg") : animalCellSVG("cSvg"); }
+  function drawCell(){ spot = null; $("#cBox").innerHTML = type === "plant" ? plantCellSVG("cSvg") : animalCellSVG("cSvg"); }
   function upd(){ $("#cSeen").innerHTML = need.plant.map(k => `<span class="chip2 ${seen.has(k) ? "ok" : ""}" data-lock="1" style="cursor:default">${pimg(k)} ${PARTS[k].n}</span>`).join("");
    if (need.plant.every(k => seen.has(k)) && !upd.q){ upd.q = 1; api.hoot("You met the whole team! Time for a quick check 🏙️✅", "m_star"); miniQuiz($("#cQ"), ["L006","L009","L019","L023","L034"], () => api.done()); } }
   drawCell(); upd();
-  $("#c3d").onclick = () => { if ($("#cBox img")){ drawCell(); $("#c3d").textContent = "🧊 Real 3D look"; return; }
+  $("#c3d").onclick = () => { spot = null; if ($("#cBox img")){ drawCell(); $("#c3d").textContent = "🧊 Real 3D look"; return; }
    $("#cBox").innerHTML = `<img src="img/lab1/cell_${type}.webp" alt="3D ${type} cell" style="width:100%;max-width:620px;display:block;margin:auto;animation:lin .5s">`; $("#c3d").textContent = "👆 Back to tap mode";
    api.hoot(type === "plant" ? "This is what a plant cell looks like in 3D! Can you spot the green chloroplasts and the thick cell wall? 🧱" : "A real-looking animal cell — round and flexible, no cell wall! 🐾", "m_wow"); };
-  el.querySelectorAll("[data-ct]").forEach(b => b.onclick = () => { type = b.dataset.ct; el.querySelectorAll("[data-ct]").forEach(x => x.classList.toggle("on", x === b)); drawCell();
+  el.querySelectorAll("[data-ct]").forEach(b => b.onclick = () => { spot = null; type = b.dataset.ct; el.querySelectorAll("[data-ct]").forEach(x => x.classList.toggle("on", x === b)); drawCell();
    api.hoot(type === "plant" ? "A <b>plant cell</b>: rectangular, with a cell wall and green chloroplasts." : "An <b>animal cell</b>: no cell wall, no chloroplasts — and a round, irregular shape.", "m_point"); });
-  $("#cBox").addEventListener("click", e => { const g = e.target.closest("[data-part]"); if (!g) return; const k = g.dataset.part; seen.add(k); $("#cInfo").innerHTML = infoHTML(k) + `<div class="lrow" id="cSeen" style="margin-top:10px"></div>`; upd(); sfx.tap();
+  $("#cBox").addEventListener("click", e => { const g = e.target.closest("[data-part]"); if (!g) return; const k = g.dataset.part;
+   if (spot){ spotTap(k, !!g.closest("#sP"), g); return; }
+   seen.add(k); $("#cInfo").innerHTML = infoHTML(k) + `<div class="lrow" id="cSeen" style="margin-top:10px"></div>`; upd(); sfx.tap();
    document.querySelectorAll("#cSvg .hl").forEach(x => x.classList.remove("hl")); document.querySelectorAll(`#cSvg [data-part="${k}"]`).forEach(x => x.classList.add("hl"));
    api.hoot(`<b>${PARTS[k].n}</b> — ${PARTS[k].city.toLowerCase()}!`, pick(["m_point","m_idea","m_thumbs"])); });
-  $("#cDiff").onclick = () => { type = "plant"; el.querySelectorAll("[data-ct]").forEach(x => x.classList.toggle("on", x.dataset.ct === "plant")); drawCell();
-   document.querySelectorAll('#cSvg [data-part="wall"],#cSvg [data-part="chloro"]').forEach(x => x.classList.add("hl"));
-   api.hoot(`Only PLANT cells have a <b>cell wall</b> 🧱 and <b>chloroplasts</b> ☀️. Both cells have a membrane, cytoplasm, nucleus and mitochondria.`, "m_idea"); seen.add("wall"); seen.add("chloro"); upd(); };
+  const ONLY = { wall:"🧱 Cell wall — a stiff outer layer that supports the plant", chloro:"☀️ Chloroplasts — make food from sunlight (photosynthesis)", vac:"💧 Large central vacuole — a big water storage tank" };
+  function spotTap(k, inPlant, g){
+   if (!inPlant){ api.hoot("Look closely at the 🌿 <b>PLANT</b> cell — what does it have that this animal cell does NOT have? 🤔", "m_think"); sfx.bad(); return; }
+   if (ONLY[k]){ if (spot.has(k)) return; spot.add(k); sfx.ok(); document.querySelectorAll(`#sP [data-part="${k}"]`).forEach(x => x.classList.add("hl"));
+    $("#spFound").innerHTML = [...spot].map(q => `<div class="spok">✅ ${ONLY[q]}</div>`).join(""); $("#spN").textContent = spot.size;
+    if (spot.size === 3){ window.FX && FX.starRain && FX.starRain(20); api.hoot("🎉 You found all 3 differences! Only <b>plant cells</b> have a <b>cell wall</b>, <b>chloroplasts</b> and a <b>large central vacuole</b>.", "m_star"); seen.add("wall"); seen.add("chloro"); seen.add("vac"); upd();
+     $("#spSum").innerHTML = `<div class="sptab"><div><b>🌿 Only plant cells</b><span>Cell wall<br>Chloroplasts<br>Large central vacuole</span></div><div><b>🤝 Both cells</b><span>Cell membrane<br>Cytoplasm<br>Nucleus<br>Mitochondria</span></div><div><b>🐾 Animal cells</b><span>No cell wall<br>No chloroplasts<br>Round, irregular shape</span></div></div>`; }
+    else api.hoot(`✅ Yes! ${ONLY[k]}. Only plant cells have it! ${3 - spot.size} more to find…`, "m_thumbs"); }
+   else { sfx.bad(); g.classList.add("spno"); setTimeout(() => g.classList.remove("spno"), 600); api.hoot(`Not a difference — <b>${PARTS[k].n}</b> is in BOTH cells! 🤝 Keep looking…`, "m_oops"); } }
+  $("#cDiff").onclick = () => { spot = new Set(); el.querySelectorAll("[data-ct]").forEach(x => x.classList.remove("on"));
+   $("#cBox").innerHTML = `<div class="spgame"><div class="sphead">🔍 <b>Find the 3 parts that ONLY the plant cell has!</b> <span class="spc"><span id="spN">0</span>/3</span></div>
+    <div class="sppair"><div id="sP"><div class="splab">🌿 Plant cell</div>${plantCellSVG("")}</div><div id="sA"><div class="splab">🐾 Animal cell</div>${animalCellSVG("")}</div></div>
+    <div id="spFound"></div><div id="spSum"></div></div>`;
+   api.hoot("Compare the two cells 👀 Tap the parts in the <b>plant cell</b> that the animal cell does NOT have!", "m_magnify"); };
   el.querySelectorAll("[data-wi]").forEach(b => b.onclick = () => {
    const k = b.dataset.wi, svg = $("#cSvg"); drawCell(); const s2 = $("#cSvg");
    if (k === "nucleus"){ s2.style.transition = "filter 2s"; requestAnimationFrame(() => s2.style.filter = "grayscale(1) brightness(.7)"); s2.querySelector('[data-part="nucleus"]').style.opacity = .15;
