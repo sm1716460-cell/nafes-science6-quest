@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795618720";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795618938";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -3326,7 +3326,7 @@ function makeMaze(){
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
  const DIRS = [[0,-1,1,4],[1,0,2,8],[0,1,4,1],[-1,0,8,2]]; // dx,dy,bit,oppositeBit  (N,E,S,W)
- const s = { kd:-1, touch:null, t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
+ const s = { kd:-1, touch:null, want:-1, budget:0, t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
  let W = view.w, H = view.h, cs = 40, ox = 0, oy = 0, panelBox = null;
  const port = () => view.h > view.w * 1.05;
 
@@ -3407,7 +3407,7 @@ function makeMaze(){
 
  /* ---------- question panel ---------- */
  const panel = document.createElement("div"); panel.className = "spanel hide"; layer.appendChild(panel);
- const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Hold your finger where she should go — she walks there<br>Lift your finger = she STOPS 🛑 · you are in control!"; layer.appendChild(tip);
+ const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Move your finger ⬅️➡️⬆️⬇️ — she moves WITH it<br>Stop your finger = she stops 🛑"; layer.appendChild(tip);
  later(() => tip.style.opacity = 0, 4500); later(() => tip.remove(), 5100);
  function ask(){
   Q.answered = false; s.state = "play";
@@ -3490,14 +3490,8 @@ function makeMaze(){
   return wantDir(h);
  }
  function wantDir(h){
-  if (s.kd >= 0) return canGo(h.x, h.y, s.kd) ? s.kd : -1;
-  if (!s.touch) return -1;
-  const vx = s.touch.x - CX(h.x), vy = s.touch.y - CY(h.y), ax = Math.abs(vx), ay = Math.abs(vy);
-  if (Math.max(ax, ay) < cs * .45) return -1;                                   // finger on the girl → stand
-  const dx = vx > 0 ? 1 : 3, dy = vy > 0 ? 2 : 0, first = ax >= ay ? dx : dy, second = ax >= ay ? dy : dx, sec = Math.min(ax, ay);
-  if (canGo(h.x, h.y, first)) return first;
-  if (sec > cs * .3 && canGo(h.x, h.y, second)) return second;
-  return -1;
+  const d = s.kd >= 0 ? s.kd : s.want;
+  return d >= 0 && canGo(h.x, h.y, d) ? d : -1;
  }
  function germChoice(m){
   const opts = [0,1,2,3].filter(i => canGo(m.x, m.y, i) && !s.gates.some(g => !g.dead && g.x === m.x + DIRS[i][0] && g.y === m.y + DIRS[i][1]));
@@ -3540,8 +3534,17 @@ function makeMaze(){
   const h = s.hero;
   if (s.state === "play" && !G.hold){
    let moving = false;
-   if (s.touch || s.kd >= 0){ const w = wantDir({ x:Math.round(h.x), y:Math.round(h.y) }); if (h.dir >= 0 && w >= 0 && (h.dir + 2) % 4 === w){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = w; } moving = stepMover(h, 3.3, dt, heroChoice); }
-   else h.dir = -1;                                                                  // no finger → she stands still
+   if (s.kd >= 0 || s.budget > 0){
+    const w = s.kd >= 0 ? s.kd : s.want;
+    if (w >= 0 && (Math.abs(h.tx - h.x) + Math.abs(h.ty - h.y) > .001) && w !== h.dir && h.dir >= 0){                                   // turning: first go back/forward to the nearest crossing point
+     const nx = Math.round(h.x), ny = Math.round(h.y);
+     if ((w + 2) % 4 === h.dir){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = w; }
+     else if (canGo(nx, ny, w)){ h.tx = nx; h.ty = ny; }
+    }
+    const amt = s.kd >= 0 ? 3.4 * dt : Math.min(s.budget, 9 * dt);
+    moving = stepMover(h, amt / dt, dt, heroChoice);
+    if (s.kd < 0){ s.budget -= amt; if (!moving) s.budget = 0; }
+   }                                                                            // finger not moving → she stands still                                                                  // no finger → she stands still
    s.pose = s.poseT > 0 ? "dizzy" : moving && h.dir >= 0 ? "run" : "stand";
   }
   if (s.state === "play" && !(s.freezeG > 0)) for (const m of s.germs) stepMover(m, m.sp, dt, germChoice);
@@ -3632,7 +3635,6 @@ function makeMaze(){
    cx.restore();
    if (pose === "dizzy") for (let k = 0; k < 3; k++){ const a = s.t * 5 + k * 2.1; img("ui_star", hx + Math.cos(a) * w * .35, hy - hh * 1.02 + Math.sin(a) * hh * .06, hh * .16); }
   }
-  if (s.touch && s.state === "play"){ const h = s.hero; cx.save(); cx.setLineDash([6, 8]); cx.strokeStyle = "rgba(91,63,217,.6)"; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(CX(h.x), CY(h.y)); cx.lineTo(s.touch.x, s.touch.y); cx.stroke(); cx.setLineDash([]); cx.fillStyle = "rgba(255,210,63,.45)"; cx.strokeStyle = "#ffb300"; cx.beginPath(); cx.arc(s.touch.x, s.touch.y, cs * .32, 0, 7); cx.fill(); cx.stroke(); cx.restore(); }
   // path preview
   if (s.path && s.path.length){ cx.fillStyle = "rgba(255,210,63,.75)"; s.path.forEach(([c, r], i) => { cx.beginPath(); cx.arc(CX(c), CY(r), cs * .07, 0, 7); cx.fill(); }); }
   s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(CX(p.x), CY(p.y), p.r * cs, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
@@ -3642,10 +3644,14 @@ function makeMaze(){
 
  /* ---------- input: drag = direction + speed (longer drag = faster) · tap = walk there · tap the girl = stop/go ---------- */
  let sw = null; const SPMAX = 7.5;
- // full manual control: hold your finger where she should go — she walks toward it; lift your finger = she stops
- const down = e => { if (G.hold || s.state !== "play") return; s.touch = ptr(e); };
- const move = e => { if (s.touch) s.touch = ptr(e); };
- const up = () => { s.touch = null; };
+ // she moves ONLY while your finger moves, in the same direction (left / right / up / down); finger still = she stops
+ const down = e => { if (G.hold || s.state !== "play") return; const p = ptr(e); s.touch = { x:p.x, y:p.y, lx:p.x, ly:p.y }; s.budget = 0; };
+ const move = e => { if (!s.touch) return; const p = ptr(e), dx = p.x - s.touch.lx, dy = p.y - s.touch.ly;
+  if (Math.hypot(dx, dy) < 3) return;
+  const ax = Math.abs(dx) >= Math.abs(dy), d = ax ? dx : dy; s.want = ax ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0);
+  s.budget = Math.min(.6, s.budget + Math.abs(d) / (cs * .55));               // a short finger move = a full step
+  s.touch.x = s.touch.lx = p.x; s.touch.y = s.touch.ly = p.y; };
+ const up = () => { s.touch = null; s.budget = 0; };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
  const ku = e => { const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m === s.kd) s.kd = -1; }; addEventListener("keyup", ku);
  function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); s.kd = m; } }
