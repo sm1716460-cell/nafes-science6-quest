@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795629418";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795629616";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -908,7 +908,7 @@ $("#fLogin").addEventListener("submit", async e => {
   const r = await api(mode === "new" ? "register" : "login", { name, pass });
   if (!r.ok) throw new Error(r.error);
   USER = { name:r.name, token:r.token }; ATT = r.attempts || [];
-  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); adoptProf(r.profile); setTimeout(checkNewAwards, 2500); api("classGoal", {}).then(g => { if (g && g.ok) setGoalLocal(g.goal); }).catch(() => {});
+  store.set("user", USER); store.set("att_"+USER.name.toLowerCase(), ATT); if (mode === "new") store.del(profKey()); adoptProf(r.profile); setTimeout(checkNewAwards, 2500); api("classGoal", {}).then(g => { if (g && g.ok) setGoalLocal(g.goal); }).catch(() => {});
   $("#lPass").value = $("#lPass2").value = "";
   flushQueue(); enterHome(mode === "new");
  }catch(err){ $("#lErr").textContent = err.message || "Something went wrong. Check the internet and try again."; }
