@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795616484";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795616610";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -3326,7 +3326,7 @@ function makeMaze(){
  const hard = (Q.mi || 0) >= 3 ? 1 : 0;
  G.hearts = 3; G.gems = 0; G.coinsRun = 0; G.stomps = 0;
  const DIRS = [[0,-1,1,4],[1,0,2,8],[0,1,4,1],[-1,0,8,2]]; // dx,dy,bit,oppositeBit  (N,E,S,W)
- const s = { t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
+ const s = { sp:3.6, stopped:false, t:0, C:9, R:7, open:[], hero:null, germs:[], ents:[], gates:[], parts:[], inv:0, shield:0, magnet:0, state:"play", fade:0, ended:false, pose:"stand", poseT:0, spin:0, path:null, qd:-1 };
  let W = view.w, H = view.h, cs = 40, ox = 0, oy = 0, panelBox = null;
  const port = () => view.h > view.w * 1.05;
 
@@ -3407,7 +3407,7 @@ function makeMaze(){
 
  /* ---------- question panel ---------- */
  const panel = document.createElement("div"); panel.className = "spanel hide"; layer.appendChild(panel);
- const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Swipe to walk · or tap where you want to go<br>Reach the gate with the right letter!"; layer.appendChild(tip);
+ const tip = document.createElement("div"); tip.className = "jtip"; tip.innerHTML = "👆 Drag to walk — a LONGER drag = FASTER 🐇<br>Tap the girl = 🛑 stop · tap a spot to walk there"; layer.appendChild(tip);
  later(() => tip.style.opacity = 0, 4500); later(() => tip.remove(), 5100);
  function ask(){
   Q.answered = false; s.state = "play";
@@ -3487,6 +3487,7 @@ function makeMaze(){
   if (s.state !== "play") return -1;
   if (s.path && s.path.length){ const [c, r] = s.path.shift(); const i = DIRS.findIndex(d => h.x + d[0] === c && h.y + d[1] === r); if (i >= 0 && canGo(h.x, h.y, i)) return i; s.path = null; return -1; }
   s.path = null;
+  if (s.stopped) return -1;
   if (s.qd >= 0 && canGo(h.x, h.y, s.qd)){ const i = s.qd; return i; }
   if (h.dir >= 0 && canGo(h.x, h.y, h.dir)) return h.dir;
   return -1;
@@ -3531,7 +3532,7 @@ function makeMaze(){
   s.gates.forEach(g => { if (g.glow) g.glow = Math.max(0, g.glow - dt * .5); if (g.shake) g.shake = Math.max(0, g.shake - dt); });
   const h = s.hero;
   if (s.state === "play" && !G.hold){
-   const moving = stepMover(h, (Q.i < 1 ? 3.4 : 3.9), dt, heroChoice);
+   const moving = stepMover(h, s.sp, dt, heroChoice);
    s.pose = s.poseT > 0 ? "dizzy" : moving && h.dir >= 0 ? "run" : "stand";
   }
   if (s.state === "play" && !(s.freezeG > 0)) for (const m of s.germs) stepMover(m, m.sp, dt, germChoice);
@@ -3626,18 +3627,29 @@ function makeMaze(){
   if (s.path && s.path.length){ cx.fillStyle = "rgba(255,210,63,.75)"; s.path.forEach(([c, r], i) => { cx.beginPath(); cx.arc(CX(c), CY(r), cs * .07, 0, 7); cx.fill(); }); }
   s.parts.forEach(p => { cx.globalAlpha = Math.max(0, p.life * 1.6); cx.fillStyle = p.c; cx.beginPath(); cx.arc(CX(p.x), CY(p.y), p.r * cs, 0, 7); cx.fill(); }); cx.globalAlpha = 1;
   if (s.fade > 0){ cx.fillStyle = `rgba(255,255,255,${s.fade * .8})`; cx.fillRect(ox - cs, oy - cs, mw + cs * 2, mh + cs * 2); }
+  // speed gauge (like the race)
+  { const gx = Math.min(view.w - 14, ox + mw + 22), gh = Math.min(200, mh * .55), gy = oy + mh / 2, f = (s.sp - 1) / (SPMAX - 1);
+   cx.globalAlpha = sw && sw.used ? 1 : .8; cx.fillStyle = "rgba(31,40,56,.8)"; rr(gx - 9, gy - gh / 2, 18, gh, 9); cx.fill();
+   cx.fillStyle = s.stopped ? "#ff8a80" : f > .7 ? "#ffd23f" : "#7CFC9A"; const hh = s.stopped ? 6 : Math.max(6, f * (gh - 6)); rr(gx - 6, gy + gh / 2 - 3 - hh, 12, hh, 6); cx.fill();
+   cx.font = "900 14px sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillStyle = "#fff"; cx.fillText("🐇", gx, gy - gh / 2 - 13); cx.fillText(s.stopped ? "🛑" : "🐢", gx, gy + gh / 2 + 13); cx.globalAlpha = 1; }
+  // joystick while dragging
+  if (sw && sw.used){ const p = sw.p || sw; cx.save(); cx.globalAlpha = .55; cx.strokeStyle = "#fff"; cx.lineWidth = 3; cx.beginPath(); cx.arc(sw.x, sw.y, 34, 0, 7); cx.stroke(); cx.fillStyle = "rgba(255,210,63,.9)"; cx.beginPath(); cx.arc(p.x, p.y, 16, 0, 7); cx.fill(); cx.restore(); }
  }
 
- /* ---------- input: swipe = direction · tap = walk there ---------- */
- let sw = null;
+ /* ---------- input: drag = direction + speed (longer drag = faster) · tap = walk there · tap the girl = stop/go ---------- */
+ let sw = null; const SPMAX = 7.5;
  const down = e => { if (G.hold || s.state !== "play") return; sw = { ...ptr(e), used:false }; };
- const move = e => { if (!sw || sw.used) return; const p = ptr(e), dx = p.x - sw.x, dy = p.y - sw.y;
-  if (Math.hypot(dx, dy) > 26){ sw.used = true; const i = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0); s.path = null; s.qd = i; const h = s.hero; if (h.dir >= 0 && (h.dir + 2) % 4 === i){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = i; } } };
- const up = e => { if (!sw) return; if (!sw.used && s.state === "play"){ const c = Math.floor((sw.x - ox) / cs), r = Math.floor((sw.y - oy) / cs);
-   if (c >= 0 && r >= 0 && c < s.C && r < s.R){ s.path = pathTo(c, r); s.qd = -1; if (s.path && s.path.length) tone([520], .04, "triangle", .06); } }
+ const move = e => { if (!sw) return; const p = ptr(e), dx = p.x - sw.x, dy = p.y - sw.y, L = Math.hypot(dx, dy); sw.p = p;
+  if (L > 24){ sw.used = true; s.stopped = false; const i = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0);
+   s.sp = Math.max(1.4, Math.min(SPMAX, 1.4 + (L - 24) / Math.max(22, cs * .55)));
+   if (i !== s.qd){ s.path = null; s.qd = i; const h = s.hero; if (h.dir >= 0 && (h.dir + 2) % 4 === i){ h.tx -= DIRS[h.dir][0]; h.ty -= DIRS[h.dir][1]; h.dir = i; } } } };
+ const up = e => { if (!sw) return; if (!sw.used && s.state === "play"){ const h = s.hero;
+   if (Math.hypot(sw.x - CX(h.x), sw.y - CY(h.y)) < cs * .75){ s.stopped = !s.stopped; if (s.stopped){ s.qd = -1; s.path = null; banner("🛑 STOP"); } else banner("GO! 🏃"); tone([s.stopped ? 400 : 600, s.stopped ? 250 : 900], .06, "sine", .06); sw = null; return; }
+   const c = Math.floor((sw.x - ox) / cs), r = Math.floor((sw.y - oy) / cs);
+   if (c >= 0 && r >= 0 && c < s.C && r < s.R){ s.stopped = false; s.path = pathTo(c, r); s.qd = -1; if (s.path && s.path.length) tone([520], .04, "triangle", .06); } }
   sw = null; };
  cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); addEventListener("pointerup", up);
- function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); s.path = null; s.qd = m; } }
+ function key(e){ const m = { ArrowUp:0, ArrowRight:1, ArrowDown:2, ArrowLeft:3, w:0, d:1, s:2, a:3 }[e.key]; if (m != null){ e.preventDefault(); s.stopped = false; s.path = null; if (s.qd === m && !e.repeat) s.sp = Math.min(SPMAX, s.sp + 1.2); s.qd = m; } if (e.key === " "){ e.preventDefault(); s.stopped = !s.stopped; if (s.stopped){ s.qd = -1; s.path = null; } } }
  const rz = () => later(measure, 60); addEventListener("resize", rz);
  $("#aCtl").classList.add("hide");
  build(); ask(); pows();
