@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795629063";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795629418";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -885,7 +885,7 @@ function toast(msg, ms = 2600){ const t = document.createElement("div"); t.class
 function show(id){ document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id)); }
 function modal(html){ $("#modal").innerHTML = '<button class="x" aria-label="Close" data-close>✕</button>' + html; $("#ov").classList.add("on"); }
 function closeModal(){ $("#ov").classList.remove("on"); }
-$("#ov").addEventListener("click", e => { if (e.target.id === "ov" || e.target.closest("[data-close]")) closeModal(); });
+$("#ov").addEventListener("click", e => { if ($("#ov").dataset.lock) return; if (e.target.id === "ov" || e.target.closest("[data-close]")) closeModal(); });
 
 /* ---------------- login ---------------- */
 let mode = "login";
@@ -924,8 +924,10 @@ async function flushQueue(){
 }
 
 /* ---------------- home / map ---------------- */
+let AFTERPICK = null;
 function enterHome(isNew){
  $("#whoName").textContent = USER.name; $("#av").textContent = USER.name.trim()[0].toUpperCase();
+ if (!prof().avatar){ AFTERPICK = () => enterHome(isNew); return pickAvatar(true); }
  if (!MODE){ openModeSel(); if (!isNew) return; } else goHome();
  if (isNew) setTimeout(() => modal(`<div class="whead"><img src="img/m_wave.webp" alt=""><div><h2 class="h">Welcome, ${esc(USER.name)}!</h2><p>I'm Professor Hoot, your science coach. 🦉</p></div></div>
   <p>Every week is open — play in any order! Pass every mission with <b>60% or more</b> to get a 🟢 <b>green circle</b>, and score <b>100%</b> in every mission for a ⭐ <b>star</b> on the week. Replaying a passed mission gives ½ coins. Collect ⭐ stars, 🪙 coins and 🏅 badges!</p>
@@ -1626,8 +1628,9 @@ function pickAvatar(first){
 }
 $("#modal").addEventListener("click", e => {
  const b = e.target.closest("[data-av]"); if (!b) return;
- const p = prof(); p.avatar = +b.dataset.av; saveProf(p); sfx.win(); closeModal();
- if (!$("#home").classList.contains("on") || !$("#map").innerHTML) goHome(); else { renderMap(); }
+ delete $("#ov").dataset.lock; const p = prof(); p.avatar = +b.dataset.av; saveProf(p); sfx.win(); closeModal();
+ if (AFTERPICK){ const f = AFTERPICK; AFTERPICK = null; f(); }
+ else if (!$("#home").classList.contains("on") || !$("#map").innerHTML) goHome(); else { renderMap(); }
  toast(`${AVATARS[p.avatar-1].name} is ready! 🚀`);
 });
 
@@ -9638,6 +9641,7 @@ pickAvatar = function(first){
  modal(`<div class="whead"><img src="img/m_wave.webp" alt=""><div><h2 class="h">${first ? "Choose your scientist!" : "Change your scientist"}</h2><p>Your hero for the whole adventure</p></div></div>
   <h3 class="avsec">👧 Girls</h3><div class="avgrid av4">${girls.map(card).join("")}</div>
   <h3 class="avsec">👦 Boys</h3><div class="avgrid av4">${BOYS.map(card).join("")}</div>`);
+ if (first){ const x = $("#modal .x"); if (x) x.remove(); $("#ov").dataset.lock = "1"; }
 };
 avatarHTML = function(width, extra = ""){
  const a = prof().avatar || 1;
