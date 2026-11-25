@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795631357";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795633561";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -9853,6 +9853,31 @@ renderResult = function(a, pct, newB){
  if (pct >= PASS) setTimeout(() => starRain(pct >= .9 ? 30 : 18), 300);
 };
 const k2 = document.createElement("style"); k2.textContent = "@keyframes heroyay2{0%{transform:translateY(40px) scale(.8)}50%{transform:translateY(-30px) rotate(360deg)}100%{transform:none}}"; document.head.appendChild(k2);
+})();
+
+/* ---------- full-screen button on every screen ---------- */
+(function(){
+ const D = document, E = D.documentElement;
+ const req = E.requestFullscreen || E.webkitRequestFullscreen, can = !!req && (D.fullscreenEnabled !== false || D.webkitFullscreenEnabled);
+ if (!can) return;
+ const fsEl = () => D.fullscreenElement || D.webkitFullscreenElement;
+ const st = D.createElement("style");
+ st.textContent = `#fsFab{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:2147483000;width:34px;height:52px;border:2px solid #6e451a;border-left:0;border-radius:0 14px 14px 0;
+  background:linear-gradient(180deg,#3a4862,#26314a);color:#ffe9b0;box-shadow:0 0 0 2px #d9a84e,0 4px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;opacity:.85;touch-action:manipulation}
+  #fsFab:hover{opacity:1}#fsFab svg{width:20px;height:20px}#fsFab.off{display:none}`;
+ D.head.appendChild(st);
+ const b = D.createElement("button"); b.id = "fsFab"; b.type = "button";
+ const ico = () => { const on = !!fsEl(); b.title = on ? "Exit full screen" : "Full screen"; b.setAttribute("aria-label", b.title);
+  b.innerHTML = on ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>'
+   : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'; };
+ b.addEventListener("click", async e => { e.stopPropagation(); try{ if (fsEl()) await (D.exitFullscreen || D.webkitExitFullscreen).call(D); else await req.call(E); }catch(err){} ico(); });
+ ["pointerdown", "touchstart", "mousedown"].forEach(t => b.addEventListener(t, e => e.stopPropagation()));
+ D.addEventListener("fullscreenchange", ico); D.addEventListener("webkitfullscreenchange", ico);
+ ico(); D.body.appendChild(b);
+ /* hide it only when the home screen's own full-screen button is visible and not covered */
+ setInterval(() => { const h = D.getElementById("bFull"), home = D.getElementById("home"), gx = D.getElementById("gx"), ov = D.getElementById("ov");
+  const own = !!(h && getComputedStyle(h).display !== "none" && h.getBoundingClientRect().width > 0 && home && home.classList.contains("on") && !(gx && !gx.classList.contains("x-hid") && getComputedStyle(gx).display !== "none") && !(ov && ov.classList.contains("on")) && !D.querySelector(".lbfull"));
+  b.classList.toggle("off", own); }, 500);
 })();
 
 /* =====================================================================
