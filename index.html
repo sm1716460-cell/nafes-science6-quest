@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795615520";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795615719";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -5435,7 +5435,7 @@ function makeRace3D(theme){
   const fs = Math.max(13, Math.min(19, A.w * .028)), nr = A.w < 560;
   const goal = !s.started ? "" : s.state === "q" ? (s.gate && s.z - s.gate.z > 70 ? "🤔 Read the question — the kart slows down at the gate" : nr ? "🏁 Drive into the RIGHT answer!" : "🏁 Steer into the gate with the RIGHT answer!") : s.state === "wrong" ? "😵 Tap to keep racing" : s.state === "run" ? SK.tip : "";
   const txt = s.msg ? s.msg.t : goal; if (txt) pill6(txt, A.x0 + A.w / 2, A.y0 + 24, s.msg ? s.msg.c : "#ffe9b0", fs);
-  if (!s.started) pill6(coarse ? "👆 Slide UP = faster · DOWN = slower · LEFT/RIGHT = lanes" : "⬅️ ➡️ lanes · ⬆️ faster · ⬇️ slower / reverse — or slide with the mouse", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
+  if (!s.started) pill6(coarse ? "👆 Slide UP faster · DOWN slower · tap the kart = STOP" : "⬅️ ➡️ lanes · ⬆️ faster · ⬇️ slower / reverse — or slide with the mouse", A.x0 + A.w / 2, A.y0 + A.h * .42, "#ffe9b0", Math.max(14, Math.min(20, A.w * .032)));
   if (s.state !== "end"){ const gx = A.x1 - 16, gh = Math.min(180, A.h * .34), gy = A.y0 + A.h * .58, f = (s.cruise + BASE * .4) / (BASE * 2.1), z0 = (BASE * .4) / (BASE * 2.1);
    cx.globalAlpha = s.drag ? 1 : .7; cx.fillStyle = "rgba(31,40,56,.75)"; rr6(gx - 9, gy - gh / 2, 18, gh, 9); cx.fill();
    const yy = v => gy + gh / 2 - v * gh; cx.fillStyle = s.cruise >= 0 ? "#7CFC9A" : "#ff8a80"; const ya = yy(Math.max(f, z0)), yb = yy(Math.min(f, z0)); rr6(gx - 6, ya, 12, Math.max(2, yb - ya), 6); cx.fill();
@@ -5454,7 +5454,10 @@ function makeRace3D(theme){
   if (!gs.mode && Math.hypot(dx, dy) > 14) gs.mode = Math.abs(dy) > Math.abs(dx) ? "spd" : "lane";
   if (gs.mode === "spd"){ s.cruise = Math.max(-BASE * .4, Math.min(BASE * 1.7, gs.c0 + dy / SPAN() * BASE * 2.1)); s.drag = 1; }
   if (gs.mode === "lane" && Math.abs(p.x - gs.lx) > 55){ steerTo(p.x > gs.lx ? 1 : -1); gs.lx = p.x; gs.did = 1; } };
- const up = e => { s.drag = 0; if (!gs || fb) return; const g = gs; gs = null; if (g.mode === "lane" && !g.did){ const x = ptr(e).x; steerTo(x > g.x0 ? 1 : -1); } else if (!g.mode){ const x = ptr(e).x; steerTo(x < A.x0 + A.w / 2 ? -1 : 1); } };
+ const up = e => { s.drag = 0; if (!gs || fb) return; const g = gs; gs = null; if (g.mode === "lane" && !g.did){ const x = ptr(e).x; steerTo(x > g.x0 ? 1 : -1); } else if (!g.mode){ const p = ptr(e); if (W && onCar(p)){ tapCar(); return; } steerTo(p.x < A.x0 + A.w / 2 ? -1 : 1); } };
+ function onCar(p){ const v = new W.T.Vector3(s.x, .8, s.z).project(W.cam), x = A.x0 + (v.x + 1) / 2 * A.w, y = A.y0 + (1 - v.y) / 2 * A.h; return Math.abs(p.x - x) < Math.max(55, A.w * .14) && Math.abs(p.y - y) < Math.max(50, A.h * .1); }
+ s.carXY = () => { const v = new W.T.Vector3(s.x, .8, s.z).project(W.cam); return [A.x0 + (v.x + 1) / 2 * A.w, A.y0 + (1 - v.y) / 2 * A.h]; };
+ function tapCar(){ s.started = true; if (Math.abs(s.cruise) > .5){ s.cruise = 0; s.msg = { t:"🛑 STOP! Tap the kart again or slide UP to go", life:2, c:"#ffe9b0" }; tone([400, 200], .08, "sine", .05); } else { s.cruise = BASE; s.msg = { t:"🏁 GO!", life:1.2, c:"#b8f5a0" }; tone([500, 900], .06, "sine", .05); } }
  const ku = e => { if (["ArrowUp", "w", "ArrowDown", "s"].includes(e.key)) s.thr = 0; };
  cv.addEventListener("pointerdown", down); addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("keyup", ku);
  const rz = () => later(P.measure, 60); addEventListener("resize", rz);
@@ -9610,7 +9613,9 @@ function ui(){
   if (!gs.mode && Math.hypot(dx, dy) > 14) gs.mode = Math.abs(dy) > Math.abs(dx) ? "spd" : "lane";
   if (gs.mode === "spd"){ const L = S.L.speed; S.cruise = Math.max(-L * .4, Math.min(L * 1.7, gs.c0 + dy / SPAN() * L * 2.1)); S.drag = 1; }
   if (gs.mode === "lane" && Math.abs(e.clientX - gs.lx) > 55){ lane(e.clientX > gs.lx ? 1 : -1); gs.lx = e.clientX; gs.did = 1; } });
- d.addEventListener("pointerup", e => { if (S) S.drag = 0; if (!gs) return; const g = gs; gs = null; if (!S || !S.run) return; if (g.mode === "lane" && !g.did) lane(e.clientX > g.x0 ? 1 : -1); else if (!g.mode) lane(e.clientX < innerWidth / 2 ? -1 : 1); });
+ d.addEventListener("pointerup", e => { if (S) S.drag = 0; if (!gs) return; const g = gs; gs = null; if (!S || !S.run) return; if (g.mode === "lane" && !g.did) lane(e.clientX > g.x0 ? 1 : -1); else if (!g.mode){ const v = new THREE.Vector3(S.x, 1.25, S.z).project(R.cam), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+   if (Math.abs(e.clientX - x) < Math.max(60, innerWidth * .14) && Math.abs(e.clientY - y) < Math.max(50, innerHeight * .08)){ if (Math.abs(S.cruise) > .5){ S.cruise = 0; pop("🛑 STOP", "x-gold", "Tap the ship again or slide UP to go"); A.tone(400, .1, "sine", .08, 200); } else { S.cruise = S.L.speed; pop("GO! 🚀", "x-good"); A.tone(500, .1, "sine", .08, 900); } hud(); return; }
+   lane(e.clientX < innerWidth / 2 ? -1 : 1); } });
  addEventListener("keydown", e => { if ($g("#gx").classList.contains("x-hid")) return;
   if (S && S.run && !S.paused){ if (["ArrowLeft", "a", "A"].includes(e.key)){ e.preventDefault(); lane(-1); } if (["ArrowRight", "d", "D"].includes(e.key)){ e.preventDefault(); lane(1); } if (["ArrowUp", "w", "W"].includes(e.key)){ e.preventDefault(); gThr = 1; } if (["ArrowDown", "s", "S"].includes(e.key)){ e.preventDefault(); gThr = -1; } }
   if (["p", "P", "Escape"].includes(e.key) && S && S.run) pause(!S.paused); });
@@ -9805,7 +9810,7 @@ function menu(){
   <div class="x-lbl" id="gxWt">${escH(sel.w === "all" ? "Questions from every week" : ((W.find(w => w.n === sel.w) || {}).title || ""))}</div>
   <div class="x-lvs">${Object.entries(LV).map(([k, L]) => { const b = B[sel.w + "-" + k]; return `<button class="x-lv ${sel.l === k ? "x-on" : ""}" data-l="${k}" style="--c:${L.col}"><div class="x-a">${L.ic}</div><div class="x-b">${L.n}</div><div class="x-c">${L.ds}</div><div class="x-d">${b ? `🏅 Best: ${b.score} · ${"⭐".repeat(b.stars)}` : "No record yet"}</div></button>`; }).join("")}</div>
   <div class="x-row"><button class="x-gb" id="gxGo">Launch! 🚀</button><button class="x-gb x-gh" id="gxBack">🏠 Back to map</button></div>
-  <div class="x-hint">Controls: slide ⬆️ UP = faster · slide ⬇️ DOWN = slower / stop / reverse · slide or tap ⬅️ ➡️ = lanes · keyboard: arrow keys · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
+  <div class="x-hint">Controls: tap the ship = 🛑 stop / go · slide ⬆️ UP = faster · slide ⬇️ DOWN = slower / stop / reverse · slide or tap ⬅️ ➡️ = lanes · keyboard: arrow keys · <kbd>P</kbd> pause · Phone/iPad/board: tap the left or right side, or swipe<br>✅ Right answer = points + SPEED BOOST · ❌ Wrong = slow down · 💎 Collect crystals · ☄️ Dodge asteroids · ⏱️ Faster finish = time bonus</div></div>`;
  $g("#gxMenu").onclick = e => { const w = e.target.closest("[data-w]"), l = e.target.closest("[data-l]");
   if (w){ sel.w = w.dataset.w === "all" ? "all" : +w.dataset.w; menu(); return; } if (l){ sel.l = l.dataset.l; menu(); return; }
   if (e.target.closest("#gxGo")) start(); if (e.target.closest("#gxBack")) close(); };
