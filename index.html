@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795708183";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795708693";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2359,7 +2359,7 @@ function outOfHearts(after){
   b.classList.add(ok ? "ok" : "bad"); if (!ok) d.querySelector(`[data-rk="${q.a}"]`).classList.add("ok");
   if (ok){ sfx.win(); FX.starRain(12); d.querySelector(".rvf").innerHTML = `<b style="color:var(--ok)">Correct! ❤️❤️❤️ Back in the game!</b>`;
    setTimeout(() => { d.remove(); G.hearts = 3; G.hold = false; hud(); after && after(); }, 1300); }
-  else { sfx.bad(); const cost = 40 * Math.pow(2, G.paid || 0), have = walletNow(), can = !!USER && have >= cost;
+  else { sfx.bad(); const cost = 100 * Math.pow(2, G.paid || 0), have = walletNow(), can = !!USER && have >= cost;
    d.querySelector(".rvf").innerHTML = `<p style="margin:6px 0">The answer is <b>${esc(q.o[q.a])}</b>.</p>
     <div class="rvpay"><button class="btn yel" id="rvPay" ${can ? "" : "disabled"}>💰 Pay ${cost} coins → ❤️❤️❤️</button><button class="btn ghost" id="rvEnd">🏁 End mission & save my score</button></div>
     <p style="margin:6px 0 0;font-size:13px;color:#7a6bb3">You have <b>${have}</b> coins.${can ? "" : ` You need ${cost - have} more.`}</p>`;
