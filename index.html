@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795707668";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795708183";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2063,17 +2063,18 @@ Object.assign(GAMES, {
  fblast:  { name:"Robot Blaster", icon:"🤖" },
  chicken: { name:"Chicken Blaster", icon:"🐔" },
  mole:    { name:"Whack-a-Mole", icon:"🔨" },
+ tvshow:  { name:"Science Quiz Show", icon:"📺" },
  dive:    { name:"Core Dive", icon:"🌀" },
  defend:  { name:"Erosion Defense", icon:"🏰" },
  climb:   { name:"Volcano Climb", icon:"🌋" },
  stack:   { name:"Quake Stack", icon:"🏗️" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, chicken:1, mole:1, dive:1, defend:1, climb:1, stack:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, chicken:1, mole:1, tvshow:1, dive:1, defend:1, climb:1, stack:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
  if (!w) return "slice";
- if (w.type === "review") return "boss";
+ if (w.type === "review") return "tvshow";
  const n = w.missions.length;
  if (mi === n - 1 && n > 1) return "boss";
  if (w.n === 1) return ["jump", "maze", "slice", "chicken", "maze", "kitchen"][mi % 6];
@@ -5548,6 +5549,123 @@ function makeMole(){
  return { update, draw, key(e){ const k = "1234".indexOf(e.key); if (k >= 0){ const i = s.holes.findIndex(h => h.up && h.k === k); if (i >= 0){ const r = H[i].getBoundingClientRect(); whack(i, { clientX:r.left + r.width / 2, clientY:r.top + r.height / 2 }); } } }, cleanup(){ d.remove(); } };
 }
 
+/* ===== Grand Review: TV Quiz Show + Mystery Cards ===== */
+const tvCss = document.createElement("style");
+tvCss.textContent = `.tv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:calc(clamp(62px,9vmin,90px) + env(safe-area-inset-top)) 10px 10px;gap:clamp(6px,1.2vmin,12px);color:#fff;pointer-events:none}
+.tv>*{pointer-events:auto}
+.tv-top{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.tv-led{background:#0b0620;border:3px solid #ffcf3f;border-radius:14px;padding:3px 14px;font-weight:900;font-size:clamp(14px,2.3vmin,22px);box-shadow:0 0 18px rgba(255,207,63,.45),inset 0 0 12px rgba(255,207,63,.25);text-align:center}
+.tv-led i{display:block;font-style:normal;font-size:.6em;color:#ffcf3f;letter-spacing:1px}
+.tv-led b{font-family:'Baloo 2',monospace;font-size:1.25em;color:#fff6c8;text-shadow:0 0 10px #ffcf3f}
+.tv-q{width:min(1000px,98%);background:linear-gradient(180deg,#2b1a7a,#1a0e52);border:4px solid #7ad7ff;border-radius:24px;padding:clamp(10px,2vmin,22px);text-align:center;box-shadow:0 0 30px rgba(122,215,255,.45);position:relative}
+.tv-q small{display:inline-block;background:#ffcf3f;color:#3a1d00;border-radius:99px;padding:2px 12px;font-weight:900;font-size:clamp(11px,1.6vmin,15px)}
+.tv-q h3{margin:6px 0 0;font-size:clamp(17px,3.1vmin,32px);line-height:1.25}
+.tv-time{width:min(1000px,98%);height:clamp(10px,1.6vmin,16px);background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;border:2px solid rgba(255,255,255,.3)}
+.tv-time u{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4ade80,#facc15,#f87171);transform-origin:left}
+.tv-ops{width:min(1000px,98%);display:grid;grid-template-columns:1fr 1fr;gap:clamp(6px,1.4vmin,14px)}
+.tv-op{display:flex;align-items:center;gap:10px;border:0;border-radius:18px;padding:clamp(10px,1.8vmin,18px) 12px;font-weight:900;font-size:clamp(14px,2.4vmin,24px);color:#fff;text-align:left;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.35);transition:transform .1s,filter .2s;min-height:clamp(56px,9vmin,96px);touch-action:manipulation}
+.tv-op:active{transform:translateY(3px)}.tv-op i{font-style:normal;font-size:1.3em;flex:none;width:1.5em;text-align:center}
+.tv-op.o0{background:#e2353f}.tv-op.o1{background:#1d6fe0}.tv-op.o2{background:#e0a100}.tv-op.o3{background:#1f9d55}
+.tv-op.dim{filter:grayscale(.8) brightness(.55)}.tv-op.ok{outline:5px solid #fff;animation:tvok .5s 2}.tv-op.bad{outline:5px solid #ff9a9a;animation:tvbad .4s}
+@keyframes tvok{50%{transform:scale(1.04)}}@keyframes tvbad{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tv-fb{min-height:1.6em;font-weight:900;font-size:clamp(15px,2.4vmin,22px);text-align:center;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.tv-fb .btn{margin-left:8px}
+.tv-host{position:absolute;left:6px;bottom:6px;display:flex;align-items:flex-end;gap:6px;z-index:3;max-width:min(520px,70vw);pointer-events:none}
+.tv-host img{width:clamp(62px,11vmin,120px);filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.tv-host span{background:#fff;color:#2a1a5e;border-radius:16px 16px 16px 4px;padding:6px 12px;font-weight:800;font-size:clamp(12px,1.9vmin,17px);margin-bottom:40%;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.tv-me{position:absolute;right:6px;bottom:4px;width:clamp(60px,10vmin,110px);z-index:2;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.tv-splash{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,4,40,.7);pointer-events:auto}
+.tv-splash>div{text-align:center;padding:20px 26px;border-radius:26px;background:linear-gradient(180deg,#3a1d9e,#1a0e52);border:4px solid #ffcf3f;box-shadow:0 0 40px rgba(255,207,63,.6);max-width:min(620px,92vw);animation:tvpop .45s cubic-bezier(.3,1.6,.5,1)}
+.tv-splash h2{margin:0;font-size:clamp(26px,5vmin,50px);color:#ffcf3f;text-shadow:0 3px 0 #7a3d00}.tv-splash p{margin:8px 0 14px;font-weight:800;font-size:clamp(14px,2.2vmin,20px)}
+@keyframes tvpop{from{transform:scale(.4);opacity:0}}
+.tv-cards{position:relative;width:100%;max-width:600px;aspect-ratio:3/2.25;margin:4px auto}
+.tv-splash>div.tv-cw{width:min(680px,94vw);box-sizing:border-box;padding:16px 14px}
+.tv-card{position:absolute;width:30%;height:46%;perspective:800px;transition:left .32s ease,top .32s ease;cursor:pointer}
+.tv-ci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}
+.tv-card.flip .tv-ci{transform:rotateY(180deg)}
+.tv-cf,.tv-cb{position:absolute;inset:0;border-radius:16px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-weight:900;border:4px solid #fff;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.tv-cb{background:repeating-linear-gradient(45deg,#6d28d9 0 12px,#7c3aed 12px 24px);font-size:clamp(34px,7vmin,64px);color:#ffcf3f;text-shadow:0 3px 0 #3b0a7a}
+.tv-cf{transform:rotateY(180deg);background:#fff;color:#2a1a5e;font-size:clamp(18px,3.6vmin,34px);flex-direction:column;text-align:center;line-height:1.1}
+.tv-cf small{display:block;font-size:.45em;color:#6b5aa6}
+.tv-cf.good{background:#d9fbe1;border-color:#1f9d55}.tv-cf.bad{background:#ffe0e0;border-color:#c0392b}.tv-cf.gold{background:#fff4c2;border-color:#e0a100}
+.tv-card.pick .tv-ci{box-shadow:0 0 0 6px #ffcf3f,0 0 30px #ffcf3f;border-radius:16px}.tv-card.fade{opacity:.55}`;
+document.head.appendChild(tvCss);
+const IMG_P3 = n => `img/p3/${n}.webp`;
+function makeTVShow(){
+ const N = Q.items.length, FIN = Math.max(0, N - 5), av = prof().avatar || 1;
+ const s = { t:0, pts:0, state:"intro", left:0, tot:1, beams:[0, 1, 2, 3].map(i => ({ a:i * 1.6, sp:.3 + i * .12 })), sparks:[] };
+ G.hearts = 3;
+ const d = document.createElement("div"); d.className = "tv"; layer.appendChild(d);
+ d.innerHTML = `<div class="tv-top"><div class="tv-led"><i>SCORE</i><b id="tvPts">0</b></div><div class="tv-led"><i id="tvRl">ROUND 1</i><b id="tvQn">1/${N}</b></div><div class="tv-led"><i>STREAK</i><b id="tvSk">0🔥</b></div></div>
+  <div class="tv-q" id="tvQ"><small id="tvTag">📺 Science Quiz Show</small><h3 id="tvQt"></h3></div><div class="tv-time"><u id="tvT"></u></div>
+  <div class="tv-ops" id="tvOps"></div><div class="tv-fb" id="tvFb"></div>
+  <div class="tv-host"><img id="tvHost" src="img/m_wave.webp" alt=""><span id="tvSay">Welcome to the show!</span></div><img class="tv-me" id="tvMe" src="${IMG_P3("h" + av + "_stand")}" alt="">`;
+ const say = (t, m) => { $("#tvSay").innerHTML = t; if (m) $("#tvHost").src = "img/" + m + ".webp"; };
+ const me = p => { $("#tvMe").src = IMG_P3("h" + av + "_" + p); };
+ const SH = ["▲", "◆", "●", "■"];
+ const setPts = v => { s.pts = Math.max(0, Math.round(v)); $("#tvPts").textContent = s.pts; };
+ const wait = fn => { const go = () => { if (G.hold) return later(go, 300); fn(); }; go(); };
+ function splash(h, p, btn, cb){ const o = document.createElement("div"); o.className = "tv-splash"; o.innerHTML = `<div><h2>${h}</h2><p>${p}</p><button class="btn yel">${btn}</button></div>`; d.appendChild(o); tone([392, 523, 659, 784], .1, "triangle", .12);
+  const go = () => { if (!o.isConnected) return; o.remove(); cb(); }; o.querySelector("button").onclick = go; later(go, 6000); }
+ function round(){ return Math.floor(Q.i / 5) + 1; }
+ function ask(){
+  if (Q.i >= N) return end();
+  if (Q.i === FIN && FIN > 0 && !s.finSeen){ s.finSeen = 1; return splash("🏆 FINAL ROUND!", "The last 5 questions are worth <b>DOUBLE points</b> ×2!", "Let's go! 🚀", ask); }
+  if (Q.i > 0 && Q.i % 5 === 0 && s.cardsAt !== Q.i){ s.cardsAt = Q.i; return cards(ask); }
+  const it = Q.items[Q.i], fin = Q.i >= FIN && FIN > 0;
+  $("#tvQt").textContent = it.q.q; $("#tvQn").textContent = `${Q.i + 1}/${N}`; $("#tvRl").textContent = fin ? "FINAL ×2" : "ROUND " + round();
+  $("#tvTag").textContent = fin ? "🏆 FINAL ROUND · DOUBLE POINTS" : `📺 Question ${Q.i + 1}`; $("#tvFb").innerHTML = "";
+  $("#tvOps").innerHTML = it.order.map((oi, k) => `<button class="tv-op o${k}" data-k="${k}"><i>${SH[k]}</i><span>${esc(it.q.o[oi])}</span></button>`).join("");
+  $("#tvOps").querySelectorAll("[data-k]").forEach(b => b.onclick = () => answer(+b.dataset.k));
+  s.tot = s.left = clamp(readT() + 10, 15, 30); s.state = "q"; me("stand");
+  say(pick(["Here's your question!", "Think carefully…", "Ooh, this one's tricky!", "You've got this!", "Read it twice!"]), pick(["m_think", "m_think2", "m_wave"])); hud();
+ }
+ function answer(k){
+  if (s.state !== "q" || G.hold) return; s.state = "a";
+  const it = Q.items[Q.i], ck = it.order.indexOf(it.q.a), timeout = k < 0;
+  const r = grade(timeout ? (ck + 1) % it.order.length : k), bs = $("#tvOps").querySelectorAll(".tv-op"), fin = Q.i >= FIN && FIN > 0;
+  bs.forEach((b, j) => { b.disabled = true; if (j === ck) b.classList.add("ok"); else if (j === k) b.classList.add("bad"); else b.classList.add("dim"); });
+  $("#tvSk").textContent = Q.streak + "🔥";
+  if (r.ok){ const p = Math.round((100 + 100 * s.left / s.tot) * (fin ? 2 : 1)); setPts(s.pts + p); sfx.win(); if (window.FX && FX.starRain) FX.starRain(10); me("cheer");
+   $("#tvFb").innerHTML = `✅ ${pick(GPH.ok)} <span style="color:#ffcf3f">+${p} points</span>`; say(pick(["CORRECT! 🎉", "Brilliant!", "The crowd goes wild! 👏", "Science star! ⭐"]), pick(["m_star", "m_celebrate", "m_thumbs", "m_wow"]));
+   later(() => wait(() => { Q.i++; ask(); }), 1500); }
+  else { me("dizzy"); $("#tvFb").innerHTML = `${timeout ? "⏰ Time's up!" : "❌ Not quite!"} The answer is <span style="color:#7CFC9A">${SH[ck]} ${esc(it.q.o[it.q.a])}</span> <button class="btn" id="tvNx">Got it ➜</button>`;
+   say(pick(["Oh no! Next one!", "Ouch! Keep going!", "Don't give up!"]), "m_oops");
+   const go = () => { if (s.state !== "a") return; s.state = "x"; wait(() => { Q.i++; ask(); }); }; $("#tvNx").onclick = go; later(go, 5000); }
+ }
+ /* Mystery cards: shown, flipped, shuffled — pick one */
+ function cards(cb){
+  s.state = "cards";
+  const pool = [{ t:"+50", v:50, c:"good" }, { t:"+100", v:100, c:"good" }, { t:"+200", v:200, c:"gold" }, { t:"×2", m:2, c:"gold", s:"double your score!" }, { t:"−50", v:-50, c:"bad" }, { t:"−100", v:-100, c:"bad" }];
+  if (G.hearts < 3) pool[0] = { t:"❤️", h:1, c:"good", s:"+1 heart" };
+  const C = shuffle(pool), o = document.createElement("div"); o.className = "tv-splash";
+  o.innerHTML = `<div class="tv-cw"><h2>🃏 MYSTERY CARDS</h2><p id="tvCp">Remember the cards… then they flip and SHUFFLE!</p><div class="tv-cards">${C.map((c, i) => `<div class="tv-card flip" data-c="${i}"><div class="tv-ci"><div class="tv-cb">?</div><div class="tv-cf ${c.c}">${c.t}${c.s ? `<small>${c.s}</small>` : ""}</div></div></div>`).join("")}</div></div>`;
+  d.appendChild(o); say("Mystery cards time! 🃏", "m_wow");
+  const els = [...o.querySelectorAll(".tv-card")]; let slot = C.map((_, i) => i);
+  const place = () => els.forEach((e, i) => { const sl = slot[i]; e.style.left = (sl % 3) * 35 + "%"; e.style.top = Math.floor(sl / 3) * 54 + "%"; });
+  place(); let can = false;
+  later(() => { els.forEach(e => e.classList.remove("flip")); tone([500, 300], .1, "triangle", .08);
+   let n = 0; const mix = () => { if (n++ >= 7){ can = true; $("#tvCp").textContent = "👆 Pick ONE card!"; return; } slot = shuffle(slot); place(); tone([400 + n * 40], .05, "square", .04); later(mix, 380); }; later(mix, 600); }, 2200);
+  els.forEach((e, i) => e.onclick = () => { if (!can) return; can = false; const c = C[i]; e.classList.add("flip", "pick"); later(() => { els.forEach(x => { if (x !== e){ x.classList.add("flip", "fade"); } }); }, 900);
+   let msg; if (c.m){ setPts(s.pts * 2); msg = "×2 — your score is DOUBLED! 🤩"; sfx.win(); } else if (c.h){ G.hearts = Math.min(3, G.hearts + 1); hud(); msg = "+1 ❤️ heart!"; sfx.win(); }
+   else { setPts(s.pts + c.v); msg = c.v > 0 ? `${c.t} points! 🎉` : `${c.t} points… 😬`; c.v > 0 ? sfx.win() : sfx.bad(); }
+   $("#tvCp").innerHTML = `<b style="color:#ffcf3f">${msg}</b>`; say(c.c === "bad" ? "Ouch, bad luck! 😬" : "Lucky pick! 🍀", c.c === "bad" ? "m_oops" : "m_celebrate");
+   later(() => { o.remove(); cb(); }, 2600); });
+ }
+ function end(){ s.state = "end"; const bonus = Math.round(s.pts / 25); if (bonus > 0) coins(bonus); say(`What a show! ${s.pts} points! 🏆`, "m_trophy"); me("cheer"); confetti(80); sfx.win();
+  splash("🎬 THAT'S A WRAP!", `Final score: <b style="color:#ffcf3f;font-size:1.4em">${s.pts}</b> points<br>+${bonus} 🪙 bonus coins`, "See my results ➜", () => arcDone()); }
+ function update(dt){ s.t += dt; if (s.state === "q" && !G.hold){ s.left -= dt; $("#tvT").style.transform = `scaleX(${Math.max(0, s.left / s.tot)})`; if (s.left <= 0) answer(-1); } }
+ function draw(){ const W = view.w, H = view.h; const g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#12052e"); g.addColorStop(.6, "#2a0f6b"); g.addColorStop(1, "#0b0420"); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+  cx.save(); cx.globalCompositeOperation = "lighter";
+  s.beams.forEach((b, i) => { const a = Math.sin(s.t * b.sp + b.a) * .5, x = W * (i + .5) / 4; cx.save(); cx.translate(x, -10); cx.rotate(a); const lg = cx.createLinearGradient(0, 0, 0, H); lg.addColorStop(0, ["rgba(255,80,180,.35)", "rgba(80,200,255,.35)", "rgba(255,220,80,.35)", "rgba(140,90,255,.35)"][i]); lg.addColorStop(1, "rgba(0,0,0,0)"); cx.fillStyle = lg; cx.beginPath(); cx.moveTo(-8, 0); cx.lineTo(8, 0); cx.lineTo(W * .16, H); cx.lineTo(-W * .16, H); cx.fill(); cx.restore(); });
+  cx.restore();
+  cx.fillStyle = "#1a0b40"; cx.beginPath(); cx.ellipse(W / 2, H * 1.02, W * .7, H * .16, 0, 0, 7); cx.fill();
+  for (let i = 0; i < 40; i++){ const x = (i / 40) * W + 10, on = (Math.floor(s.t * 4) + i) % 3 === 0; cx.fillStyle = on ? "#ffcf3f" : "rgba(255,207,63,.25)"; cx.beginPath(); cx.arc(x, H - 6, 3, 0, 7); cx.fill(); } }
+ window.__tv = s; s.answer = answer;
+ later(() => splash("📺 THE GRAND SCIENCE SHOW!", `${N} questions from ALL weeks · answer fast for bonus points · 🃏 Mystery Cards every 5 questions · 🏆 Final round = double points!`, "Start the show! 🎬", ask), 300);
+ return { update, draw, key(e){ const k = "1234".indexOf(e.key); if (k >= 0 && s.state === "q") answer(k); }, cleanup(){ d.remove(); } };
+}
+
 
 /* =====================================================================
    3D RACE ENGINE (three.js) — Kart Rush 3D (week 5)
@@ -5872,7 +5990,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "chicken" ? makeChicken() : kind === "mole" ? makeMole() : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "chicken" ? makeChicken() : kind === "mole" ? makeMole() : kind === "tvshow" ? makeTVShow() : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
