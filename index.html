@@ -3,7 +3,7 @@
 <head>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<script>(function(){var V="1795634228";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){var V="1795704885";try{fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(v){v=(v||"").trim();if(v&&v!==V&&!sessionStorage.getItem("nafes_rl_"+v)){sessionStorage.setItem("nafes_rl_"+v,"1");location.replace(location.pathname+"?v="+v+location.hash);}}).catch(function(){});}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nafes Science Quest</title>
@@ -2062,12 +2062,13 @@ Object.assign(GAMES, {
  surf3d: { name:"Surf Rush 3D", icon:"🏄" },
  fblast:  { name:"Robot Blaster", icon:"🤖" },
  chicken: { name:"Chicken Blaster", icon:"🐔" },
+ mole:    { name:"Whack-a-Mole", icon:"🔨" },
  dive:    { name:"Core Dive", icon:"🌀" },
  defend:  { name:"Erosion Defense", icon:"🏰" },
  climb:   { name:"Volcano Climb", icon:"🌋" },
  stack:   { name:"Quake Stack", icon:"🏗️" }
 });
-const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, chicken:1, dive:1, defend:1, climb:1, stack:1 };
+const ARC = { dash:1, kitchen:1, slice:1, boss:1, jump:1, race:1, maze:1, fly:1, frog:1, density:1, state:1, ph:1, speed:1, magnet:1, coaster:1, machine:1, surf:1, light:1, spark:1, conductor:1, sling:1, fish:1, blast:1, kart3d:1, coast3d:1, surf3d:1, fblast:1, chicken:1, mole:1, dive:1, defend:1, climb:1, stack:1 };
 let FORCE = "";
 
 gameFor = function(w, mi){
@@ -2084,7 +2085,7 @@ gameFor = function(w, mi){
  if (w.n === 6) return ["jump", "coast3d", "chicken", "jump", "coast3d", "chicken"][mi % 6];
  if (w.n === 5) return ["jump", "kart3d", "magnet", "jump", "kart3d", "magnet"][mi % 6];
  if (w.n === 4) return ["jump", "race", "ph", "chicken", "kitchen", "ph"][mi % 6];
- if (w.n === 3) return ["jump", "race", "fblast", "state", "jump", "race"][mi % 6];
+ if (w.n === 3) return ["jump", "race", "fblast", "state", "jump", "mole"][mi % 6];
  if (w.n === 2) return ["jump", "chicken", "race", "frog", "jump", "kitchen"][mi % 6];
  const NEW = ["dash", "kitchen", "slice"];
  return NEW[(mi + w.n - 1) % 3];
@@ -5464,6 +5465,87 @@ function makeStack(){
  return { update, draw, key(e){ if (e.key === " " || e.key === "ArrowDown"){ e.preventDefault(); if (!e.repeat) down(); } }, resize(){ P.measure(); geo(); }, cleanup(){ cv.removeEventListener("pointerdown", down); removeEventListener("resize", rz); } };
 }
 
+/* ===== Wordwall-style: Whack-a-Mole ===== */
+const mlCss = document.createElement("style");
+mlCss.textContent = `.ml{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:calc(clamp(64px,9vmin,92px) + env(safe-area-inset-top)) 12px 14px;gap:clamp(8px,1.6vmin,16px);pointer-events:none}
+.ml>*{pointer-events:auto}
+.ml-q{width:min(980px,96%);background:#fff;border-radius:22px;padding:clamp(10px,1.8vmin,18px) clamp(14px,2.4vmin,26px);box-shadow:0 8px 0 #6e451a,0 14px 30px rgba(0,0,0,.3);border:4px solid #f5b62a;text-align:center}
+.ml-q small{display:inline-block;background:#ede4ff;color:#5b3bd1;border-radius:99px;padding:2px 12px;font-weight:900;font-size:clamp(11px,1.6vmin,15px);margin-bottom:4px}
+.ml-q h3{margin:0;font-size:clamp(17px,3vmin,30px);line-height:1.25;color:#2a1a5e}
+.ml-tip{background:rgba(20,8,60,.7);color:#ffe9b0;border-radius:99px;padding:4px 16px;font-weight:900;font-size:clamp(13px,2vmin,19px)}
+.ml-field{flex:1;width:min(980px,100%);display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(8px,2vmin,24px);align-content:end;padding-bottom:4px}
+@media (orientation:landscape) and (min-width:900px){.ml-field{grid-template-columns:repeat(4,1fr)}}
+.ml-hole{position:relative;height:clamp(150px,26vmin,250px);overflow:hidden;border-radius:0 0 50% 50%/0 0 30% 30%;cursor:pointer;touch-action:manipulation}
+.ml-dirt{position:absolute;left:4%;right:4%;bottom:0;height:34%;background:radial-gradient(ellipse at 50% 30%,#3b2414 0 45%,#6d4524 46% 70%,#8a5a2e 71%);border-radius:50%;z-index:3;box-shadow:inset 0 6px 10px rgba(0,0,0,.5)}
+.ml-dirt:after{content:"";position:absolute;left:-4%;right:-4%;bottom:-12%;height:50%;background:#5aa83a;border-radius:50%;z-index:-1;box-shadow:0 -4px 0 #7bc94e}
+.ml-mole{position:absolute;left:50%;bottom:8%;width:min(78%,190px);transform:translate(-50%,105%);transition:transform .28s cubic-bezier(.3,1.6,.5,1);z-index:2;display:flex;flex-direction:column;align-items:center}
+.ml-hole.up .ml-mole{transform:translate(-50%,0)}
+.ml-sign{background:#fffdf3;border:3px solid #6e451a;border-radius:12px;padding:4px 8px;font-weight:900;color:#2a1a5e;font-size:clamp(12px,2vmin,19px);line-height:1.15;text-align:center;box-shadow:0 4px 0 #6e451a;width:100%;min-height:2.4em;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:-4px;position:relative;z-index:2}
+.ml-sign b{flex:none;width:1.6em;height:1.6em;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:.85em}
+.ml-body{width:72%;aspect-ratio:1/1.05;background:radial-gradient(circle at 50% 70%,#c89b72 0 22%,transparent 23%),linear-gradient(#9a6a43,#7a4f2e);border-radius:48% 48% 30% 30%;position:relative;border:3px solid #4a2d17}
+.ml-body:before,.ml-body:after{content:"";position:absolute;top:30%;width:15%;height:15%;background:#1a1a1a;border-radius:50%;box-shadow:inset 3px 3px 0 #fff}
+.ml-body:before{left:27%}.ml-body:after{right:27%}
+.ml-nose{position:absolute;left:50%;top:48%;width:20%;height:13%;transform:translateX(-50%);background:#ff7aa8;border-radius:50%;border:2px solid #4a2d17}
+.ml-teeth{position:absolute;left:50%;top:62%;width:16%;height:10%;transform:translateX(-50%);background:#fff;border:2px solid #4a2d17;border-top:0;border-radius:0 0 4px 4px}
+.ml-hole.hit .ml-body{animation:mlhit .45s}.ml-hole.hit .ml-body:before,.ml-hole.hit .ml-body:after{background:none;box-shadow:none;content:"✖";color:#1a1a1a;font-weight:900;font-size:clamp(12px,2vmin,20px);width:auto;height:auto;top:24%}
+.ml-hole.good .ml-sign{background:#c8f7c5;border-color:#1f9d55}.ml-hole.bad .ml-sign{background:#ffd0d0;border-color:#c0392b}
+.ml-hole.bad .ml-body{animation:mllaugh .4s 3}
+@keyframes mlhit{30%{transform:scaleY(.7) translateY(18%)}}@keyframes mllaugh{50%{transform:rotate(-8deg)}}
+.ml-ham{position:absolute;z-index:40;font-size:clamp(48px,9vmin,90px);pointer-events:none;transform-origin:80% 80%;animation:mlham .3s forwards}
+@keyframes mlham{0%{transform:translate(-50%,-80%) rotate(-50deg)}60%{transform:translate(-50%,-80%) rotate(20deg)}100%{transform:translate(-50%,-80%) rotate(10deg);opacity:0}}
+.ml-fb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:35;background:#fff;border-radius:22px;padding:16px 22px;border:4px solid #c0392b;box-shadow:0 14px 40px rgba(0,0,0,.4);text-align:center;font-weight:800;font-size:clamp(15px,2.4vmin,22px);max-width:min(560px,92vw)}
+.ml-fb button{margin-top:10px}`;
+document.head.appendChild(mlCss);
+const ML_COL = ["#8b5cff", "#2fb67a", "#f0723c", "#2f86e8"];
+function makeMole(){
+ const bg = IM(`img/p3/w${Q.w && Q.w.n ? Q.w.n : 1}_bg.webp`);
+ const s = { t:0, state:"read", wait:0, holes:[0, 1, 2, 3].map(() => ({ up:false, k:-1, t:0 })), since:0, spawn:.5, lastCk:0 };
+ G.hearts = 3;
+ const d = document.createElement("div"); d.className = "ml"; layer.appendChild(d);
+ d.innerHTML = `<div class="ml-q"><small>🔨 Whack the mole with the RIGHT answer!</small><h3 id="mlQ"></h3></div><div class="ml-tip" id="mlTip"></div>
+  <div class="ml-field">${[0, 1, 2, 3].map(i => `<div class="ml-hole" data-h="${i}"><div class="ml-mole"><div class="ml-sign"></div><div class="ml-body"><div class="ml-nose"></div><div class="ml-teeth"></div></div></div><div class="ml-dirt"></div></div>`).join("")}</div>`;
+ const H = [...d.querySelectorAll(".ml-hole")];
+ function setHole(i, up, k){ const h = s.holes[i], el = H[i]; h.up = up; if (up){ h.k = k; h.t = 0; const it = Q.items[Q.i]; el.querySelector(".ml-sign").innerHTML = `<b style="background:${ML_COL[k]}">${LET[k]}</b><span>${esc(it.q.o[it.order[k]])}</span>`; el.classList.remove("hit", "good", "bad"); } el.classList.toggle("up", up); }
+ function ask(){
+  if (Q.i >= Q.items.length){ later(arcDone, 600); return; }
+  const it = Q.items[Q.i]; $("#mlQ").textContent = it.q.q; s.holes.forEach((h, i) => setHole(i, false));
+  s.state = "read"; s.wait = Math.min(6, readT() * .45); s.since = 0; s.spawn = .2; hud();
+ }
+ function popOne(){
+  const it = Q.items[Q.i], n = it.order.length, ck = it.order.indexOf(it.q.a);
+  const free = s.holes.map((h, i) => i).filter(i => !s.holes[i].up); if (!free.length) return;
+  const shown = s.holes.filter(h => h.up).map(h => h.k);
+  let k; if (s.since > 3.2 && !shown.includes(ck)) k = ck; else { const opts = [...Array(n).keys()].filter(x => !shown.includes(x)); if (!opts.length) return; k = pick(opts); }
+  if (k === ck) s.since = 0;
+  setHole(pick(free), true, k); tone([300 + k * 80], .05, "triangle", .05);
+ }
+ function whack(i, ev){
+  if (s.state !== "play" || G.hold) return; const h = s.holes[i]; if (!h.up) return;
+  const r0 = layer.getBoundingClientRect(), ham = document.createElement("div"); ham.className = "ml-ham"; ham.textContent = "🔨";
+  ham.style.left = (ev.clientX - r0.left) + "px"; ham.style.top = (ev.clientY - r0.top) + "px"; layer.appendChild(ham); setTimeout(() => ham.remove(), 400);
+  const r = grade(h.k), el = H[i]; el.classList.add("hit", r.ok ? "good" : "bad"); s.state = "done";
+  s.holes.forEach((x, j) => { if (j !== i) setHole(j, false); });
+  if (r.ok){ sfx.ok(); fl(`+${r.val} 🪙`, ev.clientX, ev.clientY - 40); if (window.FX && FX.starRain) FX.starRain(8); banner(pick(GPH.ok)); later(() => { Q.i++; ask(); }, 1100); }
+  else { const fb = document.createElement("div"); fb.className = "ml-fb"; fb.innerHTML = `❌ The answer is <b style="color:#1f9d55">${LET[r.ck]}) ${esc(r.it.q.o[r.it.q.a])}</b><br><button class="btn">Got it ➜</button>`;
+   d.appendChild(fb); const go = () => { if (!fb.isConnected) return; fb.remove(); const nx = () => { if (G.hold) return later(nx, 300); Q.i++; ask(); }; nx(); }; fb.querySelector("button").onclick = go; later(go, 4200); }
+ }
+ H.forEach((el, i) => el.addEventListener("pointerdown", e => { e.preventDefault(); whack(i, e); }));
+ function update(dt){
+  s.t += dt;
+  if (s.state === "read"){ s.wait -= dt; $("#mlTip").textContent = `🤔 Read the question… ${Math.max(1, Math.ceil(s.wait))}`; if (s.wait <= 0){ s.state = "play"; $("#mlTip").textContent = "🔨 Tap the mole holding the RIGHT answer!"; } return; }
+  if (s.state !== "play") return;
+  s.since += dt; s.spawn -= dt;
+  const upT = 2.6 - Math.min(.8, Q.i * .04);
+  s.holes.forEach((h, i) => { if (h.up){ h.t += dt; if (h.t > upT) setHole(i, false); } });
+  if (s.spawn <= 0){ const ups = s.holes.filter(h => h.up).length; if (ups < 2) popOne(); s.spawn = rnd(.45, .9); }
+ }
+ function draw(){ const W = view.w, Hh = view.h; cx.clearRect(0, 0, W, Hh); if (!cover(bg, 0, 0, W, Hh)){ cx.fillStyle = "#6fbf4a"; cx.fillRect(0, 0, W, Hh); }
+  const g = cx.createLinearGradient(0, Hh * .45, 0, Hh); g.addColorStop(0, "rgba(90,168,58,0)"); g.addColorStop(.35, "rgba(90,168,58,.85)"); g.addColorStop(1, "#3f8a2a"); cx.fillStyle = g; cx.fillRect(0, Hh * .45, W, Hh * .55); }
+ window.__ml = s; s.whack = whack; s.H = H;
+ later(ask, 300);
+ return { update, draw, key(e){ const k = "1234".indexOf(e.key); if (k >= 0){ const i = s.holes.findIndex(h => h.up && h.k === k); if (i >= 0){ const r = H[i].getBoundingClientRect(); whack(i, { clientX:r.left + r.width / 2, clientY:r.top + r.height / 2 }); } } }, cleanup(){ d.remove(); } };
+}
+
 
 /* =====================================================================
    3D RACE ENGINE (three.js) — Kart Rush 3D (week 5)
@@ -5788,7 +5870,7 @@ function startArc(kind){
  show("arc"); fit(); sec.dataset.kind = kind;
  $("#aSound").textContent = SOUND ? "🔊" : "🔇";
  G.arc = true; hud();
- A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "chicken" ? makeChicken() : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
+ A = kind === "jump" ? makeJump() : kind === "dash" ? makeDash() : kind === "race" ? makeDash(Q.w && Q.w.n === 4 ? "volcano" : Q.w && Q.w.n === 3 ? "factory" : true) : kind === "maze" ? makeMaze() : kind === "fly" ? makeFly() : kind === "density" ? makeDensity() : kind === "state" ? makeState() : kind === "ph" ? makePH() : kind === "speed" ? makeSpeed() : kind === "coaster" ? makeCoaster() : kind === "surf" ? makeSurf() : kind === "spark" ? makeSpark() : kind === "conductor" ? makeConductor() : kind === "sling" ? makeSling() : kind === "fish" ? makeFish() : kind === "blast" ? makeBlast() : kind === "kart3d" ? makeRace3D("kart") : kind === "coast3d" ? makeRace3D("coaster") : kind === "surf3d" ? makeRace3D("surf") : kind === "chicken" ? makeChicken() : kind === "mole" ? makeMole() : kind === "fblast" ? makeFactoryBlast() : kind === "dive" ? makeDive() : kind === "defend" ? makeDefense() : kind === "climb" ? makeClimb() : kind === "stack" ? makeStack() : kind === "light" ? makeLight() : kind === "machine" ? makeMachine() : kind === "magnet" ? makeMagnet() : kind === "frog" ? makeFrog() : kind === "slice" ? makeSlice() : kind === "kitchen" ? makeKitchen() : kind === "boss" ? makeBoss() : null;
  hud(); last = 0; if (!RAF) RAF = requestAnimationFrame(loop);
 }
 
